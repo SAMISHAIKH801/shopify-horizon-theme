@@ -1,0 +1,327 @@
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" media="print" onload="this.media='all'">
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+{% style %}
+  .custom-carousel-wrapper {
+    padding: 60px 0;
+    position: relative;
+    max-width: 100%;
+    overflow: hidden;
+    background-color: {{ section.settings.bg_color }};
+  }
+  .custom-carousel-container {
+    width: 92%;
+    max-width: 1440px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .custom-swiper {
+    width: 100%;
+    height: auto;
+    position: static !important;
+  }
+  .custom-carousel-card {
+    position: relative;
+    aspect-ratio: 16 / 12; /* Height thori zyada kar di hai */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: #002823;
+  }
+  
+  /* Performance optimized background image rendering */
+  .card-bg-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+    pointer-events: none;
+  }
+  
+  /* Overlay */
+  .custom-carousel-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 40, 35, 0.75);
+    z-index: 2;
+  }
+  .card-content {
+    position: relative;
+    z-index: 3;
+    padding: 24px;
+    width: 90%;
+  }
+  .card-title {
+    font-family: 'Bebas Neue', sans-serif !important;
+    font-size: 32px; /* Set to 32px */
+    font-weight: 400;
+    color: #ffffff;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    letter-spacing: 0px; /* Normal letter spacing */
+    line-height: 1.1;
+  }
+  .card-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #a81c1c;
+    color: #ffffff;
+    padding: 10px 24px; /* Padding thori kam ki hai */
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    text-transform: capitalize;
+    transition: background 0.2s ease-in-out;
+  }
+  .card-btn:hover {
+    background-color: #bd2323;
+  }
+  
+  /* Arrows setup matching image reference */
+  .swiper-nav-btn {
+    width: 35px;
+    height: 35px;
+    background-color: #f7d047 !important;
+    border-radius: 50%;
+    color: #000000 !important;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  }
+  .swiper-nav-btn::after {
+    font-size: 16px !important;
+    font-weight: bold;
+  }
+  .swiper-button-next {
+    right: -22px;
+  }
+  .swiper-button-prev {
+    left: -22px;
+  }
+  .swiper-button-disabled {
+    opacity: 0 !important;
+    pointer-events: none;
+  }
+  .custom-carousel-pagination {
+    position: relative !important;
+    margin-top: 25px;
+    text-align: center;
+  }
+  .custom-carousel-pagination .swiper-pagination-bullet {
+    width: 8px;
+    height: 8px;
+    background: #ccc;
+    opacity: 1;
+    margin: 0 5px !important;
+  }
+  .custom-carousel-pagination .swiper-pagination-bullet-active {
+    background: #a81c1c !important;
+  }
+
+  /* Responsive/Mobile Adjustments */
+  @media (max-width: 768px) {
+    .card-title {
+      font-size: 26px; /* Mobile me balanced size */
+      margin-bottom: 12px;
+    }
+    .card-btn {
+      padding: 8px 18px; /* Mobile button scaling */
+      font-size: 14px;
+    }
+    .swiper-button-next { right: 0px; }
+    .swiper-button-prev { left: 0px; }
+    .custom-carousel-card {
+      aspect-ratio: 4 / 3;
+    }
+  }
+{% endstyle %}
+
+<div class="custom-carousel-wrapper">
+  <div class="custom-carousel-container">
+    
+    <div class="swiper custom-swiper">
+      <div class="swiper-wrapper">
+        
+        {% for block in section.blocks %}
+          {%- assign collection = collections[block.settings.collection] -%}
+          
+          <div class="swiper-slide">
+            {%- assign bg_img = block.settings.bg_image -%}
+            {%- if bg_img == blank and collection.image -%}
+              {%- assign bg_img = collection.image -%}
+            {%- endif -%}
+            
+            <div class="custom-carousel-card">
+              {%- if bg_img != blank -%}
+                <img 
+                  src="{{ bg_img | img_url: '600x' }}" 
+                  srcset="{{ bg_img | img_url: '400x' }} 400w, {{ bg_img | img_url: '600x' }} 600w, {{ bg_img | img_url: '800x' }} 800w"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  alt="{{ bg_img.alt | escape | default: collection.title }}"
+                  class="card-bg-img"
+                  loading="lazy"
+                  width="600"
+                  height="450"
+                >
+              {%- endif -%}
+              
+              <div class="card-content">
+                <h3 class="card-title">
+                  {% if block.settings.custom_title != blank %}
+                    {{ block.settings.custom_title }}
+                  {% elsif collection != blank %}
+                    {{ collection.title }}
+                  {% else %}
+                    Collection Title
+                  {% endif %}
+                </h3>
+                
+                {% assign target_link = block.settings.custom_link %}
+                {% if target_link == blank and collection != blank %}
+                  {% assign target_link = collection.url %}
+                {% endif %}
+                
+                <a href="{{ target_link | default: '#' }}" class="card-btn">
+                  {{ block.settings.btn_text }} &rarr;
+                </a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+        
+      </div>
+    </div>
+
+    <div class="swiper-button-prev swiper-nav-btn"></div>
+    <div class="swiper-button-next swiper-nav-btn"></div>
+    <div class="custom-carousel-pagination"></div>
+
+  </div>
+</div>
+
+<script>
+  // Dynamic async initialization to safeguard page performance
+  function initCustomSwiper() {
+    if (typeof Swiper !== 'undefined') {
+      new Swiper('.custom-swiper', {
+        slidesPerView: 1,
+        spaceBetween: 24,
+        loop: false,
+        slideToClickedSlide: true,
+        grabCursor: true,
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        },
+        pagination: {
+          el: '.custom-carousel-pagination',
+          clickable: true,
+        },
+        breakpoints: {
+          992: {
+            slidesPerView: 3,
+            slidesPerGroup: 1,
+          },
+          768: {
+            slidesPerView: 2,
+            slidesPerGroup: 1,
+          },
+          0: {
+            slidesPerView: 1,
+            slidesPerGroup: 1,
+          }
+        }
+      });
+    } else {
+      setTimeout(initCustomSwiper, 50);
+    }
+  }
+  
+  if (document.readyState === 'loading') {
+    document.addEventListener("DOMContentLoaded", initCustomSwiper);
+  } else {
+    initCustomSwiper();
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Custom Collec Carousel",
+  "settings": [
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section Background Color",
+      "default": "#ffffff"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection_block",
+      "name": "Carousel Card",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Select Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "bg_image",
+          "label": "Custom Background Image"
+        },
+        {
+          "type": "text",
+          "id": "custom_title",
+          "label": "Custom Title"
+        },
+        {
+          "type": "text",
+          "id": "btn_text",
+          "label": "Button Text",
+          "default": "Shop Now"
+        },
+        {
+          "type": "url",
+          "id": "custom_link",
+          "label": "Custom Button Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Collec Carousel",
+      "blocks": [
+        { "type": "collection_block" },
+        { "type": "collection_block" },
+        { "type": "collection_block" }
+      ]
+    }
+  ]
+}
+{% endschema %}

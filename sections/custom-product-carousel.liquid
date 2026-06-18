@@ -1,0 +1,1304 @@
+{% comment %} 
+<!-- Performance Preconnect & Optimized CDN Assets -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css" media="print" onload="this.media='all'">
+<script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js" defer></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | append: 'px' }};
+    padding-bottom: {{ section.settings.padding_bottom | append: 'px' }};
+  }
+
+  /* Layout Custom Variables */
+  :root {
+    --desktop-cards: {{ section.settings.products_per_row_desktop }};
+    --tablet-cards: {{ section.settings.products_per_row_tablet }};
+    --mobile-cards: {{ section.settings.products_per_row_mobile }};
+  }
+
+  .custom-carousel-wrapper {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 50px; /* Thora horizontal padding barhaya h safe zone k liye */
+    position: relative;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .custom-carousel-title {
+    font-family: 'Bebas Neue', sans-serif;
+    text-align: center;
+    font-size: 3rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    margin-bottom: 35px;
+    letter-spacing: 2px;
+    color: #000;
+    content-visibility: auto; /* Browser performance booster */
+  }
+  
+  /* Carousel View Setup */
+  .custom-product-carousel {
+    width: 100%;
+    display: block;
+  }
+  
+  /* Customizer Card Background Target */
+  .custom-product-carousel .carousel-cell-card {
+    width: calc(100% / var(--desktop-cards) - 15px);
+    margin-right: 20px;
+    background-color: {{ section.settings.card_bg_color }};
+    border: 1px solid #111;
+    padding: 15px 10px;
+    box-sizing: border-box;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    justify-content: space-between;
+    min-height: 440px;
+    will-change: transform; /* Hardware acceleration for buttery smooth scrolling */
+  }
+
+  /* Product Content Typography & Hierarchy */
+  .card-badge-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #002d62;
+    margin-bottom: 0px;
+  }
+  
+  .card-image-wrap {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  
+  .card-image-wrap img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    height: auto;
+  }
+  
+  .card-product-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #002d62;
+    margin: 0px 0 0px 0;
+    text-decoration: none;
+    line-height: 1.3;
+    width: 100%;
+    border-top: none !important;
+    padding-top: 0 !important;
+  }
+  
+  .card-shop-btn {
+    font-family: 'Inter', sans-serif;
+    background-color: #ff1e27;
+    color: #fff;
+    padding: 9px 18px;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    text-decoration: none;
+    display: inline-block;
+    text-transform: capitalize;
+    letter-spacing: 0.5px;
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+  
+  .card-shop-btn:hover {
+    background-color: #d6141c;
+  }
+
+  /* Slider Controller Layouts */
+  .flickity-viewport {
+    transition: height 0.2s;
+  }
+  
+  .flickity-prev-next-button {
+    width: 44px;
+    height: 44px;
+    background: #e9b422!important;
+    border-radius: 50%;
+    transition: background 0.2s ease, opacity 0.2s ease;
+    z-index: 2;
+  }
+  
+  .flickity-prev-next-button:hover {
+    background: #e6b800 !important;
+  }
+  
+  /* Left Arrow customization to look lighter by default */
+  .flickity-prev-next-button.previous { 
+    left: -15px; 
+    opacity: 0.5;
+  }
+  .flickity-prev-next-button.previous:hover {
+    opacity: 1;
+  }
+  .flickity-prev-next-button.next { right: -15px; }
+  
+  .flickity-page-dots { bottom: -35px; }
+  .flickity-page-dots .dot { background: #333; margin: 0 6px; opacity: 0.2; }
+  .flickity-page-dots .dot.is-selected { opacity: 1; }
+
+  /* Responsive Queries */
+  @media screen and (max-width: 1024px) {
+    .custom-product-carousel .carousel-cell-card {
+      width: calc(100% / var(--tablet-cards) - 12px);
+      margin-right: 15px;
+    }
+    .custom-carousel-wrapper { padding: 0 30px; }
+    .custom-carousel-title { font-size: 2.5rem; }
+  }
+  
+  @media screen and (max-width: 767px) {
+    .custom-product-carousel .carousel-cell-card {
+      width: calc(100% / var(--mobile-cards) - 8px);
+      margin-right: 10px;
+      min-height: 400px;
+      padding: 20px 15px;
+    }
+    .custom-carousel-wrapper { padding: 0 20px; }
+    .flickity-prev-next-button.previous { left: -10px; }
+    .flickity-prev-next-button.next { right: -10px; }
+    .custom-carousel-title {       
+      font-size: 24px;
+      letter-spacing: normal; 
+    }
+    .card-product-title {
+      font-size: 16px;
+    }
+  }
+
+  #shopify-section-template--22617970213108__custom_product_carousel_AHCHpB {
+    padding: 50px 0px;
+  }
+{%- endstyle -%}
+
+<div class="custom-carousel-wrapper section-{{ section.id }}-padding">
+  {% if section.settings.section_title != blank %}
+    <h2 class="custom-carousel-title">{{ section.settings.section_title }}</h2>
+  {% endif %}
+
+  <div class="custom-product-carousel" data-flickity-init>
+    {% assign selected_collection = collections[section.settings.collection] %}
+    {% if selected_collection != blank and selected_collection.all_products_count > 0 %}
+      
+      {% for product in selected_collection.products limit: section.settings.max_products %}
+        <div class="carousel-cell-card">
+          <div class="card-badge-text">
+            {% if section.settings.optional_percentage_text != blank %}
+              {{ section.settings.optional_percentage_text }}
+            {% else %}
+              Optional % Off
+            {% endif %}
+          </div>
+          
+          <div class="card-image-wrap">
+            {% if product.featured_image != blank %}
+              <!-- Performance Optimized Image Loading Engine -->
+              <img src="{{ product.featured_image | image_url: width: 450 }}" 
+                   alt="{{ product.title | escape }}" 
+                   loading="lazy"
+                   width="450"
+                   height="{{ 450 | divided_by: product.featured_image.aspect_ratio | round }}">
+            {% else %}
+              {{ 'product-1' | placeholder_svg_tag }}
+            {% endif %}
+          </div>
+
+          <a href="{{ product.url }}" class="card-product-title">
+            {% if section.settings.use_custom_product_text and section.settings.optional_product_text != blank %}
+              {{ section.settings.optional_product_text }}
+            {% else %}
+              {{ product.title }}
+            {% endif %}
+          </a>
+
+          <a href="{{ product.url }}" class="card-shop-btn">Shop Now</a>
+        </div>
+      {% endfor %}
+
+    {% else %}
+      {% for i in (1..6) %}
+        <div class="carousel-cell-card">
+          <div class="card-badge-text">Optional % Off</div>
+          <div class="card-image-wrap">
+            {{ 'product-' | append: i | placeholder_svg_tag }}
+          </div>
+          <a href="#" class="card-product-title">Optional Text</a>
+          <a href="#" class="card-shop-btn">Shop Now</a>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var initCarousel = function() {
+      var elem = document.querySelector('[data-flickity-init]');
+      if (elem && !elem.classList.contains('flickity-enabled')) {
+        var flkty = new Flickity(elem, {
+          cellAlign: 'center', /* Center alignment handles the left cutoff glitch elegantly */
+          contain: false,      /* Left-right boundary control dynamically allows right cutoff trailing layout */
+          wrapAround: true,
+          groupCells: 1,
+          prevNextButtons: true,
+          pageDots: true,
+          adaptiveHeight: false
+        });
+      }
+    };
+
+    initCarousel();
+    
+    if (Shopify.designMode) {
+      document.addEventListener('shopify:section:load', initCarousel);
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Custom Product Carousel",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Heading",
+      "default": "PRODUCTS/COLLECTIONS"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Select Collection"
+    },
+    {
+      "type": "color",
+      "id": "card_bg_color",
+      "label": "Card Background Color",
+      "default": "#eef1f6"
+    },
+    {
+      "type": "text",
+      "id": "optional_percentage_text",
+      "label": "Optional Card Top Text",
+      "default": "Optional % Off"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_custom_product_text",
+      "label": "Override Product Title with Custom Text",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "optional_product_text",
+      "label": "Optional Product Bottom Text",
+      "default": "Optional Text"
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "label": "Max Products to Display",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Responsive Grid Settings"
+    },
+    {
+      "type": "range",
+      "id": "products_per_row_desktop",
+      "min": 4,
+      "max": 6,
+      "step": 1,
+      "label": "Products View on Desktop",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "products_per_row_tablet",
+      "min": 3,
+      "max": 5,
+      "step": 1,
+      "label": "Products View on Tablet",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "products_per_row_mobile",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "label": "Products View on Mobile",
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Section Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Product Carousel",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %} {% endcomment %}
+
+
+
+
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
+<script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js" defer></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | append: 'px' }};
+    padding-bottom: {{ section.settings.padding_bottom | append: 'px' }};
+    padding-left: {{ section.settings.padding_left | append: 'px' }};
+    padding-right: {{ section.settings.padding_right | append: 'px' }};
+  }
+
+  /* Layout Custom Variables */
+  :root {
+    --desktop-cards: {{ section.settings.products_per_row_desktop }};
+    --tablet-cards: {{ section.settings.products_per_row_tablet }};
+    --mobile-cards: {{ section.settings.products_per_row_mobile }};
+  }
+
+  /* FIXED: Dynamic Container Width Lock */
+  .custom-carousel-wrapper {
+    margin: 0 auto !important;
+    position: relative;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    /* width: 100% !important; */
+    display: block !important;
+    
+    {% if section.settings.container_width == 'default' %}
+      max-width: 1200px !important;
+    {% elsif section.settings.container_width == 'custom' %}
+      max-width: {{ section.settings.custom_max_width | append: 'px' }} !important;
+    {% else %}
+      max-width: 100% !important;
+    {% endif %}
+  }
+  
+  .custom-carousel-title {
+    font-family: 'Bebas Neue', sans-serif;
+    text-align: center;
+    font-size: 3rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    margin-bottom: 35px;
+    letter-spacing: 2px;
+    color: #000;
+    content-visibility: auto;
+  }
+  
+  /* FIXED: Carousel box constraints inside wrapper */
+  .custom-product-carousel {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex;
+    overflow: hidden;
+    flex-wrap: nowrap;
+    box-sizing: border-box;
+  }
+
+  .custom-product-carousel.flickity-enabled {
+    display: block !important;
+  }
+
+  .custom-product-carousel .flickity-viewport {
+    display: flex !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* Customizer Card Background Target */
+  .custom-product-carousel .carousel-cell-card {
+    width: calc(100% / var(--desktop-cards) - 15px);
+    margin-right: 20px;
+    flex-shrink: 0;
+    background-color: {{ section.settings.card_bg_color }};
+    border: 1px solid #111;
+    padding: 20px 15px;
+    box-sizing: border-box;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    justify-content: space-between;
+    height: auto !important;
+    will-change: transform;
+  }
+
+  /* Product Content Typography & Hierarchy */
+  .card-badge-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #002d62;
+    margin-bottom: 10px;
+  }
+  
+  .card-image-wrap {
+    width: 100%;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+  }
+  
+  .card-image-wrap img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    height: auto;
+  }
+  
+  .card-product-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #002d62;
+    margin: 10px 0;
+    text-decoration: none;
+    line-height: 1.3;
+    width: 100%;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 48px;
+  }
+  
+  .card-shop-btn {
+    font-family: 'Inter', sans-serif;
+    background-color: #ff1e27;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    text-decoration: none;
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: auto;
+    transition: background 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .card-shop-btn:hover {
+    background-color: #d6141c;
+  }
+
+  /* Slider Controller Layouts */
+  .flickity-prev-next-button {
+    width: 44px;
+    height: 44px;
+    background: #e9b422!important;
+    border-radius: 50%;
+    transition: background 0.2s ease, opacity 0.2s ease;
+    z-index: 2;
+  }
+  
+  .flickity-prev-next-button:hover {
+    background: #e6b800 !important;
+  }
+  
+  .flickity-prev-next-button.previous { 
+    left: 5px; 
+    opacity: 0.7;
+  }
+  .flickity-prev-next-button.previous:hover {
+    opacity: 1;
+  }
+  .flickity-prev-next-button.next { right: 5px; }
+  
+  .flickity-page-dots { bottom: -25px; }
+  .flickity-page-dots .dot { background: #333; margin: 0 6px; opacity: 0.2; }
+  .flickity-page-dots .dot.is-selected { opacity: 1; }
+
+  /* Responsive Queries */
+  @media screen and (max-width: 1024px) {
+    .custom-product-carousel .carousel-cell-card {
+      width: calc(100% / var(--tablet-cards) - 12px);
+      margin-right: 15px;
+    }
+    .custom-carousel-title { font-size: 2.5rem; }
+  }
+  
+  @media screen and (max-width: 767px) {
+    /* MOBILE BALANCING FIXES */
+    .custom-carousel-wrapper {
+      padding-left: 15px !important;   /* Mobile screen borders se automatic gap */
+      padding-right: 15px !important;
+    }
+    .custom-product-carousel .carousel-cell-card {
+      width: 100% !important;          /* 1 Card full screen par space capture karega */
+      margin-right: 0px !important;    /* Layout boundaries break na hon */
+      padding: 15px 10px;
+    }
+    .flickity-prev-next-button.previous { left: 0px; }
+    .flickity-prev-next-button.next { right: 0px; }
+    .custom-carousel-title {       
+      font-size: 24px;
+      letter-spacing: normal; 
+    }
+    .card-product-title {
+      font-size: 16px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="custom-carousel-wrapper section-{{ section.id }}-padding">
+  {% if section.settings.section_title != blank %}
+    <h2 class="custom-carousel-title">{{ section.settings.section_title }}</h2>
+  {% endif %}
+
+  <div class="custom-product-carousel" data-flickity-init>
+    {% assign selected_collection = collections[section.settings.collection] %}
+    {% if selected_collection != blank and selected_collection.all_products_count > 0 %}
+      
+      {% for product in selected_collection.products limit: section.settings.max_products %}
+        <div class="carousel-cell-card">
+          <div class="card-badge-text">
+            {% if section.settings.optional_percentage_text != blank %}
+              {{ section.settings.optional_percentage_text }}
+            {% else %}
+              Optional % Off
+            {% endif %}
+          </div>
+          
+          <div class="card-image-wrap">
+            {% if product.featured_image != blank %}
+              <img src="{{ product.featured_image | image_url: width: 400 }}" 
+                   alt="{{ product.title | escape }}" 
+                   loading="lazy"
+                   width="400"
+                   height="{{ 400 | divided_by: product.featured_image.aspect_ratio | round }}">
+            {% else %}
+              {{ 'product-1' | placeholder_svg_tag }}
+            {% endif %}
+          </div>
+
+          <a href="{{ product.url }}" class="card-product-title">
+            {% if section.settings.use_custom_product_text and section.settings.optional_product_text != blank %}
+              {{ section.settings.optional_product_text }}
+            {% else %}
+              {{ product.title }}
+            {% endif %}
+          </a>
+
+          <a href="{{ product.url }}" class="card-shop-btn">Shop Now</a>
+        </div>
+      {% endfor %}
+
+    {% else %}
+      {% for i in (1..6) %}
+        <div class="carousel-cell-card">
+          <div class="card-badge-text">Optional % Off</div>
+          <div class="card-image-wrap">
+            {{ 'product-' | append: i | placeholder_svg_tag }}
+          </div>
+          <a href="#" class="card-product-title">Optional Text</a>
+          <a href="#" class="card-shop-btn">Shop Now</a>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var initCarousel = function() {
+      var elem = document.querySelector('[data-flickity-init]');
+      if (elem && !elem.classList.contains('flickity-enabled')) {
+        var flkty = new Flickity(elem, {
+          cellAlign: 'center', /* Mobile aur desktop boundaries par align stable rakhne ke liye */
+          contain: true,
+          wrapAround: true,
+          groupCells: 1,
+          prevNextButtons: true,
+          pageDots: true,
+          adaptiveHeight: false,
+          watchCSS: false
+        });
+        
+        setTimeout(function() {
+          flkty.resize();
+        }, 150);
+      }
+    };
+
+    initCarousel();
+    
+    if (Shopify.designMode) {
+      document.addEventListener('shopify:section:load', initCarousel);
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Custom Product Carousel",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Heading",
+      "default": "PRODUCTS/COLLECTIONS"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Select Collection"
+    },
+    {
+      "type": "header",
+      "content": "Page Width Configurations"
+    },
+    {
+      "type": "select",
+      "id": "container_width",
+      "label": "Layout Width Type",
+      "default": "default",
+      "options": [
+        { "value": "default", "label": "Default Theme Grid (1200px)" },
+        { "value": "custom", "label": "Custom Max Width" },
+        { "value": "full", "label": "Full Width (100%)" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "custom_max_width",
+      "min": 1000,
+      "max": 1920,
+      "step": 20,
+      "unit": "px",
+      "label": "Custom Max Width (Applies only if Custom selected)",
+      "default": 1440
+    },
+    {
+      "type": "color",
+      "id": "card_bg_color",
+      "label": "Card Background Color",
+      "default": "#eef1f6"
+    },
+    {
+      "type": "text",
+      "id": "optional_percentage_text",
+      "label": "Optional Card Top Text",
+      "default": "Optional % Off"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_custom_product_text",
+      "label": "Override Product Title with Custom Text",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "optional_product_text",
+      "label": "Optional Product Bottom Text",
+      "default": "Optional Text"
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "label": "Max Products to Display",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Responsive Grid Settings"
+    },
+    {
+      "type": "range",
+      "id": "products_per_row_desktop",
+      "min": 4,
+      "max": 6,
+      "step": 1,
+      "label": "Products View on Desktop",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "products_per_row_tablet",
+      "min": 3,
+      "max": 5,
+      "step": 1,
+      "label": "Products View on Tablet",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "products_per_row_mobile",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "label": "Products View on Mobile",
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Section Padding Settings"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding Left (Gaps from Edge)",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding Right (Gaps from Edge)",
+      "default": 50
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Product Carousel",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}
+{% comment %} 
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
+<script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js" defer></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | append: 'px' }};
+    padding-bottom: {{ section.settings.padding_bottom | append: 'px' }};
+    padding-left: {{ section.settings.padding_left | append: 'px' }};
+    padding-right: {{ section.settings.padding_right | append: 'px' }};
+  }
+
+  /* Layout Custom Variables */
+  :root {
+    --desktop-cards: {{ section.settings.products_per_row_desktop }};
+    --tablet-cards: {{ section.settings.products_per_row_tablet }};
+    --mobile-cards: {{ section.settings.products_per_row_mobile }};
+  }
+
+  /* FIXED: Dynamic Container Width Lock */
+  .custom-carousel-wrapper {
+    margin: 0 auto !important;
+    position: relative;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    /* width: 100% !important; */
+    display: block !important;
+    
+    {% if section.settings.container_width == 'default' %}
+      max-width: 1200px !important;
+    {% elsif section.settings.container_width == 'custom' %}
+      max-width: {{ section.settings.custom_max_width | append: 'px' }} !important;
+    {% else %}
+      max-width: 100% !important;
+    {% endif %}
+  }
+  
+  .custom-carousel-title {
+    font-family: 'Bebas Neue', sans-serif;
+    text-align: center;
+    font-size: 3rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    margin-bottom: 35px;
+    letter-spacing: 2px;
+    color: #000;
+    content-visibility: auto;
+  }
+  
+  /* FIXED: Carousel box constraints inside wrapper */
+  .custom-product-carousel {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex;
+    overflow: hidden;
+    flex-wrap: nowrap;
+    box-sizing: border-box;
+  }
+
+  .custom-product-carousel.flickity-enabled {
+    display: block !important;
+  }
+
+  .custom-product-carousel .flickity-viewport {
+    display: flex !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* Customizer Card Background Target */
+  .custom-product-carousel .carousel-cell-card {
+    width: calc(100% / var(--desktop-cards) - 15px);
+    margin-right: 20px;
+    flex-shrink: 0;
+    background-color: {{ section.settings.card_bg_color }};
+    border: 1px solid #111;
+    padding: 20px 15px;
+    box-sizing: border-box;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    justify-content: space-between;
+    height: auto !important;
+    will-change: transform;
+  }
+
+  /* Product Content Typography & Hierarchy */
+  .card-badge-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #002d62;
+    margin-bottom: 10px;
+  }
+  
+  .card-image-wrap {
+    width: 100%;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+  }
+  
+  .card-image-wrap img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    height: auto;
+  }
+  
+  .card-product-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #002d62;
+    margin: 10px 0;
+    text-decoration: none;
+    line-height: 1.3;
+    width: 100%;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 48px;
+  }
+  
+  .card-shop-btn {
+    font-family: 'Inter', sans-serif;
+    background-color: #ff1e27;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    text-decoration: none;
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: auto;
+    transition: background 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .card-shop-btn:hover {
+    background-color: #d6141c;
+  }
+
+  /* Slider Controller Layouts */
+  .flickity-prev-next-button {
+    width: 44px;
+    height: 44px;
+    background: #e9b422!important;
+    border-radius: 50%;
+    transition: background 0.2s ease, opacity 0.2s ease;
+    z-index: 2;
+  }
+  
+  .flickity-prev-next-button:hover {
+    background: #e6b800 !important;
+  }
+  
+  .flickity-prev-next-button.previous { 
+    left: 5px; 
+    opacity: 0.7;
+  }
+  .flickity-prev-next-button.previous:hover {
+    opacity: 1;
+  }
+  .flickity-prev-next-button.next { right: 5px; }
+  
+  .flickity-page-dots { bottom: -25px; }
+  .flickity-page-dots .dot { background: #333; margin: 0 6px; opacity: 0.2; }
+  .flickity-page-dots .dot.is-selected { opacity: 1; }
+
+  /* Responsive Queries */
+  @media screen and (max-width: 1024px) {
+    .custom-product-carousel .carousel-cell-card {
+      width: calc(100% / var(--tablet-cards) - 12px);
+      margin-right: 15px;
+    }
+    .custom-carousel-title { font-size: 2.5rem; }
+  }
+  
+  @media screen and (max-width: 767px) {
+    .custom-product-carousel .carousel-cell-card {
+      width: calc(100% / var(--mobile-cards) - 8px);
+      margin-right: 10px;
+      padding: 15px 10px;
+    }
+    .flickity-prev-next-button.previous { left: 0px; }
+    .flickity-prev-next-button.next { right: 0px; }
+    .custom-carousel-title {       
+      font-size: 24px;
+      letter-spacing: normal; 
+    }
+    .card-product-title {
+      font-size: 16px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="custom-carousel-wrapper section-{{ section.id }}-padding">
+  {% if section.settings.section_title != blank %}
+    <h2 class="custom-carousel-title">{{ section.settings.section_title }}</h2>
+  {% endif %}
+
+  <div class="custom-product-carousel" data-flickity-init>
+    {% assign selected_collection = collections[section.settings.collection] %}
+    {% if selected_collection != blank and selected_collection.all_products_count > 0 %}
+      
+      {% for product in selected_collection.products limit: section.settings.max_products %}
+        <div class="carousel-cell-card">
+          <div class="card-badge-text">
+            {% if section.settings.optional_percentage_text != blank %}
+              {{ section.settings.optional_percentage_text }}
+            {% else %}
+              Optional % Off
+            {% endif %}
+          </div>
+          
+          <div class="card-image-wrap">
+            {% if product.featured_image != blank %}
+              <img src="{{ product.featured_image | image_url: width: 400 }}" 
+                   alt="{{ product.title | escape }}" 
+                   loading="lazy"
+                   width="400"
+                   height="{{ 400 | divided_by: product.featured_image.aspect_ratio | round }}">
+            {% else %}
+              {{ 'product-1' | placeholder_svg_tag }}
+            {% endif %}
+          </div>
+
+          <a href="{{ product.url }}" class="card-product-title">
+            {% if section.settings.use_custom_product_text and section.settings.optional_product_text != blank %}
+              {{ section.settings.optional_product_text }}
+            {% else %}
+              {{ product.title }}
+            {% endif %}
+          </a>
+
+          <a href="{{ product.url }}" class="card-shop-btn">Shop Now</a>
+        </div>
+      {% endfor %}
+
+    {% else %}
+      {% for i in (1..6) %}
+        <div class="carousel-cell-card">
+          <div class="card-badge-text">Optional % Off</div>
+          <div class="card-image-wrap">
+            {{ 'product-' | append: i | placeholder_svg_tag }}
+          </div>
+          <a href="#" class="card-product-title">Optional Text</a>
+          <a href="#" class="card-shop-btn">Shop Now</a>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var initCarousel = function() {
+      var elem = document.querySelector('[data-flickity-init]');
+      if (elem && !elem.classList.contains('flickity-enabled')) {
+        var flkty = new Flickity(elem, {
+          cellAlign: 'left',
+          contain: true,
+          wrapAround: true,
+          groupCells: 1,
+          prevNextButtons: true,
+          pageDots: true,
+          adaptiveHeight: false,
+          watchCSS: false
+        });
+        
+        setTimeout(function() {
+          flkty.resize();
+        }, 150);
+      }
+    };
+
+    initCarousel();
+    
+    if (Shopify.designMode) {
+      document.addEventListener('shopify:section:load', initCarousel);
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Custom Product Carousel",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Heading",
+      "default": "PRODUCTS/COLLECTIONS"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Select Collection"
+    },
+    {
+      "type": "header",
+      "content": "Page Width Configurations"
+    },
+    {
+      "type": "select",
+      "id": "container_width",
+      "label": "Layout Width Type",
+      "default": "default",
+      "options": [
+        { "value": "default", "label": "Default Theme Grid (1200px)" },
+        { "value": "custom", "label": "Custom Max Width" },
+        { "value": "full", "label": "Full Width (100%)" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "custom_max_width",
+      "min": 1000,
+      "max": 1920,
+      "step": 20,
+      "unit": "px",
+      "label": "Custom Max Width (Applies only if Custom selected)",
+      "default": 1440
+    },
+    {
+      "type": "color",
+      "id": "card_bg_color",
+      "label": "Card Background Color",
+      "default": "#eef1f6"
+    },
+    {
+      "type": "text",
+      "id": "optional_percentage_text",
+      "label": "Optional Card Top Text",
+      "default": "Optional % Off"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_custom_product_text",
+      "label": "Override Product Title with Custom Text",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "optional_product_text",
+      "label": "Optional Product Bottom Text",
+      "default": "Optional Text"
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "label": "Max Products to Display",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Responsive Grid Settings"
+    },
+    {
+      "type": "range",
+      "id": "products_per_row_desktop",
+      "min": 4,
+      "max": 6,
+      "step": 1,
+      "label": "Products View on Desktop",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "products_per_row_tablet",
+      "min": 3,
+      "max": 5,
+      "step": 1,
+      "label": "Products View on Tablet",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "products_per_row_mobile",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "label": "Products View on Mobile",
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Section Padding Settings"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding Left (Gaps from Edge)",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding Right (Gaps from Edge)",
+      "default": 50
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Product Carousel",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %} {% endcomment %}

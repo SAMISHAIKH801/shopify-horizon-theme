@@ -1,0 +1,330 @@
+{%- comment -%}
+  Custom Two Products Section - Horizontal Layout on Mobile & Desktop
+{%- endcomment -%}
+
+<style>
+  /* Font Face Implementation with Optimization */
+  @font-face {
+    font-family: 'Black';
+    src: url('https://cdn.shopify.com/s/files/1/0834/9207/7812/files/black.otf?v=1781602199') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  /* Section Wrapper */
+  .custom-products-{{ section.id }} {
+    padding: 60px 20px;
+    background-color: {{ section.settings.bg_color }};
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .custom-products-{{ section.id }} .section-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Section Header */
+  .custom-products-{{ section.id }} .section-title {
+    font-family: 'Black', sans-serif;
+    font-size: 42px;
+    font-weight: 500;
+    text-align: center;
+    color: #0b2f46;
+    margin-bottom: 50px;
+    line-height: 1.2;
+  }
+
+  /* Grid Layout - Keeps items structured */
+  .custom-products-{{ section.id }} .products-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+  }
+
+  /* Single Product Card - Flex row ensures left image, right text */
+  .custom-products-{{ section.id }} .product-card {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    width: calc(50% - 20px);
+    gap: 20px;
+    box-sizing: border-box;
+  }
+
+  /* Product Image Styling */
+  .custom-products-{{ section.id }} .product-img-wrapper {
+    flex: 0 0 45%;
+    max-width: 250px;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .custom-products-{{ section.id }} .product-img-wrapper img,
+  .custom-products-{{ section.id }} .product-img-wrapper svg {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+  }
+
+  /* Product Info */
+  .custom-products-{{ section.id }} .product-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .custom-products-{{ section.id }} .product-title {
+    font-family: sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a4261;
+    margin: 0 0 10px 0;
+    line-height: 1.4;
+    text-decoration: none;
+        text-align: left;
+    padding: 0px;
+   
+  }
+  
+  .custom-products-{{ section.id }} .product-title:hover {
+    color: #000;
+  }
+
+  /* Pricing Engine */
+  .custom-products-{{ section.id }} .price-container {
+    margin-bottom: 20px;
+    font-family: sans-serif;
+  }
+
+  .custom-products-{{ section.id }} .compare-at-price {
+    font-size: 14px;
+    color: #7b8e9b;
+    text-decoration: line-through;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .custom-products-{{ section.id }} .current-price {
+    font-size: 20px;
+    font-weight: 700;
+    color: #000000;
+    display: block;
+  }
+
+  /* CTA Button */
+  .custom-products-{{ section.id }} .learn-more-btn {
+    display: inline-block;
+    background-color: #38dbdf;
+    color: #000000;
+    font-family: sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 14px 28px;
+    text-decoration: none;
+    text-align: center;
+    width: fit-content;
+    transition: background-color 0.2s ease;
+  }
+
+  .custom-products-{{ section.id }} .learn-more-btn:hover {
+    background-color: #2ec4c8;
+  }
+
+  /* -------------------------------
+     Responsive Breakpoints 
+  ---------------------------------- */
+
+  /* Tablets & Small Desktop */
+  @media screen and (max-width: 991px) {
+    .custom-products-{{ section.id }} .products-grid {
+      flex-direction: column; /* Sections stack on top of each other, but card inner elements stay row-based */
+      gap: 30px;
+    }
+    .custom-products-{{ section.id }} .product-card {
+      width: 100%;
+    }
+  }
+
+  /* Mobile Screens (Strict Side-by-Side Content) */
+  @media screen and (max-width: 576px) {
+    .custom-products-{{ section.id }} {
+      padding: 40px 15px;
+    }
+    
+    /* Title size reduced to 32px as requested */
+    .custom-products-{{ section.id }} .section-title {
+      font-size: 32px; 
+      margin-bottom: 30px;
+    }
+
+    /* Force row layout on mobile so left is image and right is text */
+    .custom-products-{{ section.id }} .product-card {
+      flex-direction: row !important; 
+      align-items: flex-start;;
+      gap: 15px;
+    }
+
+    .custom-products-{{ section.id }} .product-img-wrapper {
+      flex: 0 0 35%; /* Controls mobile image balance size */
+      max-width: 120px;
+    }
+
+    /* Product Title size reduced to 15px on mobile */
+    .custom-products-{{ section.id }} .product-title {
+      font-size: 15px;
+      margin-bottom: 5px;
+    }
+
+    .custom-products-{{ section.id }} .price-container {
+      margin-bottom: 12px;
+    }
+
+    .custom-products-{{ section.id }} .current-price {
+      font-size: 18px;
+    }
+
+    /* Compact CTA padding on mobile to optimize view area */
+    .custom-products-{{ section.id }} .learn-more-btn {
+      padding: 10px 18px;
+      font-size: 11px;
+    }
+  }
+</style>
+
+<section class="custom-products-{{ section.id }}">
+  <div class="section-container">
+    {%- if section.settings.title != blank -%}
+      <h2 class="section-title">{{ section.settings.title | escape }}</h2>
+    {%- endif -%}
+
+    <div class="products-grid">
+      {%- assign product_1 = all_products[section.settings.product_1] -%}
+      {%- assign product_2 = all_products[section.settings.product_2] -%}
+
+      {%- comment -%} Product Block 1 {%- endcomment -%}
+      {%- if product_1 != blank -%}
+        <div class="product-card">
+          <div class="product-img-wrapper">
+            <a href="{{ product_1.url }}">
+              <img 
+                src="{{ product_1.featured_image | img_url: '400x400' }}" 
+                alt="{{ product_1.title | escape }}"
+                loading="lazy"
+                width="200"
+                height="200"
+              >
+            </a>
+          </div>
+          <div class="product-info">
+            <a href="{{ product_1.url }}" class="product-title">{{ product_1.title }}</a>
+            <div class="price-container">
+              {%- if product_1.compare_at_price > product_1.price -%}
+                <span class="compare-at-price">{{ product_1.compare_at_price | money }}</span>
+              {%- endif -%}
+              <span class="current-price">{{ product_1.price | money }}</span>
+            </div>
+            <a href="{{ product_1.url }}" class="learn-more-btn">Learn More</a>
+          </div>
+        </div>
+      {%- else -%}
+        <div class="product-card">
+          <div class="product-img-wrapper">
+            {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+          <div class="product-info">
+            <h3 class="product-title">Sample Product Title 1</h3>
+            <div class="price-container">
+              <span class="compare-at-price">$69.49</span>
+              <span class="current-price">$58.82</span>
+            </div>
+            <a href="#" class="learn-more-btn">Learn More</a>
+          </div>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Product Block 2 {%- endcomment -%}
+      {%- if product_2 != blank -%}
+        <div class="product-card">
+          <div class="product-img-wrapper">
+            <a href="{{ product_2.url }}">
+              <img 
+                src="{{ product_2.featured_image | img_url: '400x400' }}" 
+                alt="{{ product_2.title | escape }}"
+                loading="lazy"
+                width="200"
+                height="200"
+              >
+            </a>
+          </div>
+          <div class="product-info">
+            <a href="{{ product_2.url }}" class="product-title">{{ product_2.title }}</a>
+            <div class="price-container">
+              {%- if product_2.compare_at_price > product_2.price -%}
+                <span class="compare-at-price">{{ product_2.compare_at_price | money }}</span>
+              {%- endif -%}
+              <span class="current-price">{{ product_2.price | money }}</span>
+            </div>
+            <a href="{{ product_2.url }}" class="learn-more-btn">Learn More</a>
+          </div>
+        </div>
+      {%- else -%}
+        <div class="product-card">
+          <div class="product-img-wrapper">
+            {{ 'product-2' | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+          <div class="product-info">
+            <h3 class="product-title">Sample Product Title 2</h3>
+            <div class="price-container">
+              <span class="current-price">$3.31</span>
+            </div>
+            <a href="#" class="learn-more-btn">Learn More</a>
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Two Featured Products",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Featured Products"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#eefafd"
+    },
+    {
+      "type": "product",
+      "id": "product_1",
+      "label": "Select First Product"
+    },
+    {
+      "type": "product",
+      "id": "product_2",
+      "label": "Select Second Product"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Two Featured Products",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

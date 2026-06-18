@@ -1,0 +1,409 @@
+{%- style -%}
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500&display=swap');
+
+  .custom-tabs-section {
+    padding: 60px 0;
+    background-color: #f9f9f9;
+    font-family: 'Inter', sans-serif;
+  }
+  .tabs-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    gap: 30px;
+    padding: 0 15px;
+  }
+  /* Left Sidebar Tabs */
+  .tabs-sidebar {
+    flex: 0 0 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+  }
+  .tab-button {
+    background-color: #f7ebeb;
+    color: #7d838a;
+    padding: 15px 20px;
+    text-align: left;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+  }
+  .tab-button.active-tab {
+    background-color: #0b2f4e;
+    color: #ffffff;
+  }
+  /* Right Content Area */
+  .tabs-content-area {
+    flex: 1;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    padding: 35px;
+    min-height: 400px;
+  }
+  .tab-content-panel {
+    display: none;
+  }
+  .tab-content-panel.active-panel {
+    display: block;
+  }
+  .tab-panel-title {
+    font-family: 'Bebas Neue', 'Inter', sans-serif;
+    font-size: 46px;
+    font-weight: 500;
+    line-height: 46px;
+    color: #0b2f4e;
+    text-transform: uppercase;
+    margin: 0 0 15px 0;
+    letter-spacing: 0.5px;
+  }
+  .tab-panel-divider {
+    border: none;
+    border-top: 1px solid #b0b0b0;
+    margin-bottom: 20px;
+  }
+  .tab-panel-desc {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #555555;
+    margin-bottom: 25px;
+  }
+  /* Media Grid */
+  .tab-media-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .media-box-video {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+    overflow: hidden;
+    background: #000;
+    border-radius: 2px;
+  }
+  .media-box-video iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .media-box-image {
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+    color: #ffffff;
+    z-index: 1;
+  }
+  .media-box-image::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(11, 47, 78, 0.75);
+    z-index: -1;
+  }
+  .media-box-image h4 {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 15px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 1.3;
+  }
+  .media-box-image .cta-btn {
+    background-color: #0066b2;
+    color: #ffffff;
+    padding: 10px 25px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    transition: background 0.3s;
+  }
+  .media-box-image .cta-btn:hover {
+    background-color: #004b85;
+  }
+  /* Empty State styling */
+  .empty-tab-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #999;
+    font-style: italic;
+    min-height: 300px;
+  }
+
+  /* Responsive Mobile View (image_b4a0a4.png ke mutabik) */
+  @media (max-width: 768px) {
+    .tabs-container {
+      flex-direction: column;
+    }
+    .tabs-sidebar {
+      flex: 1 1 auto;
+    }
+    .tab-media-grid {
+      grid-template-columns: 1fr;
+    }
+    .tab-panel-title {
+      font-size: 36px;
+      line-height: 38px;
+    }
+  }
+{%- endstyle -%}
+
+<section class="custom-tabs-section">
+  <div class="tabs-container">
+    
+    <!-- Left Side Tabs Links -->
+    <div class="tabs-sidebar">
+      <button class="tab-button active-tab" onclick="openCustomTab(event, 'tab-1')">
+        {{ section.settings.tab_1_title | default: "Engine Oil Change" }}
+      </button>
+      <button class="tab-button" onclick="openCustomTab(event, 'tab-2')">
+        {{ section.settings.tab_2_title | default: "Fuel System" }}
+      </button>
+    </div>
+
+    <!-- Right Side Content -->
+    <div class="tabs-content-area">
+      
+      <!-- TAB 1 PANEL -->
+      <div id="tab-1" class="tab-content-panel active-panel">
+        {% if section.settings.tab_1_heading != blank %}
+          <h2 class="tab-panel-title">{{ section.settings.tab_1_heading }}</h2>
+          <hr class="tab-panel-divider">
+          <p class="tab-panel-desc">{{ section.settings.tab_1_text }}</p>
+          
+          <div class="tab-media-grid">
+            <!-- Left Box: YouTube Video -->
+            <div class="media-box-video">
+              {% if section.settings.tab_1_video_url != blank %}
+                {% assign video_id = section.settings.tab_1_video_url | split: 'v=' | last %}
+                {% if video_id contains '&' %}
+                  {% assign video_id = video_id | split: '&' | first %}
+                {% endif %}
+                <iframe data-src="https://www.youtube.com/embed/{{ video_id }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="lazy-iframe"></iframe>
+              {% endif %}
+            </div>
+            
+            <!-- Right Box: Banner Image + Text + Button -->
+            <div class="media-box-image" {% if section.settings.tab_1_img != blank %}data-bg="{{ section.settings.tab_1_img | img_url: '600x' }}"{% endif %}>
+              <h4>{{ section.settings.tab_1_box_title | default: "Need More Help?" }}</h4>
+              {% if section.settings.tab_1_btn_label != blank %}
+                <a href="{{ section.settings.tab_1_btn_url }}" class="cta-btn">{{ section.settings.tab_1_btn_label }}</a>
+              {% endif %}
+            </div>
+          </div>
+        {% else %}
+          <div class="empty-tab-state">No content available for this tab.</div>
+        {% endif %}
+      </div>
+
+      <!-- TAB 2 PANEL -->
+      <div id="tab-2" class="tab-content-panel">
+        {% if section.settings.tab_2_heading != blank %}
+          <h2 class="tab-panel-title">{{ section.settings.tab_2_heading }}</h2>
+          <hr class="tab-panel-divider">
+          <p class="tab-panel-desc">{{ section.settings.tab_2_text }}</p>
+          
+          <div class="tab-media-grid">
+            <!-- Left Box -->
+            <div class="media-box-video">
+              {% if section.settings.tab_2_video_url != blank %}
+                {% assign video_id2 = section.settings.tab_2_video_url | split: 'v=' | last %}
+                <iframe data-src="https://www.youtube.com/embed/{{ video_id2 }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="lazy-iframe"></iframe>
+              {% endif %}
+            </div>
+            
+            <!-- Right Box -->
+            <div class="media-box-image" {% if section.settings.tab_2_img != blank %}data-bg="{{ section.settings.tab_2_img | img_url: '600x' }}"{% endif %}>
+              <h4>{{ section.settings.tab_2_box_title }}</h4>
+              {% if section.settings.tab_2_btn_label != blank %}
+                <a href="{{ section.settings.tab_2_btn_url }}" class="cta-btn">{{ section.settings.tab_2_btn_label }}</a>
+              {% endif %}
+            </div>
+          </div>
+        {% else %}
+          <!-- Jab dusre tab me kch add na ho to khali dikhega (image_b4a120.png ke mutabik) -->
+          <div class="empty-tab-state">No content configured for this tab.</div>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+  function openCustomTab(evt, tabId) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tab-content-panel");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+      tabcontent[i].classList.remove("active-panel");
+    }
+    tablinks = document.getElementsByClassName("tab-button");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].classList.remove("active-tab");
+    }
+    var activePanel = document.getElementById(tabId);
+    activePanel.style.display = "block";
+    activePanel.classList.add("active-panel");
+    evt.currentTarget.classList.add("active-tab");
+    
+    // Lazy load elements inside active tab
+    lazyLoadTabContent(activePanel);
+  }
+
+  // Performance Optimization Logic for Dynamic Loading
+  function lazyLoadTabContent(panel) {
+    // 1. Load Youtube Iframes only when active
+    var iframes = panel.querySelectorAll('.lazy-iframe');
+    iframes.forEach(function(iframe) {
+      if(iframe.getAttribute('data-src') && !iframe.getAttribute('src')) {
+        iframe.setAttribute('src', iframe.getAttribute('data-src'));
+      }
+    });
+
+    // 2. Load Background Images only when active
+    var bgImages = panel.querySelectorAll('[data-bg]');
+    bgImages.forEach(function(el) {
+      var bg = el.getAttribute('data-bg');
+      if(bg) {
+        el.style.backgroundImage = "url('" + bg + "')";
+        el.removeAttribute('data-bg'); // clear once loaded
+      }
+    });
+  }
+
+  // Initial Load for first default tab
+  document.addEventListener("DOMContentLoaded", function() {
+    var defaultPanel = document.getElementById('tab-1');
+    if(defaultPanel) {
+      lazyLoadTabContent(defaultPanel);
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Custom Video Tabs Section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "TAB 1 SETTINGS"
+    },
+    {
+      "type": "text",
+      "id": "tab_1_title",
+      "label": "Tab 1 Sidebar Label",
+      "default": "Engine Oil Change"
+    },
+    {
+      "type": "text",
+      "id": "tab_1_heading",
+      "label": "Tab 1 Content Title",
+      "default": "HOW TO PERFORM AN ENGINE OIL CHANGE"
+    },
+    {
+      "type": "textarea",
+      "id": "tab_1_text",
+      "label": "Tab 1 Paragraph",
+      "default": "Seasoned marine mechanic, Frank Cutri, takes the helm to guide you..."
+    },
+    {
+      "type": "text",
+      "id": "tab_1_video_url",
+      "label": "Tab 1 YouTube Video Link",
+      "placeholder": "https://www.youtube.com/watch?v=xxxxxx"
+    },
+    {
+      "type": "image_picker",
+      "id": "tab_1_img",
+      "label": "Tab 1 Right Box Bg Image"
+    },
+    {
+      "type": "text",
+      "id": "tab_1_box_title",
+      "label": "Tab 1 Right Box Text",
+      "default": "NEED MORE HELP REPAIRING YOUR WATER PUMP?"
+    },
+    {
+      "type": "text",
+      "id": "tab_1_btn_label",
+      "label": "Tab 1 Button Label",
+      "default": "Read Now"
+    },
+    {
+      "type": "url",
+      "id": "tab_1_btn_url",
+      "label": "Tab 1 Button Link"
+    },
+    {
+      "type": "header",
+      "content": "TAB 2 SETTINGS"
+    },
+    {
+      "type": "text",
+      "id": "tab_2_title",
+      "label": "Tab 2 Sidebar Label",
+      "default": "Fuel System"
+    },
+    {
+      "type": "text",
+      "id": "tab_2_heading",
+      "label": "Tab 2 Content Title",
+      "info": "Leave empty if you want this tab to display empty state"
+    },
+    {
+      "type": "textarea",
+      "id": "tab_2_text",
+      "label": "Tab 2 Paragraph"
+    },
+    {
+      "type": "text",
+      "id": "tab_2_video_url",
+      "label": "Tab 2 YouTube Video Link"
+    },
+    {
+      "type": "image_picker",
+      "id": "tab_2_img",
+      "label": "Tab 2 Right Box Bg Image"
+    },
+    {
+      "type": "text",
+      "id": "tab_2_box_title",
+      "label": "Tab 2 Right Box Text"
+    },
+    {
+      "type": "text",
+      "id": "tab_2_btn_label",
+      "label": "Tab 2 Button Label"
+    },
+    {
+      "type": "url",
+      "id": "tab_2_btn_url",
+      "label": "Tab 2 Button Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Video Tabs Section"
+    }
+  ]
+}
+{% endschema %}

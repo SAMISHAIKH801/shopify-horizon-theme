@@ -1,0 +1,306 @@
+{%- style -%}
+  #shopify-section-{{ section.id }} .custom-fp-wrapper {
+    min-height: {{ section.settings.section_height_desktop }}vh;
+    {% if section.settings.bg_image != blank %}
+      background-image: url('{{ section.settings.bg_image | image_url: width: 2000 }}');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    {% else %}
+      background-color: #001e62; /* Fallback deep blue background */
+    {% endif %}
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Red Badge / Top Title */
+  .custom-fp-badge {
+    background-color: #e52421;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 24px;
+    font-weight: 900;
+    text-transform: uppercase;
+    padding: 10px 30px;
+    margin-bottom: 40px;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  }
+
+  /* Two Column Layout Grid */
+  .custom-fp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    max-width: 1200px;
+    width: 100%;
+    align-items: center;
+  }
+
+  /* Left Column (Main Image) */
+  .custom-fp-left {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .custom-fp-left img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  /* Right Column (Content) */
+  .custom-fp-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    color: #ffffff;
+  }
+
+  /* Right Top Logo/Image Settings */
+  .custom-fp-right-img {
+    margin-bottom: 20px;
+    display: block;
+  }
+  .custom-fp-right-img img {
+    width: {{ section.settings.right_img_width }}px;
+    height: auto;
+    object-fit: contain;
+  }
+
+  /* Title Size Increased slightly as requested */
+  .custom-fp-title {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 42px !important; 
+    font-weight: 900 !important;
+    line-height: 56px !important;
+    color: rgb(255, 255, 255) !important;
+    margin: 0 0 15px 0;
+    text-transform: uppercase;
+  }
+
+  .custom-fp-para {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 18px !important;
+    font-weight: 400 !important;
+    line-height: 30px !important;
+    color: rgb(255, 255, 255) !important;
+    margin: 0 0 25px 0;
+  }
+
+  /* Target dynamically bolded prices */
+  .custom-fp-para strong {
+    font-weight: 700 !important;
+  }
+
+  /* Button Styling */
+  .custom-fp-btn {
+    background-color: #e52421;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 12px 35px;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: none;
+    cursor: pointer;
+  }
+  .custom-fp-btn:hover {
+    background-color: #cc1f1c;
+    transform: translateY(-2px);
+  }
+
+  /* Responsive Mobile Design */
+  @media (max-width: 768px) {
+    #shopify-section-{{ section.id }} .custom-fp-wrapper {
+      min-height: auto;
+      padding: 40px 15px;
+    }
+    .custom-fp-grid {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+    .custom-fp-badge {
+      font-size: 18px;
+      padding: 8px 20px;
+      margin-bottom: 25px;
+    }
+    .custom-fp-title {
+      font-size: 30px !important;
+      line-height: 42px !important;
+    }
+    .custom-fp-para {
+      font-size: 16px !important;
+      line-height: 26px !important;
+    }
+    .custom-fp-right {
+      align-items: center;
+      text-align: center;
+    }
+    .custom-fp-right-img {
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+{%- endstyle -%}
+
+<div class="custom-fp-wrapper">
+  
+  {% if section.settings.badge_text != blank %}
+    <div class="custom-fp-badge">
+      <span>★</span> {{ section.settings.badge_text }} <span>★</span>
+    </div>
+  {% endif %}
+
+  <div class="custom-fp-grid">
+    
+    <div class="custom-fp-left">
+      {% if section.settings.left_image != blank %}
+        {{ section.settings.left_image | image_url: width: 800 | image_tag: 
+          loading: 'lazy', 
+          widths: '400, 600, 800', 
+          alt: section.settings.left_image.alt | default: 'Featured Product' 
+        }}
+      {% else %}
+        {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+      {% endif %}
+    </div>
+
+    <div class="custom-fp-right">
+      
+      {% if section.settings.right_image != blank %}
+        <div class="custom-fp-right-img">
+          {{ section.settings.right_image | image_url: width: 500 | image_tag: 
+            loading: 'lazy', 
+            alt: section.settings.right_image.alt | default: 'Logo' 
+          }}
+        </div>
+      {% endif %}
+
+      {% if section.settings.main_title != blank %}
+        <h2 class="custom-fp-title">{{ section.settings.main_title }}</h2>
+      {% endif %}
+
+      {% if section.settings.paragraph_text != blank %}
+        <div class="custom-fp-para">
+          {% assign formatted_text = section.settings.paragraph_text | newline_to_br %}
+          {% assign formatted_text = formatted_text | replace: "$7.50", "<strong>$7.50</strong>" %}
+          {% assign formatted_text = formatted_text | replace: "$3.50", "<strong>$3.50</strong>" %}
+          {{ formatted_text }}
+        </div>
+      {% endif %}
+
+      {% if section.settings.btn_label != blank and section.settings.btn_link != blank %}
+        <a href="{{ section.settings.btn_link }}" class="custom-fp-btn">
+          {{ section.settings.btn_label }}
+        </a>
+      {% endif %}
+
+    </div>
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Custom Featured Product",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout Settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background Image"
+    },
+    {
+      "type": "range",
+      "id": "section_height_desktop",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "label": "Section Height (Desktop)",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Top Badge Settings"
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge Text",
+      "default": "FEATURED PRODUCT"
+    },
+    {
+      "type": "header",
+      "content": "Left Column Settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "left_image",
+      "label": "Main Product Image"
+    },
+    {
+      "type": "header",
+      "content": "Right Column Settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "right_image",
+      "label": "Top Logo / Sub-image"
+    },
+    {
+      "type": "range",
+      "id": "right_img_width",
+      "min": 100,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo Width",
+      "default": 250
+    },
+    {
+      "type": "text",
+      "id": "main_title",
+      "label": "Main Title",
+      "default": "MAKE FLUSHING YOUR OUTBOARD SIMPLER"
+    },
+    {
+      "type": "textarea",
+      "id": "paragraph_text",
+      "label": "Paragraph Text",
+      "default": "$7.50 Off Flush-M for Mercury & Suzuki Outboards\n$3.50 Off Flush-M for Yamaha Outboards"
+    },
+    {
+      "type": "text",
+      "id": "btn_label",
+      "label": "Button Label",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "btn_link",
+      "label": "Button Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Featured Product"
+    }
+  ]
+}
+{% endschema %}

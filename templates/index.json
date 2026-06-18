@@ -1,0 +1,1043 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "hero_jVaWmY": {
+      "type": "hero",
+      "blocks": {
+        "text_YLPk4p": {
+          "type": "text",
+          "name": "t:names.heading",
+          "settings": {
+            "text": "<p>Browse our latest products</p>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "h2",
+            "font": "var(--font-body--family)",
+            "font_size": "1rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "text_color": "{{ settings.color_palette.background }}",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "button_H9gpTf": {
+          "type": "button",
+          "name": "t:names.button",
+          "settings": {
+            "label": "Shop all",
+            "link": "shopify://collections/all",
+            "open_in_new_tab": false,
+            "style_class": "button-custom",
+            "custom_button_background": "rgba(0,0,0,0)",
+            "custom_button_text": "{{ settings.color_palette.background }}",
+            "custom_button_border": "{{ settings.color_palette.background }}",
+            "link_text_color": "",
+            "width": "fit-content",
+            "custom_width": 100,
+            "width_mobile": "fit-content",
+            "custom_width_mobile": 100
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "text_YLPk4p",
+        "button_H9gpTf"
+      ],
+      "disabled": true,
+      "name": "t:names.hero",
+      "settings": {
+        "media_type_1": "image",
+        "media_type_2": "image",
+        "stack_media_on_mobile": false,
+        "custom_mobile_media": false,
+        "media_type_1_mobile": "image",
+        "media_type_2_mobile": "image",
+        "link": "",
+        "open_in_new_tab": false,
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "space-between",
+        "vertical_alignment": "flex-end",
+        "align_baseline": true,
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "flex-end",
+        "gap": 24,
+        "section_width": "page-width",
+        "section_height": "medium",
+        "section_height_custom": 50,
+        "background_color": "rgba(0,0,0,0)",
+        "toggle_overlay": true,
+        "overlay_color": "#12121266",
+        "overlay_style": "solid",
+        "gradient_direction": "to bottom",
+        "blurred_reflection": false,
+        "reflection_opacity": 75,
+        "padding-block-start": 100,
+        "padding-block-end": 72
+      }
+    },
+    "product_list_fa6P9H": {
+      "type": "product-list",
+      "blocks": {
+        "static-header": {
+          "type": "_product-list-content",
+          "name": "t:names.header",
+          "static": true,
+          "settings": {
+            "content_direction": "row",
+            "vertical_on_mobile": false,
+            "horizontal_alignment": "space-between",
+            "vertical_alignment": "flex-end",
+            "align_baseline": true,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "center",
+            "gap": 12,
+            "width": "fill",
+            "custom_width": 100,
+            "width_mobile": "fill",
+            "custom_width_mobile": 100,
+            "height": "fit",
+            "custom_height": 100,
+            "background_media": "none",
+            "background_color": "",
+            "video_position": "cover",
+            "background_image_position": "cover",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_color": "",
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "product_list_text_YFtzcL": {
+              "type": "_product-list-text",
+              "name": "t:names.collection_title",
+              "settings": {
+                "text": "<h3>{{ closest.collection.title }}</h3>",
+                "width": "fit-content",
+                "max_width": "normal",
+                "alignment": "left",
+                "type_preset": "h4",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "text_color": "",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "product_list_button_MWeP9V": {
+              "type": "_product-list-button",
+              "name": "t:names.product_list_button",
+              "settings": {
+                "label": "View all",
+                "open_in_new_tab": false,
+                "style_class": "link",
+                "custom_button_background": "{{ settings.color_palette.foreground }}",
+                "custom_button_text": "{{ settings.color_palette.background }}",
+                "custom_button_border": "{{ settings.color_palette.background }}",
+                "link_text_color": "",
+                "width": "fit-content",
+                "custom_width": 100,
+                "width_mobile": "fit-content",
+                "custom_width_mobile": 100
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "product_list_text_YFtzcL",
+            "product_list_button_MWeP9V"
+          ]
+        },
+        "static-product-card": {
+          "type": "_product-card",
+          "name": "t:names.product_card",
+          "static": true,
+          "settings": {
+            "product_card_gap": 4,
+            "background_color": "",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_color": "",
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "product_card_gallery_677WP3": {
+              "type": "_product-card-gallery",
+              "name": "t:names.product_card_media",
+              "settings": {
+                "image_ratio": "adapt",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_color": "",
+                "border_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "product_title_YXxMTj": {
+              "type": "product-title",
+              "name": "t:names.product_title",
+              "settings": {
+                "width": "100%",
+                "max_width": "normal",
+                "alignment": "left",
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "text_color": "",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 4,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "price_JQzVV4": {
+              "type": "price",
+              "name": "t:names.product_price",
+              "settings": {
+                "show_sale_price_first": true,
+                "show_installments": false,
+                "show_tax_info": false,
+                "type_preset": "h6",
+                "width": "100%",
+                "alignment": "left",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "text_color": "",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "product_card_gallery_677WP3",
+            "product_title_YXxMTj",
+            "price_JQzVV4"
+          ]
+        }
+      },
+      "disabled": true,
+      "name": "Featured collection",
+      "settings": {
+        "collection": "all",
+        "layout_type": "carousel",
+        "carousel_on_mobile": false,
+        "max_products": 8,
+        "columns": 4,
+        "mobile_columns": "2",
+        "mobile_card_size": "44cqw",
+        "columns_gap": 8,
+        "rows_gap": 24,
+        "icons_style": "arrow",
+        "icons_shape": "circle",
+        "section_width": "page-width",
+        "horizontal_alignment": "flex-start",
+        "gap": 28,
+        "background_color": "{{ settings.color_palette.background }}",
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      }
+    },
+    "custom_product_carousel_AHCHpB": {
+      "type": "custom-product-carousel",
+      "name": "Custom Product Carousel",
+      "settings": {
+        "section_title": "PRODUCTS/COLLECTIONS",
+        "collection": "frontpage",
+        "container_width": "custom",
+        "custom_max_width": 1260,
+        "card_bg_color": "#e0e3e7",
+        "optional_percentage_text": "Optional % Off",
+        "use_custom_product_text": false,
+        "optional_product_text": "Optional Text",
+        "max_products": 10,
+        "products_per_row_desktop": 5,
+        "products_per_row_tablet": 3,
+        "products_per_row_mobile": 1,
+        "padding_top": 96,
+        "padding_bottom": 100,
+        "padding_left": 50,
+        "padding_right": 50
+      }
+    },
+    "collection_list_n4tHTm": {
+      "type": "collection-list",
+      "blocks": {
+        "group_hQacTM": {
+          "type": "group",
+          "name": "t:names.header",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": true,
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "center",
+            "align_baseline": false,
+            "horizontal_alignment_flex_direction_column": "center",
+            "vertical_alignment_flex_direction_column": "center",
+            "gap": 12,
+            "width": "fill",
+            "custom_width": 100,
+            "width_mobile": "fill",
+            "custom_width_mobile": 100,
+            "height": "fit",
+            "custom_height": 100,
+            "background_media": "none",
+            "background_color": "",
+            "video_position": "cover",
+            "background_image_position": "cover",
+            "toggle_overlay": false,
+            "overlay_color": "#00000026",
+            "overlay_style": "solid",
+            "gradient_direction": "to top",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_color": "",
+            "border_radius": 0,
+            "link": "",
+            "open_in_new_tab": false,
+            "placeholder": "",
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "text_wJr7Vw": {
+              "type": "text",
+              "name": "t:names.text",
+              "settings": {
+                "text": "<h3>Test</h3>",
+                "width": "fit-content",
+                "max_width": "none",
+                "alignment": "left",
+                "type_preset": "custom",
+                "font": "var(--font-heading--family)",
+                "font_size": "3rem",
+                "line_height": "normal",
+                "letter_spacing": "tight",
+                "case": "uppercase",
+                "wrap": "pretty",
+                "text_color": "",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 11,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "text_wJr7Vw"
+          ]
+        },
+        "static-collection-card": {
+          "type": "_collection-card",
+          "name": "t:names.collection_card",
+          "static": true,
+          "settings": {
+            "placement": "on_image",
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "flex-start",
+            "collection_card_gap": 8,
+            "background_color": "",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_color": "",
+            "border_radius": 0
+          },
+          "blocks": {
+            "collection_title_M7e4QX": {
+              "type": "collection-title",
+              "name": "t:names.collection_title",
+              "disabled": true,
+              "settings": {
+                "width": "fit-content",
+                "max_width": "normal",
+                "alignment": "left",
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "background": true,
+                "background_color": "#ffffff",
+                "text_color": "{{ settings.color_palette.foreground }}",
+                "corner_radius": 0,
+                "padding-block-start": 4,
+                "padding-block-end": 4,
+                "padding-inline-start": 8,
+                "padding-inline-end": 8
+              },
+              "blocks": {}
+            },
+            "collection-card-image": {
+              "type": "_collection-card-image",
+              "name": "t:names.collection_card_image",
+              "static": true,
+              "settings": {
+                "image_ratio": "adapt",
+                "toggle_overlay": false,
+                "overlay_color": "#00000026",
+                "overlay_style": "solid",
+                "gradient_direction": "to top",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_color": "",
+                "border_radius": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "collection_title_M7e4QX"
+          ]
+        }
+      },
+      "block_order": [
+        "group_hQacTM"
+      ],
+      "custom_css": [
+        ".section--page-width.section-resource-list.spacing-style.gap-style {max-width: 950px !important; margin: auto;}"
+      ],
+      "name": "t:names.collections_grid",
+      "settings": {
+        "collection_list": [
+          "collection-1",
+          "collection-4",
+          "collection-1-copy",
+          "collection-2-copy",
+          "collection-4-copy",
+          "collection-3-copy"
+        ],
+        "layout_type": "grid",
+        "carousel_on_mobile": false,
+        "columns": 3,
+        "mobile_columns": "2",
+        "mobile_card_size": "60cqw",
+        "columns_gap": 28,
+        "bento_gap": 8,
+        "rows_gap": 28,
+        "max_collections": 4,
+        "icons_style": "arrow",
+        "icons_shape": "none",
+        "section_width": "page-width",
+        "gap": 12,
+        "background_color": "",
+        "padding-block-start": 60,
+        "padding-block-end": 60
+      }
+    },
+    "dual_promo_grid_KjXqe7": {
+      "type": "dual-promo-grid",
+      "name": "Dual Promo Grid",
+      "settings": {
+        "full_width": false,
+        "custom_width": 1300,
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "box1_bg_color": "#052242",
+        "box1_brand_img": "shopify://shop_images/Dakota-Lithium-Logo_White.avif",
+        "box1_title": "BATTERIES, CHARGERS, & MORE",
+        "box1_title_color": "#ffcc00",
+        "box1_product_img": "shopify://shop_images/Dakota-Lithium.webp",
+        "box1_text": "<p>Explore cutting-edge Lithium Iron Phosphate (LiFePO4) technology</p>",
+        "box1_text_color": "#ffffff",
+        "box1_btn_text": "Shop Now",
+        "box1_btn_link": "",
+        "box1_btn_bg": "#00a676",
+        "box1_btn_text_color": "#ffffff",
+        "box2_bg_color": "#052242",
+        "box2_brand_img": "shopify://shop_images/ME-Logo_0a6e0d27-e4c8-4f86-affb-e25f07798b67.avif",
+        "box2_title": "OEM-QUALITY FILTERS",
+        "box2_title_color": "#ffffff",
+        "box2_product_img": "shopify://shop_images/Maintenance-Essentials.webp",
+        "box2_text": "<ul><li>Up to 40% less than OEM</li><li>Superior corrosion resistance</li></ul>",
+        "box2_text_color": "#ffffff",
+        "box2_btn_text": "Shop Now",
+        "box2_btn_link": "",
+        "box2_btn_bg": "#00a676",
+        "box2_btn_text_color": "#ffffff"
+      }
+    },
+    "custom_product2_slide_QUJkrh": {
+      "type": "custom-product2-slide",
+      "name": "Custom Product Carousel",
+      "settings": {
+        "title": "Yamaha Kits Collection",
+        "collection": "collection-1",
+        "products_to_show": 8,
+        "desktop_cards": "4",
+        "mobile_cards": "2",
+        "badge_text": "UP TO 10% OFF",
+        "button_text": "Shop Now",
+        "primary_color": "#00a074",
+        "arrow_color": "#e98926"
+      }
+    },
+    "custom_collection_carousel_mQBtiF": {
+      "type": "custom-collection-carousel",
+      "blocks": {
+        "collection_block_PcHLPX": {
+          "type": "collection_block",
+          "settings": {
+            "collection": "",
+            "bg_image": "shopify://shop_images/Mercury-Maintenance-Schedule-Slider-Service-Kits.webp",
+            "custom_title": "100 & 300 Hour Service Kits",
+            "btn_text": "Shop Now",
+            "custom_link": ""
+          }
+        },
+        "collection_block_th8pyR": {
+          "type": "collection_block",
+          "settings": {
+            "collection": "",
+            "bg_image": "shopify://shop_images/Mercury-Maintenance-Schedule-Slider-Service-Kits.webp",
+            "custom_title": "100 & 300 Hour Service Kits",
+            "btn_text": "Shop Now",
+            "custom_link": ""
+          }
+        },
+        "collection_block_qq6Lrm": {
+          "type": "collection_block",
+          "settings": {
+            "collection": "",
+            "bg_image": "shopify://shop_images/Mercury-Maintenance-Schedule-Slider-Service-Kits.webp",
+            "custom_title": "100 & 300 Hour Service Kits",
+            "btn_text": "Shop Now",
+            "custom_link": ""
+          }
+        },
+        "collection_block_Pxkmjq": {
+          "type": "collection_block",
+          "settings": {
+            "collection": "",
+            "bg_image": "shopify://shop_images/Mercury-Maintenance-Schedule-Slider-Service-Kits.webp",
+            "custom_title": "100 & 300 Hour Service Kits",
+            "btn_text": "Shop Now",
+            "custom_link": ""
+          }
+        },
+        "collection_block_Ti3Qx6": {
+          "type": "collection_block",
+          "settings": {
+            "collection": "",
+            "bg_image": "shopify://shop_images/Mercury-Maintenance-Schedule-Slider-Service-Kits.webp",
+            "custom_title": "100 & 300 Hour Service Kits",
+            "btn_text": "Shop Now",
+            "custom_link": ""
+          }
+        }
+      },
+      "block_order": [
+        "collection_block_PcHLPX",
+        "collection_block_th8pyR",
+        "collection_block_qq6Lrm",
+        "collection_block_Pxkmjq",
+        "collection_block_Ti3Qx6"
+      ],
+      "name": "Custom Collec Carousel",
+      "settings": {
+        "bg_color": "#ffffff"
+      }
+    },
+    "custom_featured_product_cDUGgm": {
+      "type": "custom-featured-product",
+      "name": "Custom Featured Product",
+      "settings": {
+        "bg_image": "shopify://shop_images/HeaderBG_LandingPage_4thofJuly_7-24.webp",
+        "section_height_desktop": 100,
+        "badge_text": "FEATURED PRODUCT",
+        "left_image": "shopify://shop_images/FlushMBlock_LandingPage_4thofJuly_7-24.webp",
+        "right_image": "shopify://shop_images/FlushMLogo_LandingPage_4thofJuly_7-24.avif",
+        "right_img_width": 400,
+        "main_title": "MAKE FLUSHING YOUR OUTBOARD SIMPLER",
+        "paragraph_text": "$7.50 Off Flush-M for Mercury & Suzuki Outboards\n$3.50 Off Flush-M for Yamaha Outboards",
+        "btn_label": "Shop Now",
+        "btn_link": ""
+      }
+    },
+    "custom_liquid_yEgnnW": {
+      "type": "custom-liquid",
+      "name": "t:names.custom_liquid",
+      "settings": {
+        "custom_liquid": "<div class=\"maintenance-banner-section\">\n  <div class=\"maintenance-container\">\n    <div class=\"maintenance-banner-wrapper\">\n      \n      <h2 class=\"maintenance-banner-title\">\n        * Treat Yourself & <span class=\"white-text\">Your Wallet</span> *\n      </h2>\n      \n      <div class=\"maintenance-image-container\">\n        <img \n          src=\"https://cdn.shopify.com/s/files/1/0834/9207/7812/files/ME-DESKTOP_0ba5bc2a-04ba-4d32-a6c1-0725cffcf2ef.webp?v=1781601149\" \n          alt=\"Maintenance Essentials Filters\" \n          class=\"maintenance-main-img\"\n          loading=\"lazy\"\n        >\n      </div>\n      \n      <div class=\"maintenance-banner-content\">\n        <a href=\"/collections/all\" class=\"maintenance-btn\">\n          SHOP MAINTENANCE ESSENTIALS\n        </a>\n      </div>\n\n    </div>\n  </div>\n</div>\n\n<style>\n  /* Loading Custom OTF Font directly from your Shopify CDN */\n  @font-face {\n    font-family: 'CustomBlackFont';\n    src: url('https://cdn.shopify.com/s/files/1/0834/9207/7812/files/black.otf?v=1781602199') format('opentype');\n    font-weight: 500;\n    font-style: normal;\n    font-display: swap;\n  }\n\n  /* Base Section Wrapper */\n  .maintenance-banner-section {\n    width: 100%;\n    background-color: #001e3d; /* Signature dark blue background */\n    padding: 60px 0;\n    box-sizing: border-box;\n  }\n\n  /* Centered Container locked to maximum 1200px desktop grid width */\n  .maintenance-container {\n    max-width: 1200px;\n    margin: 0 auto;\n    padding: 0 20px;\n    box-sizing: border-box;\n  }\n\n  .maintenance-banner-wrapper {\n    width: 100%;\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    justify-content: center;\n    text-align: center;\n  }\n\n  /* Title Style Requirements with Custom Font */\n  .maintenance-banner-title {\n    font-family: 'CustomBlackFont', 'Arial Black', sans-serif;\n    font-size: 40px;\n    font-weight: 500;\n    line-height: 1.2;\n    color: rgb(246, 183, 25); /* Default brand yellow */\n    margin: 0 0 25px 0;\n    text-transform: uppercase;\n    letter-spacing: -0.01em;\n    width: 100%;\n    word-wrap: break-word;\n  }\n\n  /* Target specific text to be white */\n  .maintenance-banner-title .white-text {\n    color: #ffffff !important;\n  }\n\n  /* Image Layout Container */\n  .maintenance-image-container {\n    width: 100%;\n    max-width: 720px; \n    margin: 0 auto 30px auto;\n    display: block;\n  }\n\n  .maintenance-main-img {\n    width: 100%;\n    height: auto;\n    display: block;\n    object-fit: contain;\n  }\n\n  /* Button Positioning Wrapper */\n  .maintenance-banner-content {\n    width: 100%;\n    display: flex;\n    justify-content: center;\n  }\n\n  /* Premium Responsive Yellow Button */\n  .maintenance-btn {\n    display: inline-block;\n    background-color: #e5b122; /* Premium brand yellow */\n    color: #001e3d;\n    font-family: inherit;\n    font-weight: 700;\n    font-size: 15px;\n    letter-spacing: 0.05em;\n    padding: 15px 40px;\n    text-decoration: none;\n    text-transform: uppercase;\n    border: none;\n    transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.2s ease;\n    cursor: pointer;\n    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.25);\n    white-space: nowrap;\n    box-sizing: border-box;\n  }\n\n  /* Hover micro-interactions */\n  .maintenance-btn:hover {\n    background-color: #f0be33;\n    transform: translateY(-2px);\n  }\n\n  /* Perfect Responsive Media Queries (Mobile & Tablet) */\n  @media (max-width: 991px) {\n    .maintenance-banner-section {\n      padding: 45px 0;\n    }\n    .maintenance-banner-title {\n      font-size: 36px;\n      margin-bottom: 20px;\n    }\n  }\n\n  @media (max-width: 767px) {\n    .maintenance-banner-section {\n      padding: 35px 15px;\n    }\n    .maintenance-banner-title {\n      font-size: 24px; /* Fully responsive size for mobile displays */\n      line-height: 1.3;\n      margin-bottom: 15px;\n    }\n    .maintenance-image-container {\n      max-width: 100%;\n      margin-bottom: 20px;\n    }\n    .maintenance-btn {\n      font-size: 12px;\n      padding: 10px 15px;\n      width: 100%;\n      max-width: 320px; /* Fits 100% beautifully on small devices */\n      white-space: normal; /* Prevents overflow issues if text is long */\n      text-align: center;\n    }\n  }\n</style>",
+        "background_color": "",
+        "section_width": "page-width",
+        "padding-block-start": 60,
+        "padding-block-end": 50
+      }
+    },
+    "two_featured_products_QM3ixp": {
+      "type": "two-featured-products",
+      "name": "Two Featured Products",
+      "settings": {
+        "title": "Featured Products",
+        "bg_color": "{{ settings.color_palette.background }}",
+        "product_1": "mercury-3-4l-v6-4-6l-v8-water-pump-repair-kit-98-8m0142980",
+        "product_2": "10-lock-washers-5-bx"
+      }
+    },
+    "engine_tabs_accordion_bPWUDp": {
+      "type": "engine-tabs-accordion",
+      "blocks": {
+        "tab_header_im9nV4": {
+          "type": "tab_header",
+          "settings": {
+            "title": "BF2 - BF8",
+            "tab_id": "group1"
+          }
+        },
+        "tab_header_FtMjrm": {
+          "type": "tab_header",
+          "settings": {
+            "title": "BF9.9 - BF15",
+            "tab_id": "group2"
+          }
+        },
+        "tab_header_69fEKC": {
+          "type": "tab_header",
+          "settings": {
+            "title": "BF15.5 - BF22",
+            "tab_id": "group3"
+          }
+        },
+        "tab_header_yM7Ahg": {
+          "type": "tab_header",
+          "settings": {
+            "title": "BF22.5 - BF27",
+            "tab_id": "group4"
+          }
+        },
+        "tab_header_anmmUy": {
+          "type": "tab_header",
+          "settings": {
+            "title": "BF27.7 - BF35",
+            "tab_id": "group5"
+          }
+        },
+        "accordion_item_3bfFbK": {
+          "type": "accordion_item",
+          "settings": {
+            "target_tab_id": "group1",
+            "accordion_title": "BF5A",
+            "box1_title": "Gear Lube Capacity:",
+            "box1_text": "4.2 oz.",
+            "box2_title": "Notes:",
+            "box2_text": "Check every 100 hours",
+            "box3_title": "Recommended Gear Lube:",
+            "box3_text": "<p><a href=\"#\">80W-90 Marine Gear Lube</a></p>",
+            "btn_text": "Shop Yamaha Outboard Parts",
+            "btn_link": ""
+          }
+        },
+        "accordion_item_ewcQ8w": {
+          "type": "accordion_item",
+          "settings": {
+            "target_tab_id": "group1",
+            "accordion_title": "BF5A",
+            "box1_title": "Gear Lube Capacity:",
+            "box1_text": "5.0 oz.",
+            "box2_title": "Notes:",
+            "box2_text": "Replace once per season",
+            "box3_title": "Recommended Gear Lube:",
+            "box3_text": "<p>75W-90 Synthetic Gear Lube</p>",
+            "btn_text": "Shop Yamaha Outboard Parts",
+            "btn_link": ""
+          }
+        },
+        "accordion_item_LDzgg7": {
+          "type": "accordion_item",
+          "settings": {
+            "target_tab_id": "group2",
+            "accordion_title": "BF9.9 - BF15",
+            "box1_title": "Gear Lube Capacity:",
+            "box1_text": "4.2 oz.",
+            "box2_title": "Notes:",
+            "box2_text": "Check every 100 hours",
+            "box3_title": "Recommended Gear Lube:",
+            "box3_text": "<p><a href=\"#\">80W-90 Marine Gear Lube</a></p>",
+            "btn_text": "Shop Yamaha Outboard Parts",
+            "btn_link": ""
+          }
+        }
+      },
+      "block_order": [
+        "tab_header_im9nV4",
+        "tab_header_FtMjrm",
+        "tab_header_69fEKC",
+        "tab_header_yM7Ahg",
+        "tab_header_anmmUy",
+        "accordion_item_3bfFbK",
+        "accordion_item_ewcQ8w",
+        "accordion_item_LDzgg7"
+      ],
+      "name": "Engine Tabs Accordion",
+      "settings": {
+        "section_title": "SELECT YOUR ENGINE"
+      }
+    },
+    "section_MfFTh9": {
+      "type": "section",
+      "blocks": {
+        "text_iPQfpr": {
+          "type": "text",
+          "name": "t:names.heading",
+          "settings": {
+            "text": "",
+            "width": "fit-content",
+            "max_width": "narrow",
+            "alignment": "left",
+            "type_preset": "h3",
+            "font": "var(--font-body--family)",
+            "font_size": "1rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "text_color": "",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "accordion_T9BJtR": {
+          "type": "accordion",
+          "name": "t:names.accordion",
+          "settings": {
+            "icon": "caret",
+            "dividers": false,
+            "divider_color": "",
+            "type_preset": "h5",
+            "background_color": "",
+            "text_color": "",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_color": "",
+            "border_radius": 4,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "accordion_row_jAEcyd": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "What is the return policy?",
+                "open_by_default": false,
+                "icon": "none",
+                "width": 12
+              },
+              "blocks": {
+                "custom_liquid_dDkTCh": {
+                  "type": "custom-liquid",
+                  "name": "t:names.custom_liquid",
+                  "settings": {
+                    "custom_liquid": "<div class=\"custom-table-container\">\n  <table class=\"maintenance-table\">\n    <thead>\n      <tr>\n        <th class=\"col-item\">ITEM</th>\n        <th class=\"col-action\">ACTION(S)</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr>\n        <td>Lanyard Stop Switch</td>\n        <td>Check</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Transom Tightness</td>\n        <td>Check</td>\n      </tr>\n      <tr>\n        <td>Steering System</td>\n        <td>Check</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Steering Link Rod Fasteners</td>\n        <td>Check</td>\n      </tr>\n      <tr>\n        <td>Propeller Blades</td>\n        <td>Check</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Engine Fuel Filter</td>\n        <td>Check</td>\n      </tr>\n      <tr>\n        <td>Engine Timing Setup</td>\n        <td>Check</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Corrosion Control Anode</td>\n        <td>Check</td>\n      </tr>\n      <tr>\n        <td>Valve Clearance</td>\n        <td>Check</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Power Trim Fluid</td>\n        <td>Check</td>\n      </tr>\n      <tr>\n        <td>Battery</td>\n        <td>Check</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Control Cable Adjustments</td>\n        <td>Check</td>\n      </tr>\n      <tr>\n        <td>Timing Belt</td>\n        <td>Check</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Bolts, Nuts, & Other Fasteners</td>\n        <td>Check</td>\n      </tr>\n      <tr>\n        <td>Fuel System</td>\n        <td>Inspect for Deterioration or Leaks</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Thermostat</td>\n        <td>Inspect for Corrosion or Broken Spring</td>\n      </tr>\n      <tr>\n        <td>Grease Points</td>\n        <td>Lubricate</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Splines on Prop Drive Shaft</td>\n        <td>Lubricate</td>\n      </tr>\n      <tr>\n        <td>Spark Plugs</td>\n        <td>Check/Replace</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Engine Oil</td>\n        <td>Replace</td>\n      </tr>\n      <tr>\n        <td>Oil Filter</td>\n        <td>Replace</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Gear Case Lubricant</td>\n        <td>Replace</td>\n      </tr>\n    </tbody>\n  </table>\n</div>\n\n<style>\n  .custom-table-container {\n    width: 100%;\n    margin: 20px auto;\n    max-width: 1200px;\n    padding: 0 15px;\n    box-sizing: border-box;\n  }\n\n  .maintenance-table {\n    width: 100%;\n    border-collapse: collapse;\n    font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif;\n    font-size: 14px;\n    color: #333333;\n    background-color: #ffffff;\n    box-shadow: 0 1px 3px rgba(0,0,0,0.1);\n  }\n\n  .maintenance-table th {\n    background-color: #000000;\n    color: #ffffff;\n    font-weight: bold;\n    text-transform: uppercase;\n    letter-spacing: 0.5px;\n    padding: 15px 20px;\n    text-align: center;\n    border: 1px solid #dcdcdc;\n  }\n\n  .maintenance-table td {\n    padding: 12px 20px;\n    text-align: center;\n    border: 1px solid #dcdcdc;\n    line-height: 1.4;\n  }\n\n  /* Zebra crossing color effect */\n  .maintenance-table tr.alt-row td {\n    background-color: #f2f2f2;\n  }\n\n  /* Mobile responsiveness & horizontal scrolling */\n  @media screen and (max-width: 767px) {\n    .custom-table-container {\n      overflow-x: auto;\n      -webkit-overflow-scrolling: touch;\n      padding-right: 25px; /* Gives visual cue for scrolling */\n    }\n\n    .maintenance-table {\n      min-width: 500px; /* Forces table to keep structure and scroll horizontally */\n    }\n\n    .maintenance-table th, \n    .maintenance-table td {\n      padding: 10px 15px;\n      font-size: 13px;\n    }\n  }\n</style>"
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "custom_liquid_dDkTCh"
+              ]
+            },
+            "accordion_row_UbEjF9": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "What is the return policy?",
+                "open_by_default": false,
+                "icon": "none",
+                "width": 12
+              },
+              "blocks": {
+                "custom_liquid_c3PgbK": {
+                  "type": "custom-liquid",
+                  "name": "t:names.custom_liquid",
+                  "settings": {
+                    "custom_liquid": "<div class=\"custom-table-container\">\n  <table class=\"maintenance-table\">\n    <thead>\n      <tr>\n        <th class=\"col-item\">ITEM</th>\n        <th class=\"col-action\">ACTION(S)</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr>\n        <td>Lanyard Stop Switch</td>\n        <td>Check</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Transom Tightness</td>\n        <td>Check</td>\n      </tr>\n      <tr>\n        <td>Steering System</td>\n        <td>Check</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Steering Link Rod Fasteners</td>\n        <td>Check</td>\n      </tr>\n      <tr>\n        <td>Propeller Blades</td>\n        <td>Check</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Engine Fuel Filter</td>\n        <td>Check</td>\n      </tr>\n      <tr>\n        <td>Engine Timing Setup</td>\n        <td>Check</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Corrosion Control Anode</td>\n        <td>Check</td>\n      </tr>\n      <tr>\n        <td>Valve Clearance</td>\n        <td>Check</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Power Trim Fluid</td>\n        <td>Check</td>\n      </tr>\n      <tr>\n        <td>Battery</td>\n        <td>Check</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Control Cable Adjustments</td>\n        <td>Check</td>\n      </tr>\n      <tr>\n        <td>Timing Belt</td>\n        <td>Check</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Bolts, Nuts, & Other Fasteners</td>\n        <td>Check</td>\n      </tr>\n      <tr>\n        <td>Fuel System</td>\n        <td>Inspect for Deterioration or Leaks</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Thermostat</td>\n        <td>Inspect for Corrosion or Broken Spring</td>\n      </tr>\n      <tr>\n        <td>Grease Points</td>\n        <td>Lubricate</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Splines on Prop Drive Shaft</td>\n        <td>Lubricate</td>\n      </tr>\n      <tr>\n        <td>Spark Plugs</td>\n        <td>Check/Replace</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Engine Oil</td>\n        <td>Replace</td>\n      </tr>\n      <tr>\n        <td>Oil Filter</td>\n        <td>Replace</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Gear Case Lubricant</td>\n        <td>Replace</td>\n      </tr>\n    </tbody>\n  </table>\n</div>\n\n<style>\n  .custom-table-container {\n    width: 100%;\n    margin: 20px auto;\n    max-width: 1200px;\n    padding: 0 15px;\n    box-sizing: border-box;\n  }\n\n  .maintenance-table {\n    width: 100%;\n    border-collapse: collapse;\n    font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif;\n    font-size: 14px;\n    color: #333333;\n    background-color: #ffffff;\n    box-shadow: 0 1px 3px rgba(0,0,0,0.1);\n  }\n\n  .maintenance-table th {\n    background-color: #000000;\n    color: #ffffff;\n    font-weight: bold;\n    text-transform: uppercase;\n    letter-spacing: 0.5px;\n    padding: 15px 20px;\n    text-align: center;\n    border: 1px solid #dcdcdc;\n  }\n\n  .maintenance-table td {\n    padding: 12px 20px;\n    text-align: center;\n    border: 1px solid #dcdcdc;\n    line-height: 1.4;\n  }\n\n  /* Zebra crossing color effect */\n  .maintenance-table tr.alt-row td {\n    background-color: #f2f2f2;\n  }\n\n  /* Mobile responsiveness & horizontal scrolling */\n  @media screen and (max-width: 767px) {\n    .custom-table-container {\n      overflow-x: auto;\n      -webkit-overflow-scrolling: touch;\n      padding-right: 25px; /* Gives visual cue for scrolling */\n    }\n\n    .maintenance-table {\n      min-width: 500px; /* Forces table to keep structure and scroll horizontally */\n    }\n\n    .maintenance-table th, \n    .maintenance-table td {\n      padding: 10px 15px;\n      font-size: 13px;\n    }\n  }\n</style>"
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "custom_liquid_c3PgbK"
+              ]
+            },
+            "accordion_row_GGAEUJ": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "What is the return policy?",
+                "open_by_default": false,
+                "icon": "none",
+                "width": 12
+              },
+              "blocks": {
+                "custom_liquid_G8nRWf": {
+                  "type": "custom-liquid",
+                  "name": "t:names.custom_liquid",
+                  "settings": {
+                    "custom_liquid": "<div class=\"custom-table-container\">\n  <table class=\"maintenance-table\">\n    <thead>\n      <tr>\n        <th class=\"col-item\">ITEM</th>\n        <th class=\"col-action\">ACTION(S)</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr>\n        <td>Lanyard Stop Switch</td>\n        <td>Check</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Transom Tightness</td>\n        <td>Check</td>\n      </tr>\n      <tr>\n        <td>Steering System</td>\n        <td>Check</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Steering Link Rod Fasteners</td>\n        <td>Check</td>\n      </tr>\n      <tr>\n        <td>Propeller Blades</td>\n        <td>Check</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Engine Fuel Filter</td>\n        <td>Check</td>\n      </tr>\n      <tr>\n        <td>Engine Timing Setup</td>\n        <td>Check</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Corrosion Control Anode</td>\n        <td>Check</td>\n      </tr>\n      <tr>\n        <td>Valve Clearance</td>\n        <td>Check</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Power Trim Fluid</td>\n        <td>Check</td>\n      </tr>\n      <tr>\n        <td>Battery</td>\n        <td>Check</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Control Cable Adjustments</td>\n        <td>Check</td>\n      </tr>\n      <tr>\n        <td>Timing Belt</td>\n        <td>Check</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Bolts, Nuts, & Other Fasteners</td>\n        <td>Check</td>\n      </tr>\n      <tr>\n        <td>Fuel System</td>\n        <td>Inspect for Deterioration or Leaks</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Thermostat</td>\n        <td>Inspect for Corrosion or Broken Spring</td>\n      </tr>\n      <tr>\n        <td>Grease Points</td>\n        <td>Lubricate</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Splines on Prop Drive Shaft</td>\n        <td>Lubricate</td>\n      </tr>\n      <tr>\n        <td>Spark Plugs</td>\n        <td>Check/Replace</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Engine Oil</td>\n        <td>Replace</td>\n      </tr>\n      <tr>\n        <td>Oil Filter</td>\n        <td>Replace</td>\n      </tr>\n      <tr class=\"alt-row\">\n        <td>Gear Case Lubricant</td>\n        <td>Replace</td>\n      </tr>\n    </tbody>\n  </table>\n</div>\n\n<style>\n  .custom-table-container {\n    width: 100%;\n    margin: 20px auto;\n    max-width: 1200px;\n    padding: 0 15px;\n    box-sizing: border-box;\n  }\n\n  .maintenance-table {\n    width: 100%;\n    border-collapse: collapse;\n    font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif;\n    font-size: 14px;\n    color: #333333;\n    background-color: #ffffff;\n    box-shadow: 0 1px 3px rgba(0,0,0,0.1);\n  }\n\n  .maintenance-table th {\n    background-color: #000000;\n    color: #ffffff;\n    font-weight: bold;\n    text-transform: uppercase;\n    letter-spacing: 0.5px;\n    padding: 15px 20px;\n    text-align: center;\n    border: 1px solid #dcdcdc;\n  }\n\n  .maintenance-table td {\n    padding: 12px 20px;\n    text-align: center;\n    border: 1px solid #dcdcdc;\n    line-height: 1.4;\n  }\n\n  /* Zebra crossing color effect */\n  .maintenance-table tr.alt-row td {\n    background-color: #f2f2f2;\n  }\n\n  /* Mobile responsiveness & horizontal scrolling */\n  @media screen and (max-width: 767px) {\n    .custom-table-container {\n      overflow-x: auto;\n      -webkit-overflow-scrolling: touch;\n      padding-right: 25px; /* Gives visual cue for scrolling */\n    }\n\n    .maintenance-table {\n      min-width: 500px; /* Forces table to keep structure and scroll horizontally */\n    }\n\n    .maintenance-table th, \n    .maintenance-table td {\n      padding: 10px 15px;\n      font-size: 13px;\n    }\n  }\n</style>"
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "custom_liquid_G8nRWf"
+              ]
+            },
+            "accordion_row_YzzWwX": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "Are any purchases final sale?",
+                "open_by_default": false,
+                "icon": "none",
+                "width": 20
+              },
+              "blocks": {
+                "text_f39XFE": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>We are unable to accept returns on certain items. These will be carefully marked before purchase.</p>",
+                    "width": "100%",
+                    "max_width": "normal",
+                    "alignment": "left",
+                    "type_preset": "rte",
+                    "font": "var(--font-body--family)",
+                    "font_size": "1rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "text_color": "",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "text_f39XFE"
+              ]
+            }
+          },
+          "block_order": [
+            "accordion_row_jAEcyd",
+            "accordion_row_UbEjF9",
+            "accordion_row_GGAEUJ",
+            "accordion_row_YzzWwX"
+          ]
+        }
+      },
+      "block_order": [
+        "text_iPQfpr",
+        "accordion_T9BJtR"
+      ],
+      "name": "t:names.faq_section",
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 33,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "background_media": "none",
+        "background_color": "",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_color": "",
+        "border_radius": 0,
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      }
+    },
+    "custom_logo_carousel_k7Ht3r": {
+      "type": "custom-logo-carousel",
+      "blocks": {
+        "logo_miFwh9": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/yamaha-motor-corporation-vector-logo-removebg-preview.png",
+            "link": ""
+          }
+        },
+        "logo_Hkk7Lw": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/yamaha-motor-corporation-vector-logo-removebg-preview.png",
+            "link": ""
+          }
+        },
+        "logo_AHYXY3": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/yamaha-motor-corporation-vector-logo-removebg-preview.png",
+            "link": ""
+          }
+        },
+        "logo_xnBP48": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/yamaha-motor-corporation-vector-logo-removebg-preview.png",
+            "link": ""
+          }
+        },
+        "logo_9zDRcj": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/yamaha-motor-corporation-vector-logo-removebg-preview.png",
+            "link": ""
+          }
+        },
+        "logo_cV7hWd": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/yamaha-motor-corporation-vector-logo-removebg-preview.png",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "logo_miFwh9",
+        "logo_Hkk7Lw",
+        "logo_AHYXY3",
+        "logo_xnBP48",
+        "logo_9zDRcj",
+        "logo_cV7hWd"
+      ],
+      "name": "Responsive Logo Slider",
+      "settings": {
+        "logos_per_row_desktop": 5,
+        "bg_color": "#ffffff",
+        "page_width": 1200,
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    },
+    "custom_tab_videobox_wKcYNN": {
+      "type": "custom-tab-videobox",
+      "name": "Custom Video Tabs Section",
+      "settings": {
+        "tab_1_title": "Engine Oil Change",
+        "tab_1_heading": "HOW TO PERFORM AN ENGINE OIL CHANGE",
+        "tab_1_text": "Seasoned marine mechanic, Frank Cutri, takes the helm to guide you...",
+        "tab_1_video_url": "https://www.youtube.com/watch?v=suHOLFhbwsM",
+        "tab_1_img": "shopify://shop_images/Mercury-Maintenance-Schedule-Slider-Service-Kits.webp",
+        "tab_1_box_title": "NEED MORE HELP REPAIRING YOUR WATER PUMP?",
+        "tab_1_btn_label": "Read Now",
+        "tab_1_btn_url": "",
+        "tab_2_title": "Fuel System",
+        "tab_2_heading": "",
+        "tab_2_text": "",
+        "tab_2_video_url": "",
+        "tab_2_box_title": "",
+        "tab_2_btn_label": "",
+        "tab_2_btn_url": ""
+      }
+    }
+  },
+  "order": [
+    "hero_jVaWmY",
+    "product_list_fa6P9H",
+    "custom_product_carousel_AHCHpB",
+    "collection_list_n4tHTm",
+    "dual_promo_grid_KjXqe7",
+    "custom_product2_slide_QUJkrh",
+    "custom_collection_carousel_mQBtiF",
+    "custom_featured_product_cDUGgm",
+    "custom_liquid_yEgnnW",
+    "two_featured_products_QM3ixp",
+    "engine_tabs_accordion_bPWUDp",
+    "section_MfFTh9",
+    "custom_logo_carousel_k7Ht3r",
+    "custom_tab_videobox_wKcYNN"
+  ]
+}

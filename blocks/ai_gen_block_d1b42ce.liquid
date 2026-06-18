@@ -1,0 +1,1505 @@
+{% doc %}
+  @prompt
+    Create a fully customizable custom header section for a marine/boating parts store with the following features:
+    
+    TOP ROW:
+    1. Logo on the left - uploadable image with configurable width
+    2. Predictive search bar in the center - dynamic search that shows product results as you type
+    3. "Shop by Engine" button (gold/yellow #f5a623 color) next to search - clicking opens a popup modal
+    4. Account icon with hover dropdown menu - dropdown items fully customizable (Sign In, Create Account, Order Status, etc.)
+    5. Shopping cart icon with item count badge - two modes: Cart Drawer (slide-in from right, auto-opens on Add to Cart) or Cart Page link
+    
+    BOTTOM ROW - MEGA MENU:
+    - Full-width horizontal navigation bar
+    - On hover over parent menu item, mega menu dropdown opens
+    - Left column shows child items
+    - Smart detection: if child URL contains /products/ → show as product card (image, title, price); otherwise show as plain text link
+    - All menu items configurable in theme settings
+    
+    SHOP BY ENGINE POPUP MODAL:
+    - Opens on button click
+    - Left side: customizable uploaded image
+    - Right side: multiple dropdown fields (Brand, Year, Model etc.) - merchant can add/remove fields and options
+    - Gold "Search" button at bottom
+    
+    MOBILE MENU:
+    - Hamburger icon on mobile
+    - Slide-in drawer from left
+    - "Shop by Engine" button at top
+    - Vertical menu list with expand/collapse for children
+    
+    DESIGN:
+    - Dark navy blue background (#0a1628)
+    - White navigation text
+    - Gold/yellow accent (#f5a623) for buttons
+    - Sticky header on scroll
+    - All colors, labels, menu items customizable via theme editor settings
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-marine-header-{{ ai_gen_id }} {
+    display: block;
+    background-color: {{ block.settings.header_bg_color }};
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+  }
+
+  .ai-marine-header__top-row-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: {{ block.settings.top_row_padding }}px {{ block.settings.horizontal_padding }}px;
+    gap: 20px;
+  }
+
+  .ai-marine-header__logo-{{ ai_gen_id }} {
+    flex-shrink: 0;
+  }
+
+  .ai-marine-header__logo-{{ ai_gen_id }} img {
+    display: block;
+    width: {{ block.settings.logo_width }}px;
+    height: auto;
+  }
+
+  .ai-marine-header__center-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-grow: 1;
+    max-width: 600px;
+  }
+
+  .ai-marine-header__search-{{ ai_gen_id }} {
+    flex-grow: 1;
+    position: relative;
+  }
+
+  .ai-marine-header__search-input-{{ ai_gen_id }} {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid {{ block.settings.search_border_color }};
+    border-radius: {{ block.settings.search_border_radius }}px;
+    background-color: {{ block.settings.search_bg_color }};
+    color: {{ block.settings.search_text_color }};
+    font-size: 14px;
+  }
+
+  .ai-marine-header__search-results-{{ ai_gen_id }} {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: {{ block.settings.search_bg_color }};
+    border: 1px solid {{ block.settings.search_border_color }};
+    border-top: none;
+    border-radius: 0 0 {{ block.settings.search_border_radius }}px {{ block.settings.search_border_radius }}px;
+    max-height: 400px;
+    overflow-y: auto;
+    display: none;
+    z-index: 100;
+  }
+
+  .ai-marine-header__search-results-{{ ai_gen_id }}.active {
+    display: block;
+  }
+
+  .ai-marine-header__search-result-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    text-decoration: none;
+    color: {{ block.settings.search_text_color }};
+    border-bottom: 1px solid {{ block.settings.search_border_color }};
+  }
+
+  .ai-marine-header__search-result-{{ ai_gen_id }}:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  .ai-marine-header__search-result-image-{{ ai_gen_id }} {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+
+  .ai-marine-header__search-result-info-{{ ai_gen_id }} {
+    flex-grow: 1;
+  }
+
+  .ai-marine-header__search-result-title-{{ ai_gen_id }} {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+
+  .ai-marine-header__search-result-price-{{ ai_gen_id }} {
+    font-size: 13px;
+    color: {{ block.settings.accent_color }};
+  }
+
+  .ai-marine-header__engine-btn-{{ ai_gen_id }} {
+    padding: 12px 24px;
+    background-color: {{ block.settings.accent_color }};
+    color: {{ block.settings.accent_text_color }};
+    border: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.3s ease;
+  }
+
+  .ai-marine-header__engine-btn-{{ ai_gen_id }}:hover {
+    opacity: 0.9;
+  }
+
+  .ai-marine-header__icons-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .ai-marine-header__account-{{ ai_gen_id }} {
+    position: relative;
+  }
+
+  .ai-marine-header__account-icon-{{ ai_gen_id }} {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    color: {{ block.settings.icon_color }};
+  }
+
+  .ai-marine-header__account-icon-{{ ai_gen_id }} svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    fill: none;
+  }
+
+  .ai-marine-header__account-dropdown-{{ ai_gen_id }} {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: {{ block.settings.dropdown_bg_color }};
+    border: 1px solid {{ block.settings.dropdown_border_color }};
+    border-radius: {{ block.settings.dropdown_border_radius }}px;
+    min-width: 200px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+    z-index: 100;
+    margin-top: 8px;
+  }
+
+  .ai-marine-header__account-dropdown-{{ ai_gen_id }}.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .ai-marine-header__account-link-{{ ai_gen_id }} {
+    display: block;
+    padding: 12px 16px;
+    color: {{ block.settings.dropdown_text_color }};
+    text-decoration: none;
+    font-size: 14px;
+    border-bottom: 1px solid {{ block.settings.dropdown_border_color }};
+  }
+
+  .ai-marine-header__account-link-{{ ai_gen_id }}:last-child {
+    border-bottom: none;
+  }
+
+  .ai-marine-header__account-link-{{ ai_gen_id }}:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  .ai-marine-header__cart-{{ ai_gen_id }} {
+    position: relative;
+  }
+
+  .ai-marine-header__cart-link-{{ ai_gen_id }} {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    color: {{ block.settings.icon_color }};
+    position: relative;
+    text-decoration: none;
+    display: block;
+  }
+
+  .ai-marine-header__cart-link-{{ ai_gen_id }} svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    fill: none;
+  }
+
+  .ai-marine-header__cart-count-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: {{ block.settings.accent_color }};
+    color: {{ block.settings.accent_text_color }};
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .ai-marine-header__nav-{{ ai_gen_id }} {
+    background-color: {{ block.settings.nav_bg_color }};
+    border-top: 1px solid {{ block.settings.nav_border_color }};
+  }
+
+  .ai-marine-header__nav-list-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    padding: 0 {{ block.settings.horizontal_padding }}px;
+    margin: 0;
+    list-style: none;
+  }
+
+  .ai-marine-header__nav-item-{{ ai_gen_id }} {
+    position: relative;
+  }
+
+  .ai-marine-header__nav-link-{{ ai_gen_id }} {
+    display: block;
+    padding: {{ block.settings.nav_link_padding }}px 0;
+    color: {{ block.settings.nav_text_color }};
+    text-decoration: none;
+    font-size: {{ block.settings.nav_font_size }}px;
+    font-weight: 600;
+    transition: color 0.3s ease;
+  }
+
+  .ai-marine-header__nav-link-{{ ai_gen_id }}:hover {
+    color: {{ block.settings.accent_color }};
+  }
+
+  .ai-marine-header__mega-menu-{{ ai_gen_id }} {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: {{ block.settings.mega_menu_bg_color }};
+    border: 1px solid {{ block.settings.mega_menu_border_color }};
+    border-radius: {{ block.settings.mega_menu_border_radius }}px;
+    min-width: 600px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 100;
+    margin-top: 0;
+    padding: 24px;
+  }
+
+  .ai-marine-header__nav-item-{{ ai_gen_id }}:hover .ai-marine-header__mega-menu-{{ ai_gen_id }} {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .ai-marine-header__mega-menu-grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+  }
+
+  .ai-marine-header__mega-menu-link-{{ ai_gen_id }} {
+    display: block;
+    color: {{ block.settings.mega_menu_text_color }};
+    text-decoration: none;
+    font-size: 14px;
+    padding: 8px 0;
+    transition: color 0.3s ease;
+  }
+
+  .ai-marine-header__mega-menu-link-{{ ai_gen_id }}:hover {
+    color: {{ block.settings.accent_color }};
+  }
+
+  .ai-marine-header__mega-menu-product-{{ ai_gen_id }} {
+    display: block;
+    text-decoration: none;
+    color: {{ block.settings.mega_menu_text_color }};
+  }
+
+  .ai-marine-header__mega-menu-product-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+
+  .ai-marine-header__mega-menu-product-title-{{ ai_gen_id }} {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+
+  .ai-marine-header__mega-menu-product-price-{{ ai_gen_id }} {
+    font-size: 13px;
+    color: {{ block.settings.accent_color }};
+  }
+
+  .ai-marine-header__modal-{{ ai_gen_id }} {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+  }
+
+  .ai-marine-header__modal-{{ ai_gen_id }}.active {
+    display: flex;
+  }
+
+  .ai-marine-header__modal-content-{{ ai_gen_id }} {
+    background-color: {{ block.settings.modal_bg_color }};
+    border-radius: {{ block.settings.modal_border_radius }}px;
+    max-width: 900px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .ai-marine-header__modal-inner-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  .ai-marine-header__modal-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-marine-header__modal-form-{{ ai_gen_id }} {
+    padding: 40px;
+  }
+
+  .ai-marine-header__modal-close-{{ ai_gen_id }} {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    color: {{ block.settings.modal_text_color }};
+    z-index: 10;
+  }
+
+  .ai-marine-header__modal-close-{{ ai_gen_id }} svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+  }
+
+  .ai-marine-header__modal-title-{{ ai_gen_id }} {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 24px;
+    color: {{ block.settings.modal_text_color }};
+  }
+
+  .ai-marine-header__modal-field-{{ ai_gen_id }} {
+    margin-bottom: 16px;
+  }
+
+  .ai-marine-header__modal-label-{{ ai_gen_id }} {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: {{ block.settings.modal_text_color }};
+  }
+
+  .ai-marine-header__modal-select-{{ ai_gen_id }} {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid {{ block.settings.modal_border_color }};
+    border-radius: 8px;
+    background-color: #fff;
+    color: #000;
+    font-size: 14px;
+  }
+
+  .ai-marine-header__modal-submit-{{ ai_gen_id }} {
+    width: 100%;
+    padding: 14px 24px;
+    background-color: {{ block.settings.accent_color }};
+    color: {{ block.settings.accent_text_color }};
+    border: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity 0.3s ease;
+  }
+
+  .ai-marine-header__modal-submit-{{ ai_gen_id }}:hover {
+    opacity: 0.9;
+  }
+
+  .ai-marine-header__mobile-toggle-{{ ai_gen_id }} {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    color: {{ block.settings.icon_color }};
+  }
+
+  .ai-marine-header__mobile-toggle-{{ ai_gen_id }} svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+  }
+
+  .ai-marine-header__mobile-drawer-{{ ai_gen_id }} {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 300px;
+    background-color: {{ block.settings.mobile_drawer_bg_color }};
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 2000;
+    overflow-y: auto;
+    padding: 20px;
+  }
+
+  .ai-marine-header__mobile-drawer-{{ ai_gen_id }}.active {
+    transform: translateX(0);
+  }
+
+  .ai-marine-header__mobile-overlay-{{ ai_gen_id }} {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    z-index: 1999;
+  }
+
+  .ai-marine-header__mobile-overlay-{{ ai_gen_id }}.active {
+    display: block;
+  }
+
+  .ai-marine-header__mobile-close-{{ ai_gen_id }} {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    color: {{ block.settings.mobile_drawer_text_color }};
+    margin-bottom: 20px;
+  }
+
+  .ai-marine-header__mobile-close-{{ ai_gen_id }} svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+  }
+
+  .ai-marine-header__mobile-engine-btn-{{ ai_gen_id }} {
+    width: 100%;
+    padding: 12px 24px;
+    background-color: {{ block.settings.accent_color }};
+    color: {{ block.settings.accent_text_color }};
+    border: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+
+  .ai-marine-header__mobile-nav-{{ ai_gen_id }} {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .ai-marine-header__mobile-nav-item-{{ ai_gen_id }} {
+    border-bottom: 1px solid {{ block.settings.mobile_drawer_border_color }};
+  }
+
+  .ai-marine-header__mobile-nav-link-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    color: {{ block.settings.mobile_drawer_text_color }};
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .ai-marine-header__mobile-expand-{{ ai_gen_id }} {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: {{ block.settings.mobile_drawer_text_color }};
+  }
+
+  .ai-marine-header__mobile-expand-{{ ai_gen_id }} svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    transition: transform 0.3s ease;
+  }
+
+  .ai-marine-header__mobile-expand-{{ ai_gen_id }}.active svg {
+    transform: rotate(180deg);
+  }
+
+  .ai-marine-header__mobile-submenu-{{ ai_gen_id }} {
+    list-style: none;
+    padding: 0 0 0 16px;
+    margin: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .ai-marine-header__mobile-submenu-{{ ai_gen_id }}.active {
+    max-height: 500px;
+  }
+
+  .ai-marine-header__mobile-submenu-link-{{ ai_gen_id }} {
+    display: block;
+    padding: 8px 0;
+    color: {{ block.settings.mobile_drawer_text_color }};
+    text-decoration: none;
+    font-size: 14px;
+  }
+
+  @media screen and (max-width: 990px) {
+    .ai-marine-header__nav-{{ ai_gen_id }} {
+      display: none;
+    }
+
+    .ai-marine-header__mobile-toggle-{{ ai_gen_id }} {
+      display: block;
+    }
+
+    .ai-marine-header__center-{{ ai_gen_id }} {
+      max-width: none;
+    }
+
+    .ai-marine-header__engine-btn-{{ ai_gen_id }} {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-marine-header__top-row-{{ ai_gen_id }} {
+      padding: 12px 16px;
+    }
+
+    .ai-marine-header__logo-{{ ai_gen_id }} img {
+      width: {{ block.settings.logo_width | times: 0.7 }}px;
+    }
+
+    .ai-marine-header__search-{{ ai_gen_id }} {
+      display: none;
+    }
+  }
+{% endstyle %}
+
+<marine-header-{{ ai_gen_id }} class="ai-marine-header-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-marine-header__top-row-{{ ai_gen_id }}">
+    <button class="ai-marine-header__mobile-toggle-{{ ai_gen_id }}" aria-label="Open menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+
+    <div class="ai-marine-header__logo-{{ ai_gen_id }}">
+      {% if block.settings.logo %}
+        <a href="/">
+          <img src="{{ block.settings.logo | image_url: width: 400 }}" alt="{{ shop.name }}" loading="lazy">
+        </a>
+      {% else %}
+        <a href="/" style="color: {{ block.settings.icon_color }}; font-size: 20px; font-weight: 700; text-decoration: none;">
+          {{ shop.name }}
+        </a>
+      {% endif %}
+    </div>
+
+    <div class="ai-marine-header__center-{{ ai_gen_id }}">
+      <div class="ai-marine-header__search-{{ ai_gen_id }}">
+        <input
+          type="text"
+          class="ai-marine-header__search-input-{{ ai_gen_id }}"
+          placeholder="{{ block.settings.search_placeholder }}"
+          aria-label="Search"
+        >
+        <div class="ai-marine-header__search-results-{{ ai_gen_id }}"></div>
+      </div>
+
+      <button class="ai-marine-header__engine-btn-{{ ai_gen_id }}">
+        {{ block.settings.engine_button_text }}
+      </button>
+    </div>
+
+    <div class="ai-marine-header__icons-{{ ai_gen_id }}">
+      <div class="ai-marine-header__account-{{ ai_gen_id }}">
+        <button class="ai-marine-header__account-icon-{{ ai_gen_id }}" aria-label="Account">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </button>
+        <div class="ai-marine-header__account-dropdown-{{ ai_gen_id }}">
+          {% for i in (1..5) %}
+            {% assign link_text_key = 'account_link_' | append: i | append: '_text' %}
+            {% assign link_url_key = 'account_link_' | append: i | append: '_url' %}
+            {% assign link_text = block.settings[link_text_key] %}
+            {% assign link_url = block.settings[link_url_key] %}
+            {% if link_text != blank %}
+              <a href="{{ link_url }}" class="ai-marine-header__account-link-{{ ai_gen_id }}">{{ link_text }}</a>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="ai-marine-header__cart-{{ ai_gen_id }}">
+        {% if block.settings.cart_mode == 'drawer' %}
+          <button class="ai-marine-header__cart-link-{{ ai_gen_id }}" aria-label="Cart">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            <span class="ai-marine-header__cart-count-{{ ai_gen_id }}">{{ cart.item_count }}</span>
+          </button>
+        {% else %}
+          <a href="/cart" class="ai-marine-header__cart-link-{{ ai_gen_id }}" aria-label="Cart">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            <span class="ai-marine-header__cart-count-{{ ai_gen_id }}">{{ cart.item_count }}</span>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <nav class="ai-marine-header__nav-{{ ai_gen_id }}">
+    <ul class="ai-marine-header__nav-list-{{ ai_gen_id }}">
+      {% for link in linklists[block.settings.menu].links %}
+        <li class="ai-marine-header__nav-item-{{ ai_gen_id }}">
+          <a href="{{ link.url }}" class="ai-marine-header__nav-link-{{ ai_gen_id }}">{{ link.title }}</a>
+          {% if link.links.size > 0 %}
+            <div class="ai-marine-header__mega-menu-{{ ai_gen_id }}">
+              <div class="ai-marine-header__mega-menu-grid-{{ ai_gen_id }}">
+                {% for child_link in link.links %}
+                  {% if child_link.url contains '/products/' %}
+                    {% assign product_handle = child_link.url | split: '/products/' | last | split: '?' | first %}
+                    {% assign product = all_products[product_handle] %}
+                    {% if product %}
+                      <a href="{{ product.url }}" class="ai-marine-header__mega-menu-product-{{ ai_gen_id }}">
+                        {% if product.featured_image %}
+                          <img src="{{ product.featured_image | image_url: width: 300 }}" alt="{{ product.title }}" class="ai-marine-header__mega-menu-product-image-{{ ai_gen_id }}" loading="lazy">
+                        {% endif %}
+                        <h3 class="ai-marine-header__mega-menu-product-title-{{ ai_gen_id }}">{{ product.title }}</h3>
+                        <div class="ai-marine-header__mega-menu-product-price-{{ ai_gen_id }}">{{ product.price | money }}</div>
+                      </a>
+                    {% endif %}
+                  {% else %}
+                    <a href="{{ child_link.url }}" class="ai-marine-header__mega-menu-link-{{ ai_gen_id }}">{{ child_link.title }}</a>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+
+  <div class="ai-marine-header__modal-{{ ai_gen_id }}">
+    <div class="ai-marine-header__modal-content-{{ ai_gen_id }}">
+      <button class="ai-marine-header__modal-close-{{ ai_gen_id }}" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <div class="ai-marine-header__modal-inner-{{ ai_gen_id }}">
+        <div>
+          {% if block.settings.modal_image %}
+            <img src="{{ block.settings.modal_image | image_url: width: 600 }}" alt="Shop by engine" class="ai-marine-header__modal-image-{{ ai_gen_id }}" loading="lazy">
+          {% else %}
+            <div style="background-color: #f4f4f4; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+              {{ 'image' | placeholder_svg_tag }}
+            </div>
+          {% endif %}
+        </div>
+        <div class="ai-marine-header__modal-form-{{ ai_gen_id }}">
+          <h2 class="ai-marine-header__modal-title-{{ ai_gen_id }}">{{ block.settings.modal_title }}</h2>
+          <form>
+            {% for i in (1..5) %}
+              {% assign field_label_key = 'modal_field_' | append: i | append: '_label' %}
+              {% assign field_options_key = 'modal_field_' | append: i | append: '_options' %}
+              {% assign field_label = block.settings[field_label_key] %}
+              {% assign field_options = block.settings[field_options_key] %}
+              {% if field_label != blank %}
+                <div class="ai-marine-header__modal-field-{{ ai_gen_id }}">
+                  <label class="ai-marine-header__modal-label-{{ ai_gen_id }}">{{ field_label }}</label>
+                  <select class="ai-marine-header__modal-select-{{ ai_gen_id }}">
+                    <option value="">Select {{ field_label }}</option>
+                    {% assign options_array = field_options | split: ',' %}
+                    {% for option in options_array %}
+                      <option value="{{ option | strip }}">{{ option | strip }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              {% endif %}
+            {% endfor %}
+            <button type="submit" class="ai-marine-header__modal-submit-{{ ai_gen_id }}">{{ block.settings.modal_button_text }}</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ai-marine-header__mobile-overlay-{{ ai_gen_id }}"></div>
+  <div class="ai-marine-header__mobile-drawer-{{ ai_gen_id }}">
+    <button class="ai-marine-header__mobile-close-{{ ai_gen_id }}" aria-label="Close menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+
+    <button class="ai-marine-header__mobile-engine-btn-{{ ai_gen_id }}">
+      {{ block.settings.engine_button_text }}
+    </button>
+
+    <ul class="ai-marine-header__mobile-nav-{{ ai_gen_id }}">
+      {% for link in linklists[block.settings.menu].links %}
+        <li class="ai-marine-header__mobile-nav-item-{{ ai_gen_id }}">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <a href="{{ link.url }}" class="ai-marine-header__mobile-nav-link-{{ ai_gen_id }}">{{ link.title }}</a>
+            {% if link.links.size > 0 %}
+              <button class="ai-marine-header__mobile-expand-{{ ai_gen_id }}" aria-label="Expand menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+            {% endif %}
+          </div>
+          {% if link.links.size > 0 %}
+            <ul class="ai-marine-header__mobile-submenu-{{ ai_gen_id }}">
+              {% for child_link in link.links %}
+                <li>
+                  <a href="{{ child_link.url }}" class="ai-marine-header__mobile-submenu-link-{{ ai_gen_id }}">{{ child_link.title }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</marine-header-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class MarineHeader{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.searchInput = this.querySelector('.ai-marine-header__search-input-{{ ai_gen_id }}');
+        this.searchResults = this.querySelector('.ai-marine-header__search-results-{{ ai_gen_id }}');
+        this.accountIcon = this.querySelector('.ai-marine-header__account-icon-{{ ai_gen_id }}');
+        this.accountDropdown = this.querySelector('.ai-marine-header__account-dropdown-{{ ai_gen_id }}');
+        this.engineBtn = this.querySelector('.ai-marine-header__engine-btn-{{ ai_gen_id }}');
+        this.mobileEngineBtn = this.querySelector('.ai-marine-header__mobile-engine-btn-{{ ai_gen_id }}');
+        this.modal = this.querySelector('.ai-marine-header__modal-{{ ai_gen_id }}');
+        this.modalClose = this.querySelector('.ai-marine-header__modal-close-{{ ai_gen_id }}');
+        this.mobileToggle = this.querySelector('.ai-marine-header__mobile-toggle-{{ ai_gen_id }}');
+        this.mobileDrawer = this.querySelector('.ai-marine-header__mobile-drawer-{{ ai_gen_id }}');
+        this.mobileOverlay = this.querySelector('.ai-marine-header__mobile-overlay-{{ ai_gen_id }}');
+        this.mobileClose = this.querySelector('.ai-marine-header__mobile-close-{{ ai_gen_id }}');
+        this.mobileExpandBtns = this.querySelectorAll('.ai-marine-header__mobile-expand-{{ ai_gen_id }}');
+        this.cartLink = this.querySelector('.ai-marine-header__cart-link-{{ ai_gen_id }}');
+        this.searchTimeout = null;
+      }
+
+      connectedCallback() {
+        this.setupSearch();
+        this.setupAccountDropdown();
+        this.setupModal();
+        this.setupMobileMenu();
+        this.setupCart();
+      }
+
+      setupSearch() {
+        if (!this.searchInput) return;
+
+        this.searchInput.addEventListener('input', (e) => {
+          clearTimeout(this.searchTimeout);
+          const query = e.target.value.trim();
+
+          if (query.length < 2) {
+            this.searchResults.classList.remove('active');
+            return;
+          }
+
+          this.searchTimeout = setTimeout(() => {
+            this.performSearch(query);
+          }, 300);
+        });
+
+        document.addEventListener('click', (e) => {
+          if (!e.target.closest('.ai-marine-header__search-{{ ai_gen_id }}')) {
+            this.searchResults.classList.remove('active');
+          }
+        });
+      }
+
+      async performSearch(query) {
+        try {
+          const response = await fetch(`/search/suggest.json?q=${encodeURIComponent(query)}&resources[type]=product&resources[limit]=5`);
+          const data = await response.json();
+          this.displaySearchResults(data.resources.results.products || []);
+        } catch (error) {
+          console.error('Search error:', error);
+        }
+      }
+
+      displaySearchResults(products) {
+        if (products.length === 0) {
+          this.searchResults.innerHTML = '<div style="padding: 16px; text-align: center; color: #666;">No results found</div>';
+          this.searchResults.classList.add('active');
+          return;
+        }
+
+        const html = products.map(product => {
+          const image = product.featured_image ? product.featured_image : '';
+          const price = product.price ? (product.price / 100).toFixed(2) : '0.00';
+          return `
+            <a href="${product.url}" class="ai-marine-header__search-result-{{ ai_gen_id }}">
+              ${image ? `<img src="${image}" alt="${product.title}" class="ai-marine-header__search-result-image-{{ ai_gen_id }}" loading="lazy">` : ''}
+              <div class="ai-marine-header__search-result-info-{{ ai_gen_id }}">
+                <h3 class="ai-marine-header__search-result-title-{{ ai_gen_id }}">${product.title}</h3>
+                <div class="ai-marine-header__search-result-price-{{ ai_gen_id }}">$${price}</div>
+              </div>
+            </a>
+          `;
+        }).join('');
+
+        this.searchResults.innerHTML = html;
+        this.searchResults.classList.add('active');
+      }
+
+      setupAccountDropdown() {
+        if (!this.accountIcon) return;
+
+        this.accountIcon.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.accountDropdown.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+          if (!e.target.closest('.ai-marine-header__account-{{ ai_gen_id }}')) {
+            this.accountDropdown.classList.remove('active');
+          }
+        });
+      }
+
+      setupModal() {
+        if (this.engineBtn) {
+          this.engineBtn.addEventListener('click', () => {
+            this.modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+          });
+        }
+
+        if (this.mobileEngineBtn) {
+          this.mobileEngineBtn.addEventListener('click', () => {
+            this.modal.classList.add('active');
+            this.mobileDrawer.classList.remove('active');
+            this.mobileOverlay.classList.remove('active');
+            document.body.style.overflow = 'hidden';
+          });
+        }
+
+        if (this.modalClose) {
+          this.modalClose.addEventListener('click', () => {
+            this.modal.classList.remove('active');
+            document.body.style.overflow = '';
+          });
+        }
+
+        this.modal.addEventListener('click', (e) => {
+          if (e.target === this.modal) {
+            this.modal.classList.remove('active');
+            document.body.style.overflow = '';
+          }
+        });
+      }
+
+      setupMobileMenu() {
+        if (this.mobileToggle) {
+          this.mobileToggle.addEventListener('click', () => {
+            this.mobileDrawer.classList.add('active');
+            this.mobileOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+          });
+        }
+
+        if (this.mobileClose) {
+          this.mobileClose.addEventListener('click', () => {
+            this.mobileDrawer.classList.remove('active');
+            this.mobileOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+          });
+        }
+
+        if (this.mobileOverlay) {
+          this.mobileOverlay.addEventListener('click', () => {
+            this.mobileDrawer.classList.remove('active');
+            this.mobileOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+          });
+        }
+
+        this.mobileExpandBtns.forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const submenu = btn.closest('.ai-marine-header__mobile-nav-item-{{ ai_gen_id }}').querySelector('.ai-marine-header__mobile-submenu-{{ ai_gen_id }}');
+            btn.classList.toggle('active');
+            submenu.classList.toggle('active');
+          });
+        });
+      }
+
+      setupCart() {
+        const cartMode = '{{ block.settings.cart_mode }}';
+        if (cartMode === 'drawer' && this.cartLink) {
+          this.cartLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.dispatchEvent(new CustomEvent('cart:open'));
+          });
+
+          const autoOpen = {{ block.settings.auto_open_cart_drawer }};
+          if (autoOpen) {
+            document.addEventListener('cart:item-added', () => {
+              document.dispatchEvent(new CustomEvent('cart:open'));
+            });
+          }
+        }
+      }
+    }
+
+    customElements.define('marine-header-{{ ai_gen_id }}', MarineHeader{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Marine header",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "Logo width",
+      "min": 50,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "default": 150
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "header_bg_color",
+      "label": "Header background",
+      "default": "#0a1628"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#f5a623"
+    },
+    {
+      "type": "color",
+      "id": "accent_text_color",
+      "label": "Accent text color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Search"
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search placeholder",
+      "default": "Search products..."
+    },
+    {
+      "type": "color",
+      "id": "search_bg_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "search_text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "search_border_color",
+      "label": "Border color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "range",
+      "id": "search_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Shop by engine button"
+    },
+    {
+      "type": "text",
+      "id": "engine_button_text",
+      "label": "Button text",
+      "default": "Shop by Engine"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "Button border radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Account dropdown"
+    },
+    {
+      "type": "text",
+      "id": "account_link_1_text",
+      "label": "Link 1 text",
+      "default": "Sign In"
+    },
+    {
+      "type": "url",
+      "id": "account_link_1_url",
+      "label": "Link 1 URL"
+    },
+    {
+      "type": "text",
+      "id": "account_link_2_text",
+      "label": "Link 2 text",
+      "default": "Create Account"
+    },
+    {
+      "type": "url",
+      "id": "account_link_2_url",
+      "label": "Link 2 URL"
+    },
+    {
+      "type": "text",
+      "id": "account_link_3_text",
+      "label": "Link 3 text",
+      "default": "Order Status"
+    },
+    {
+      "type": "url",
+      "id": "account_link_3_url",
+      "label": "Link 3 URL"
+    },
+    {
+      "type": "text",
+      "id": "account_link_4_text",
+      "label": "Link 4 text"
+    },
+    {
+      "type": "url",
+      "id": "account_link_4_url",
+      "label": "Link 4 URL"
+    },
+    {
+      "type": "text",
+      "id": "account_link_5_text",
+      "label": "Link 5 text"
+    },
+    {
+      "type": "url",
+      "id": "account_link_5_url",
+      "label": "Link 5 URL"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_bg_color",
+      "label": "Dropdown background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_text_color",
+      "label": "Dropdown text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_border_color",
+      "label": "Dropdown border",
+      "default": "#cccccc"
+    },
+    {
+      "type": "range",
+      "id": "dropdown_border_radius",
+      "label": "Dropdown border radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Cart"
+    },
+    {
+      "type": "select",
+      "id": "cart_mode",
+      "label": "Cart mode",
+      "options": [
+        {
+          "value": "drawer",
+          "label": "Cart drawer"
+        },
+        {
+          "value": "page",
+          "label": "Cart page"
+        }
+      ],
+      "default": "drawer"
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_open_cart_drawer",
+      "label": "Auto-open cart drawer on add to cart",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "color",
+      "id": "nav_bg_color",
+      "label": "Navigation background",
+      "default": "#0a1628"
+    },
+    {
+      "type": "color",
+      "id": "nav_text_color",
+      "label": "Navigation text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "nav_border_color",
+      "label": "Navigation border",
+      "default": "#1a2638"
+    },
+    {
+      "type": "range",
+      "id": "nav_font_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "nav_link_padding",
+      "label": "Link padding",
+      "min": 8,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Mega menu"
+    },
+    {
+      "type": "color",
+      "id": "mega_menu_bg_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "mega_menu_text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "mega_menu_border_color",
+      "label": "Border color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "range",
+      "id": "mega_menu_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Shop by engine modal"
+    },
+    {
+      "type": "text",
+      "id": "modal_title",
+      "label": "Modal title",
+      "default": "Shop by Engine"
+    },
+    {
+      "type": "image_picker",
+      "id": "modal_image",
+      "label": "Modal image"
+    },
+    {
+      "type": "text",
+      "id": "modal_button_text",
+      "label": "Search button text",
+      "default": "Search"
+    },
+    {
+      "type": "color",
+      "id": "modal_bg_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "modal_text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "modal_border_color",
+      "label": "Border color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "range",
+      "id": "modal_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Modal form fields"
+    },
+    {
+      "type": "text",
+      "id": "modal_field_1_label",
+      "label": "Field 1 label",
+      "default": "Brand"
+    },
+    {
+      "type": "text",
+      "id": "modal_field_1_options",
+      "label": "Field 1 options",
+      "default": "Mercury, Yamaha, Honda, Suzuki, Evinrude",
+      "info": "Comma-separated values"
+    },
+    {
+      "type": "text",
+      "id": "modal_field_2_label",
+      "label": "Field 2 label",
+      "default": "Year"
+    },
+    {
+      "type": "text",
+      "id": "modal_field_2_options",
+      "label": "Field 2 options",
+      "default": "2024, 2023, 2022, 2021, 2020",
+      "info": "Comma-separated values"
+    },
+    {
+      "type": "text",
+      "id": "modal_field_3_label",
+      "label": "Field 3 label",
+      "default": "Model"
+    },
+    {
+      "type": "text",
+      "id": "modal_field_3_options",
+      "label": "Field 3 options",
+      "default": "Outboard, Inboard, Sterndrive",
+      "info": "Comma-separated values"
+    },
+    {
+      "type": "text",
+      "id": "modal_field_4_label",
+      "label": "Field 4 label"
+    },
+    {
+      "type": "text",
+      "id": "modal_field_4_options",
+      "label": "Field 4 options",
+      "info": "Comma-separated values"
+    },
+    {
+      "type": "text",
+      "id": "modal_field_5_label",
+      "label": "Field 5 label"
+    },
+    {
+      "type": "text",
+      "id": "modal_field_5_options",
+      "label": "Field 5 options",
+      "info": "Comma-separated values"
+    },
+    {
+      "type": "header",
+      "content": "Mobile menu"
+    },
+    {
+      "type": "color",
+      "id": "mobile_drawer_bg_color",
+      "label": "Drawer background",
+      "default": "#0a1628"
+    },
+    {
+      "type": "color",
+      "id": "mobile_drawer_text_color",
+      "label": "Drawer text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "mobile_drawer_border_color",
+      "label": "Drawer border",
+      "default": "#1a2638"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "top_row_padding",
+      "label": "Top row padding",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "horizontal_padding",
+      "label": "Horizontal padding",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "presets": [
+    {
+      "name": "Marine header1"
+    }
+  ]
+}
+{% endschema %}

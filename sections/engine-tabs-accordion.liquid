@@ -1,0 +1,1065 @@
+
+
+
+
+
+
+<div class="engine-selector-section section-{{ section.id }}">
+  <div class="page-width-padding">
+    
+    {% if section.settings.section_title != blank %}
+      <h2 class="section-main-title">{{ section.settings.section_title }}</h2>
+    {% endif %}
+
+    <div class="engine-tabs-nav">
+      {% assign tab_index = 0 %}
+      {% for block in section.blocks %}
+        {% if block.type == 'tab_header' %}
+          <button type="button" 
+                  class="tab-btn {% if tab_index == 0 %}active{% endif %}" 
+                  data-tab-target="tab-{{ section.id }}-{{ block.settings.tab_id | handleize }}">
+            {{ block.settings.title }}
+          </button>
+          {% assign tab_index = tab_index | plus: 1 %}
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="active-tab-banner-wrapper">
+      {% assign tab_index_banner = 0 %}
+      {% for block in section.blocks %}
+        {% if block.type == 'tab_header' %}
+          <div id="banner-tab-{{ section.id }}-{{ block.settings.tab_id | handleize }}" 
+               class="active-tab-title-banner {% if tab_index_banner == 0 %}show-banner{% endif %}">
+            {{ block.settings.title }}
+          </div>
+          {% assign tab_index_banner = tab_index_banner | plus: 1 %}
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="engine-tabs-content-container">
+      {% assign tab_content_index = 0 %}
+      {% for block_tab in section.blocks %}
+        {% if block_tab.type == 'tab_header' %}
+          
+          <div id="tab-{{ section.id }}-{{ block_tab.settings.tab_id | handleize }}" 
+               class="tab-panel-content {% if tab_content_index == 0 %}active-panel{% endif %}">
+            
+            {% assign has_accordions = false %}
+            
+            {% for block_acc in section.blocks %}
+              {% if block_acc.type == 'accordion_item' %}
+                {% if block_acc.settings.target_tab_id == block_tab.settings.tab_id %}
+                  {% assign has_accordions = true %}
+                  
+                  <div class="accordion-card-item">
+                    <button type="button" class="accordion-trigger-header" aria-expanded="false">
+                      <span class="acc-icon-state">+</span>
+                      <span class="acc-title-text">{{ block_acc.settings.accordion_title }}</span>
+                    </button>
+                    
+                    <div class="accordion-panel-transition-wrapper">
+                      <div class="accordion-panel-body">
+                        <div class="accordion-inner-grid-content">
+                          
+                          <div class="info-content-box">
+                            <span class="box-label-title">{{ block_acc.settings.box1_title }}</span>
+                            <p class="box-value-text">{{ block_acc.settings.box1_text }}</p>
+                          </div>
+
+                          <div class="info-content-box">
+                            <span class="box-label-title">{{ block_acc.settings.box2_title }}</span>
+                            <p class="box-value-text">{{ block_acc.settings.box2_text }}</p>
+                          </div>
+
+                          <div class="info-content-box box-with-richtext">
+                            <span class="box-label-title">{{ block_acc.settings.box3_title }}</span>
+                            <div class="box-value-text-rt">{{ block_acc.settings.box3_text }}</div>
+                          </div>
+
+                        </div>
+
+                        {% if block_acc.settings.btn_text != blank %}
+                          <div class="accordion-action-footer">
+                            <a href="{{ block_acc.settings.btn_link }}" class="accordion-cta-button">
+                              {{ block_acc.settings.btn_text }}
+                            </a>
+                          </div>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+
+            {% if has_accordions == false %}
+              <p class="no-accordion-notice">No engines added to this tab yet. Please add an Accordion Content Card block and link it to this Tab ID.</p>
+            {% endif %}
+
+          </div>
+          {% assign tab_content_index = tab_content_index | plus: 1 %}
+        {% endif %}
+      {% endfor %}
+    </div>
+
+  </div>
+</div>
+
+<style>
+  /* Inter Font Implementation for clean modern layout styling */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  .engine-selector-section {
+    background-color: #f0f2f5;
+    padding: 50px 15px;
+    font-family: 'Arial Black', Gadget, sans-serif;
+  }
+  .page-width-padding {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .section-main-title {
+    text-align: center;
+    font-size: 32px;
+    color: #0b2c6b;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+  }
+  
+  /* Tabs Grid UI Layout */
+  .engine-tabs-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 25px;
+  }
+  .tab-btn {
+    flex: 1;
+    min-width: 180px;
+    background-color: #0b2c6b;
+    color: #ffffff;
+    border: 2px solid #cc0000;
+    padding: 14px 10px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+    text-align: center;
+  }
+  .tab-btn.active, .tab-btn:hover {
+    background-color: #cc0000;
+    border-color: #cc0000;
+  }
+
+  /* Red Highlighted Active Tracker Banner */
+  .active-tab-banner-wrapper {
+    margin-bottom: 20px;
+  }
+  .active-tab-title-banner {
+    display: none;
+    background-color: #1a3d7c;
+    color: #ffffff;
+    text-align: center;
+    padding: 16px;
+    font-size: 22px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+  .active-tab-title-banner.show-banner {
+    display: block;
+  }
+
+  /* Accordions Panel Layout */
+  .tab-panel-content {
+    display: none;
+  }
+  .tab-panel-content.active-panel {
+    display: block;
+  }
+  
+  /* Default State: Transparent & Clean Borders */
+  .accordion-card-item {
+    border: 2px solid #0b2c6b;
+    background-color: transparent;
+    margin-bottom: 12px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .accordion-trigger-header {
+    width: 100%;
+    background-color: transparent;
+    color: #0b2c6b;
+    text-align: left;
+    padding: 16px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  /* Precise Absolute Sizing for Icon Box to prevent layout shifts */
+  .acc-icon-state {
+    font-size: 26px;
+    line-height: 1;
+    font-family: monospace, sans-serif;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  /* Active Open State UI Layout */
+  .accordion-card-item.is-open {
+    background-color: #ffffff; 
+  }
+  .accordion-card-item.is-open .accordion-trigger-header {
+    background-color: #0b2c6b;
+    color: #ffffff;
+  }
+  
+  /* Advanced Pure CSS Smooth Height Dropdowns via Grid Interpolation */
+  .accordion-panel-transition-wrapper {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .accordion-card-item.is-open .accordion-panel-transition-wrapper {
+    grid-template-rows: 1fr;
+  }
+  
+  .accordion-panel-body {
+    overflow: hidden;
+    padding: 0 20px;
+    transition: padding 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .accordion-card-item.is-open .accordion-panel-body {
+    padding: 30px 20px;
+  }
+  
+  /* Inner Grid Elements Layout with Inter Font integration */
+  .accordion-inner-grid-content {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    text-align: center;
+    margin-bottom: 25px;
+    align-items: start;
+  }
+  .box-label-title {
+    display: block;
+    font-size:16px;
+    color: #000000;
+    font-weight: bold !important;
+    margin-bottom: 0px;
+    font-family: 'Inter', sans-serif !important;
+  }
+  .box-value-text, 
+  .box-value-text-rt, 
+  .box-value-text-rt p, 
+  .box-value-text-rt a {
+    font-size: 15px;
+    color: #444444;
+    margin: 0;
+    font-weight: 400;
+    font-family: 'Inter', sans-serif !important;
+  }
+  .box-value-text-rt a {
+    color: #0000ff;
+    text-decoration: underline;
+    font-weight: 500;
+  }
+
+  /* Footer Action Button Specs */
+  .accordion-action-footer {
+    text-align: center;
+  }
+  .accordion-cta-button {
+    display: inline-block;
+    background-color: #cc0000;
+    color: #ffffff;
+    padding: 14px 40px;
+    font-size: 15px;
+    font-weight: 600 !important;
+    text-decoration: none;
+    text-transform: capitalize;
+    transition: background-color 0.2s ease;
+    font-family: 'Inter', sans-serif !important;
+  }
+  .accordion-cta-button:hover {
+    background-color: #b30000;
+  }
+  
+  .no-accordion-notice {
+    text-align: center; 
+    color: #666; 
+    font-family: 'Inter', sans-serif !important; 
+    padding: 20px;
+  }
+
+  /* Responsive Fluid Scaling Media Queries */
+  @media screen and (max-width: 767px) {
+    .engine-tabs-nav {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .tab-btn {
+      min-width: unset;
+      font-size: 14px;
+      padding: 12px 5px;
+    }
+    .accordion-inner-grid-content {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    .accordion-trigger-header {
+      font-size: 16px;
+      padding: 14px 15px;
+    }
+    .acc-icon-state {
+      font-size: 22px;
+      width: 20px;
+      height: 20px;
+    }
+    .active-tab-title-banner {
+      font-size: 18px;
+      padding: 12px;
+    }
+    .accordion-card-item.is-open .accordion-panel-body {
+      padding: 25px 15px;
+    }
+    .accordion-cta-button {
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const sectionContainer = document.querySelector(".section-{{ section.id }}");
+    if (!sectionContainer) return;
+
+    // 1. Core Tab Switching Logic
+    const tabButtons = sectionContainer.querySelectorAll(".tab-btn");
+    const tabPanels = sectionContainer.querySelectorAll(".tab-panel-content");
+    const bannerElements = sectionContainer.querySelectorAll(".active-tab-title-banner");
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener("click", function () {
+        const targetId = this.getAttribute("data-tab-target");
+        const cleanId = targetId.replace(`tab-{{ section.id }}-`, "");
+
+        tabButtons.forEach(b => b.classList.remove("active"));
+        tabPanels.forEach(p => p.classList.remove("active-panel"));
+        bannerElements.forEach(banner => banner.classList.remove("show-banner"));
+
+        this.classList.add("active");
+        
+        const activePanel = sectionContainer.querySelector(`#${targetId}`);
+        if(activePanel) {
+          activePanel.classList.add("active-panel");
+          // Reset other tabs items when shifting views
+          activePanel.querySelectorAll('.accordion-card-item').forEach(card => {
+            card.classList.remove('is-open');
+            card.querySelector('.accordion-trigger-header').setAttribute('aria-expanded', 'false');
+            card.querySelector('.acc-icon-state').textContent = '+';
+          });
+        }
+
+        const activeBanner = sectionContainer.querySelector(`#banner-tab-{{ section.id }}-${cleanId}`);
+        if(activeBanner) activeBanner.classList.add("show-banner");
+      });
+    });
+
+    // 2. High-Performance Smooth Accordion Toggle Event Handles
+    const accordionHeaders = sectionContainer.querySelectorAll(".accordion-trigger-header");
+    accordionHeaders.forEach(header => {
+      header.addEventListener("click", function () {
+        const parentCard = this.closest(".accordion-card-item");
+        const iconState = this.querySelector(".acc-icon-state");
+        const isOpen = parentCard.classList.contains("is-open");
+
+        if (isOpen) {
+          parentCard.classList.remove("is-open");
+          this.setAttribute("aria-expanded", "false");
+          if (iconState) iconState.textContent = "+";
+        } else {
+          parentCard.classList.add("is-open");
+          this.setAttribute("aria-expanded", "true");
+          if (iconState) iconState.textContent = "—";
+        }
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Engine Tabs Accordion",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Main Title",
+      "default": "SELECT YOUR ENGINE"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab_header",
+      "name": "Tab Navigation Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Tab Name Button",
+          "default": "BF2 - BF8"
+        },
+        {
+          "type": "text",
+          "id": "tab_id",
+          "label": "Unique Tab ID Key",
+          "default": "tab1",
+          "info": "Important: Yahan unique short ID likhein (e.g., 'tab1', 'tab2'). Isi ID ke zarye accordions is tab se connect honge."
+        }
+      ]
+    },
+    {
+      "type": "accordion_item",
+      "name": "Accordion Content Card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "target_tab_id",
+          "label": "Link to Tab ID",
+          "default": "tab1",
+          "info": "Wahi exact Unique Tab ID likhein jis tab ke andar aap ye particular accordion card dikhana chahte hain."
+        },
+        {
+          "type": "text",
+          "id": "accordion_title",
+          "label": "Accordion Row Title",
+          "default": "BF5A"
+        },
+        {
+          "type": "header",
+          "content": "Box Content 1 Column"
+        },
+        {
+          "type": "text",
+          "id": "box1_title",
+          "label": "Box 1 - Headline Title",
+          "default": "Gear Lube Capacity:"
+        },
+        {
+          "type": "text",
+          "id": "box1_text",
+          "label": "Box 1 - Value Description Text",
+          "default": "4.2 oz."
+        },
+        {
+          "type": "header",
+          "content": "Box Content 2 Column"
+        },
+        {
+          "type": "text",
+          "id": "box2_title",
+          "label": "Box 2 - Headline Title",
+          "default": "Notes:"
+        },
+        {
+          "type": "text",
+          "id": "box2_text",
+          "label": "Box 2 - Value Description Text",
+          "default": "Check every 100 hours"
+        },
+        {
+          "type": "header",
+          "content": "Box Content 3 Column"
+        },
+        {
+          "type": "text",
+          "id": "box3_title",
+          "label": "Box 3 - Headline Title",
+          "default": "Recommended Gear Lube:"
+        },
+        {
+          "type": "richtext",
+          "id": "box3_text",
+          "label": "Box 3 - Value/Link Description Text",
+          "default": "<p><a href=\"#\">80W-90 Marine Gear Lube</a></p>"
+        },
+        {
+          "type": "header",
+          "content": "Footer CTA Button Settings"
+        },
+        {
+          "type": "text",
+          "id": "btn_text",
+          "label": "Action Button Label Text",
+          "default": "Shop Yamaha Outboard Parts"
+        },
+        {
+          "type": "url",
+          "id": "btn_link",
+          "label": "Action Button Target URL Redirect"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Engine Tabs Accordion",
+      "blocks": [
+        { "type": "tab_header", "settings": { "title": "BF2 - BF8", "tab_id": "tab1" } },
+        { "type": "tab_header", "settings": { "title": "BF9.9 - BF15", "tab_id": "tab2" } },
+        { "type": "accordion_item", "settings": { "target_tab_id": "tab1", "accordion_title": "BF5A" } },
+        { "type": "accordion_item", "settings": { "target_tab_id": "tab1", "accordion_title": "BF8A" } },
+        { "type": "accordion_item", "settings": { "target_tab_id": "tab2", "accordion_title": "BF9.9A" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
+{% comment %} 
+
+<div class="engine-selector-section section-{{ section.id }}">
+  <div class="page-width-padding">
+    
+    {% if section.settings.section_title != blank %}
+      <h2 class="section-main-title">{{ section.settings.section_title }}</h2>
+    {% endif %}
+
+    <div class="engine-tabs-nav">
+      {% assign tab_index = 0 %}
+      {% for block in section.blocks %}
+        {% if block.type == 'tab_header' %}
+          <button type="button" 
+                  class="tab-btn {% if tab_index == 0 %}active{% endif %}" 
+                  data-tab-target="tab-{{ section.id }}-{{ block.settings.tab_id | handleize }}">
+            {{ block.settings.title }}
+          </button>
+          {% assign tab_index = tab_index | plus: 1 %}
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="active-tab-banner-wrapper">
+      {% assign tab_index_banner = 0 %}
+      {% for block in section.blocks %}
+        {% if block.type == 'tab_header' %}
+          <div id="banner-tab-{{ section.id }}-{{ block.settings.tab_id | handleize }}" 
+               class="active-tab-title-banner {% if tab_index_banner == 0 %}show-banner{% endif %}">
+            {{ block.settings.title }}
+          </div>
+          {% assign tab_index_banner = tab_index_banner | plus: 1 %}
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="engine-tabs-content-container">
+      {% assign tab_content_index = 0 %}
+      {% for block_tab in section.blocks %}
+        {% if block_tab.type == 'tab_header' %}
+          
+          <div id="tab-{{ section.id }}-{{ block_tab.settings.tab_id | handleize }}" 
+               class="tab-panel-content {% if tab_content_index == 0 %}active-panel{% endif %}">
+            
+            {% assign has_accordions = false %}
+            
+            {% for block_acc in section.blocks %}
+              {% if block_acc.type == 'accordion_item' %}
+                {% if block_acc.settings.target_tab_id == block_tab.settings.tab_id %}
+                  {% assign has_accordions = true %}
+                  
+                  <div class="accordion-card-item">
+                    <button type="button" class="accordion-trigger-header" aria-expanded="false">
+                      <span class="acc-icon-state">+</span>
+                      <span class="acc-title-text">{{ block_acc.settings.accordion_title }}</span>
+                    </button>
+                    
+                    <div class="accordion-panel-transition-wrapper">
+                      <div class="accordion-panel-body">
+                        <div class="accordion-inner-grid-content">
+                          
+                          <div class="info-content-box">
+                            <span class="box-label-title">{{ block_acc.settings.box1_title }}</span>
+                            <p class="box-value-text">{{ block_acc.settings.box1_text }}</p>
+                          </div>
+
+                          <div class="info-content-box">
+                            <span class="box-label-title">{{ block_acc.settings.box2_title }}</span>
+                            <p class="box-value-text">{{ block_acc.settings.box2_text }}</p>
+                          </div>
+
+                          <div class="info-content-box box-with-richtext">
+                            <span class="box-label-title">{{ block_acc.settings.box3_title }}</span>
+                            <div class="box-value-text-rt">{{ block_acc.settings.box3_text }}</div>
+                          </div>
+
+                        </div>
+
+                        {% if block_acc.settings.btn_text != blank %}
+                          <div class="accordion-action-footer">
+                            <a href="{{ block_acc.settings.btn_link }}" class="accordion-cta-button">
+                              {{ block_acc.settings.btn_text }}
+                            </a>
+                          </div>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+
+            {% if has_accordions == false %}
+              <p class="no-accordion-notice">No engines added to this tab yet. Please add an Accordion Content Card block and link it to this Tab ID.</p>
+            {% endif %}
+
+          </div>
+          {% assign tab_content_index = tab_content_index | plus: 1 %}
+        {% endif %}
+      {% endfor %}
+    </div>
+
+  </div>
+</div>
+
+<style>
+  .engine-selector-section {
+    background-color: #f0f2f5;
+    padding: 50px 15px;
+    font-family: 'Arial Black', Gadget, sans-serif;
+  }
+  .page-width-padding {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .section-main-title {
+    text-align: center;
+    font-size: 32px;
+    color: #0b2c6b;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+  }
+  
+  /* Tabs Grid UI Layout */
+  .engine-tabs-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 25px;
+  }
+  .tab-btn {
+    flex: 1;
+    min-width: 180px;
+    background-color: #0b2c6b;
+    color: #ffffff;
+    border: 2px solid #cc0000;
+    padding: 14px 10px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+    text-align: center;
+  }
+  .tab-btn.active, .tab-btn:hover {
+    background-color: #cc0000;
+    border-color: #cc0000;
+  }
+
+  /* Red Highlighted Active Tracker Banner */
+  .active-tab-banner-wrapper {
+    margin-bottom: 20px;
+  }
+  .active-tab-title-banner {
+    display: none;
+    background-color: #1a3d7c;
+    color: #ffffff;
+    text-align: center;
+    padding: 16px;
+    font-size: 22px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+  .active-tab-title-banner.show-banner {
+    display: block;
+  }
+
+  /* Accordions Panel Layout */
+  .tab-panel-content {
+    display: none;
+  }
+  .tab-panel-content.active-panel {
+    display: block;
+  }
+  
+  /* Default State: Transparent & Clean Borders */
+  .accordion-card-item {
+    border: 2px solid #0b2c6b;
+    background-color: transparent;
+    margin-bottom: 12px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .accordion-trigger-header {
+    width: 100%;
+    background-color: transparent;
+    color: #0b2c6b;
+    text-align: left;
+    padding: 16px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  /* Precise Absolute Sizing for Icon Box to prevent layout shifts */
+  .acc-icon-state {
+    font-size: 26px;
+    line-height: 1;
+    font-family: monospace, sans-serif;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  /* Active Open State UI Layout */
+  .accordion-card-item.is-open {
+    background-color: #ffffff; 
+  }
+  .accordion-card-item.is-open .accordion-trigger-header {
+    background-color: #0b2c6b;
+    color: #ffffff;
+  }
+  
+  /* Advanced Pure CSS Smooth Height Dropdowns via Grid Interpolation */
+  .accordion-panel-transition-wrapper {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .accordion-card-item.is-open .accordion-panel-transition-wrapper {
+    grid-template-rows: 1fr;
+  }
+  
+  .accordion-panel-body {
+    overflow: hidden;
+    padding: 0 20px;
+    transition: padding 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .accordion-card-item.is-open .accordion-panel-body {
+    padding: 30px 20px;
+  }
+  
+  /* Inner Grid Elements Layout */
+  .accordion-inner-grid-content {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    text-align: center;
+    margin-bottom: 25px;
+    align-items: start;
+  }
+  .box-label-title {
+    display: block;
+    font-size: 15px;
+    color: #000000;
+    font-weight: 500 !important;
+    margin-bottom: 0px;
+  }
+  .box-value-text, .box-value-text-rt, .box-value-text-rt p {
+    font-size: 15px;
+    color: #444444;
+    margin: 0;
+    font-weight: normal;
+    font-family: Arial, sans-serif;
+  }
+  .box-value-text-rt a {
+    color: #0000ff;
+    text-decoration: underline;
+  }
+
+  /* Footer Action Button Specs */
+  .accordion-action-footer {
+    text-align: center;
+  }
+  .accordion-cta-button {
+    display: inline-block;
+    background-color: #cc0000;
+    color: #ffffff;
+    padding: 14px 40px;
+    font-size: 15px;
+    font-weight: 500 !important;
+    text-decoration: none;
+    text-transform: capitalize;
+    transition: background-color 0.2s ease;
+  }
+  .accordion-cta-button:hover {
+    background-color: #b30000;
+  }
+  
+  .no-accordion-notice {
+    text-align: center; 
+    color: #666; 
+    font-family: Arial, sans-serif; 
+    padding: 20px;
+  }
+
+  /* Responsive Fluid Scaling Media Queries */
+  @media screen and (max-width: 767px) {
+    .engine-tabs-nav {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .tab-btn {
+      min-width: unset;
+      font-size: 14px;
+      padding: 12px 5px;
+    }
+    .accordion-inner-grid-content {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    .accordion-trigger-header {
+      font-size: 16px;
+      padding: 14px 15px;
+    }
+    .acc-icon-state {
+      font-size: 22px;
+      width: 20px;
+      height: 20px;
+    }
+    .active-tab-title-banner {
+      font-size: 18px;
+      padding: 12px;
+    }
+    .accordion-card-item.is-open .accordion-panel-body {
+      padding: 25px 15px;
+    }
+    .accordion-cta-button {
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const sectionContainer = document.querySelector(".section-{{ section.id }}");
+    if (!sectionContainer) return;
+
+    // 1. Core Tab Switching Logic
+    const tabButtons = sectionContainer.querySelectorAll(".tab-btn");
+    const tabPanels = sectionContainer.querySelectorAll(".tab-panel-content");
+    const bannerElements = sectionContainer.querySelectorAll(".active-tab-title-banner");
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener("click", function () {
+        const targetId = this.getAttribute("data-tab-target");
+        const cleanId = targetId.replace(`tab-{{ section.id }}-`, "");
+
+        tabButtons.forEach(b => b.classList.remove("active"));
+        tabPanels.forEach(p => p.classList.remove("active-panel"));
+        bannerElements.forEach(banner => banner.classList.remove("show-banner"));
+
+        this.classList.add("active");
+        
+        const activePanel = sectionContainer.querySelector(`#${targetId}`);
+        if(activePanel) {
+          activePanel.classList.add("active-panel");
+          // Reset other tabs items when shifting views
+          activePanel.querySelectorAll('.accordion-card-item').forEach(card => {
+            card.classList.remove('is-open');
+            card.querySelector('.accordion-trigger-header').setAttribute('aria-expanded', 'false');
+            card.querySelector('.acc-icon-state').textContent = '+';
+          });
+        }
+
+        const activeBanner = sectionContainer.querySelector(`#banner-tab-{{ section.id }}-${cleanId}`);
+        if(activeBanner) activeBanner.classList.add("show-banner");
+      });
+    });
+
+    // 2. High-Performance Smooth Accordion Toggle Event Handles
+    const accordionHeaders = sectionContainer.querySelectorAll(".accordion-trigger-header");
+    accordionHeaders.forEach(header => {
+      header.addEventListener("click", function () {
+        const parentCard = this.closest(".accordion-card-item");
+        const iconState = this.querySelector(".acc-icon-state");
+        const isOpen = parentCard.classList.contains("is-open");
+
+        if (isOpen) {
+          parentCard.classList.remove("is-open");
+          this.setAttribute("aria-expanded", "false");
+          if (iconState) iconState.textContent = "+";
+        } else {
+          parentCard.classList.add("is-open");
+          this.setAttribute("aria-expanded", "true");
+          if (iconState) iconState.textContent = "—";
+        }
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Engine Tabs Accordion",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Main Title",
+      "default": "SELECT YOUR ENGINE"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab_header",
+      "name": "Tab Navigation Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Tab Name Button",
+          "default": "BF2 - BF8"
+        },
+        {
+          "type": "text",
+          "id": "tab_id",
+          "label": "Unique Tab ID Key",
+          "default": "tab1",
+          "info": "Important: Yahan unique short ID likhein (e.g., 'tab1', 'tab2'). Isi ID ke zarye accordions is tab se connect honge."
+        }
+      ]
+    },
+    {
+      "type": "accordion_item",
+      "name": "Accordion Content Card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "target_tab_id",
+          "label": "Link to Tab ID",
+          "default": "tab1",
+          "info": "Wahi exact Unique Tab ID likhein jis tab ke andar aap ye particular accordion card dikhana chahte hain."
+        },
+        {
+          "type": "text",
+          "id": "accordion_title",
+          "label": "Accordion Row Title",
+          "default": "BF5A"
+        },
+        {
+          "type": "header",
+          "content": "Box Content 1 Column"
+        },
+        {
+          "type": "text",
+          "id": "box1_title",
+          "label": "Box 1 - Headline Title",
+          "default": "Gear Lube Capacity:"
+        },
+        {
+          "type": "text",
+          "id": "box1_text",
+          "label": "Box 1 - Value Description Text",
+          "default": "4.2 oz."
+        },
+        {
+          "type": "header",
+          "content": "Box Content 2 Column"
+        },
+        {
+          "type": "text",
+          "id": "box2_title",
+          "label": "Box 2 - Headline Title",
+          "default": "Notes:"
+        },
+        {
+          "type": "text",
+          "id": "box2_text",
+          "label": "Box 2 - Value Description Text",
+          "default": "Check every 100 hours"
+        },
+        {
+          "type": "header",
+          "content": "Box Content 3 Column"
+        },
+        {
+          "type": "text",
+          "id": "box3_title",
+          "label": "Box 3 - Headline Title",
+          "default": "Recommended Gear Lube:"
+        },
+        {
+          "type": "richtext",
+          "id": "box3_text",
+          "label": "Box 3 - Value/Link Description Text",
+          "default": "<p><a href=\"#\">80W-90 Marine Gear Lube</a></p>"
+        },
+        {
+          "type": "header",
+          "content": "Footer CTA Button Settings"
+        },
+        {
+          "type": "text",
+          "id": "btn_text",
+          "label": "Action Button Label Text",
+          "default": "Shop Yamaha Outboard Parts"
+        },
+        {
+          "type": "url",
+          "id": "btn_link",
+          "label": "Action Button Target URL Redirect"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Engine Tabs Accordion",
+      "blocks": [
+        { "type": "tab_header", "settings": { "title": "BF2 - BF8", "tab_id": "tab1" } },
+        { "type": "tab_header", "settings": { "title": "BF9.9 - BF15", "tab_id": "tab2" } },
+        { "type": "accordion_item", "settings": { "target_tab_id": "tab1", "accordion_title": "BF5A" } },
+        { "type": "accordion_item", "settings": { "target_tab_id": "tab1", "accordion_title": "BF8A" } },
+        { "type": "accordion_item", "settings": { "target_tab_id": "tab2", "accordion_title": "BF9.9A" } }
+      ]
+    }
+  ]
+}
+{% endschema %} {% endcomment %}

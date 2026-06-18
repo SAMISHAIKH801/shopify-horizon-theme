@@ -1,0 +1,420 @@
+<section class="product-carousel-section" id="carousel-{{ section.id }}" 
+  style="
+    --primary-green: {{ section.settings.primary_color }}; 
+    --accent-orange: {{ section.settings.arrow_color }};
+    --desktop-view: {{ section.settings.desktop_cards }};
+    --mobile-view: {{ section.settings.mobile_cards }};
+  ">
+  
+  <div class="carousel-container">
+    
+    {% if section.settings.title != blank %}
+      <div class="section-header-wrap">
+        <h2 class="carousel-section-heading">{{ section.settings.title }}</h2>
+      </div>
+    {% endif %}
+    
+    <button class="carousel-arrow prev-arrow" aria-label="Previous slide" type="button">
+      <svg viewBox="0 0 24 24" width="24" height="24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+    </button>
+    <button class="carousel-arrow next-arrow" aria-label="Next slide" type="button">
+      <svg viewBox="0 0 24 24" width="24" height="24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+    </button>
+
+    <div class="carousel-track-wrapper">
+      <div class="carousel-track">
+        
+        {%- assign selected_collection = section.settings.collection -%}
+        
+        {% if selected_collection != blank and collections[selected_collection].products_count > 0 %}
+          {% for product in collections[selected_collection].products limit: section.settings.products_to_show %}
+            <div class="product-card">
+              <div class="card-inner">
+                
+                <div class="discount-badge">
+                  {% if section.settings.badge_text != blank %}
+                    {{ section.settings.badge_text }}
+                  {% else %}
+                    UP TO 10% OFF
+                  {% endif %}
+                </div>
+                
+                <h3 class="product-title">{{ product.title | upcase }}</h3>
+                
+                <div class="product-image-wrapper">
+                  {% if product.featured_image != blank %}
+                    <img 
+                      src="{{ product.featured_image | img_url: '250x250', scale: 2 }}" 
+                      srcset="{{ product.featured_image | img_url: '200x200' }} 200w, {{ product.featured_image | img_url: '350x350' }} 350w"
+                      sizes="(max-width: 767px) 50vw, 25vw"
+                      alt="{{ product.title | escape }}" 
+                      class="product-image" 
+                      loading="lazy"
+                      width="200"
+                      height="200">
+                  {% else %}
+                    {{ 'product-1' | placeholder_svg_tag: 'product-image placeholder-svg' }}
+                  {% endif %}
+                </div>
+                
+                <a href="{{ product.url }}" class="shop-now-btn">
+                  {% if section.settings.button_text != blank %}
+                    {{ section.settings.button_text }}
+                  {% else %}
+                    Shop Now
+                  {% endif %}
+                </a>
+                
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          {% for i in (1..6) %}
+            <div class="product-card">
+              <div class="card-inner">
+                <div class="discount-badge">UP TO 10% OFF</div>
+                <h3 class="product-title">SAMPLE YAMAHA KIT {{ i }}</h3>
+                <div class="product-image-wrapper">
+                  {{ 'product-' | append: i | placeholder_svg_tag: 'product-image placeholder-svg' }}
+                </div>
+                <a href="#" class="shop-now-btn">Shop Now</a>
+              </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% style %}
+:root {
+  --text-dark: #0A2540;
+  --border-light: #E2E8F0;
+  --font-size-base: 16px;
+}
+
+.product-carousel-section {
+  padding: 40px 0;
+  background-color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow: hidden;
+}
+
+.section-header-wrap {
+  max-width: 1280px;
+  margin: 0 auto 20px auto;
+  padding: 0 20px;
+}
+
+.carousel-section-heading {
+  font-size: 22px;
+  color: var(--text-dark);
+  margin: 0;
+  font-weight: 700;
+}
+
+.carousel-container {
+  position: relative;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 40px; /* Safe space for floating arrows */
+}
+
+.carousel-track-wrapper {
+  overflow: hidden;
+  width: 100%;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform;
+  gap: 8px !important;
+}
+
+/* --- Dynamic Responsive Columns Logic --- */
+.product-card {
+  flex: 0 0 calc(100% / var(--mobile-view));
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .product-card {
+    flex: 0 0 calc(100% / 3); /* Tablet default */
+  }
+}
+
+@media (min-width: 992px) {
+  .product-card {
+    flex: 0 0 calc(100% / var(--desktop-view));
+  }
+}
+
+.card-inner {
+  border: 1px solid var(--border-light);
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  box-sizing: border-box;
+      padding: 5px;
+}
+
+/* Reduced vertical padding as requested */
+.discount-badge {
+  background-color: var(--primary-green);
+  color: #ffffff;
+  font-size: clamp(13px, 2vw, var(--font-size-base));
+  font-weight: 700;
+  text-align: center;
+  padding: 1px 8px; 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-title {
+  font-size: clamp(14px, 1.8vw, var(--font-size-base));
+  color: var(--text-dark);
+  font-weight: 800;
+  text-align: center;
+  margin: 15px 0 10px 0;
+  padding: 0 10px;
+  letter-spacing: 0.1px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;  
+  overflow: hidden;
+  min-height: 36px;
+}
+
+.product-image-wrapper {
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 160px;
+  max-height: 220px;
+}
+
+.product-image {
+  max-width: 100%;
+  height: auto;
+  max-height: 160px;
+  object-fit: cover;
+}
+
+.placeholder-svg {
+  background: #f4f4f4;
+  width: 100%;
+  height: 150px;
+}
+
+/* Reduced vertical padding as requested */
+.shop-now-btn {
+  background-color: var(--primary-green);
+  color: #ffffff;
+  text-decoration: none;
+  font-size: clamp(14px, 1.8vw, var(--font-size-base));
+  font-weight: 700;
+  text-align: center;
+  padding: 6px 10px; 
+  margin-top: auto;
+  transition: opacity 0.2s ease;
+}
+
+.shop-now-btn:hover {
+  opacity: 0.9;
+}
+
+/* Floating Arrows Overlap */
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  background-color: var(--accent-orange);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  transition: opacity 0.2s ease;
+  padding: 0;
+}
+
+.carousel-arrow:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.carousel-arrow svg {
+  width: 17px;
+  height: 17px;
+  fill: #ffffff;
+}
+
+.prev-arrow { left: 55px; }
+.next-arrow { right: 55px; }
+
+@media (max-width: 480px) {
+  .carousel-container { padding: 0 10px; }
+  .prev-arrow { left: 20px; }
+  .next-arrow { right: 20px; }
+  .carousel-track {
+  gap: 2px !important;
+}
+}
+{% endstyle %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const container = document.querySelector('#carousel-{{ section.id }}');
+  if(!container) return;
+
+  const track = container.querySelector('.carousel-track');
+  const prevBtn = container.querySelector('.prev-arrow');
+  const nextBtn = container.querySelector('.next-arrow');
+  
+  let currentIndex = 0;
+
+  function getCardsPerView() {
+    const width = window.innerWidth;
+    if (width >= 992) return parseInt(getComputedStyle(container).getPropertyValue('--desktop-view')) || 4;
+    if (width >= 768) return 3;
+    return parseInt(getComputedStyle(container).getPropertyValue('--mobile-view')) || 1;
+  }
+
+  function updateCarousel() {
+    const cards = track.querySelectorAll('.product-card');
+    if (cards.length === 0) return;
+    
+    const cardsPerView = getCardsPerView();
+    const maxIndex = Math.max(0, cards.length - cardsPerView);
+    
+    if (currentIndex > maxIndex) currentIndex = maxIndex;
+    if (currentIndex < 0) currentIndex = 0;
+
+    // Shift exactly by 1 card slot size using clean CSS percentage math
+    const stepPercentage = 100 / cardsPerView;
+    track.style.transform = `translateX(-${currentIndex * stepPercentage}%)`;
+
+    // Arrow states toggle
+    prevBtn.disabled = (currentIndex === 0);
+    nextBtn.disabled = (currentIndex >= maxIndex);
+  }
+
+  nextBtn.addEventListener('click', function() {
+    const cards = track.querySelectorAll('.product-card');
+    if (currentIndex < cards.length - getCardsPerView()) {
+      currentIndex++;
+      updateCarousel();
+    }
+  });
+
+  prevBtn.addEventListener('click', function() {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateCarousel();
+    }
+  });
+
+  // Performance safe resize handler
+  let resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(updateCarousel, 50);
+  });
+
+  // Initial trigger
+  updateCarousel();
+});
+</script>
+
+{% schema %}
+{
+  "name": "Custom Product Carousel",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Heading",
+      "default": "Yamaha Kits Collection"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Select Category/Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "default": 10,
+      "label": "Maximum Products to Fetch"
+    },
+    {
+      "type": "select",
+      "id": "desktop_cards",
+      "label": "Cards to Show on Desktop",
+      "options": [
+        { "value": "4", "label": "4 Cards" },
+        { "value": "5", "label": "5 Cards" },
+        { "value": "6", "label": "6 Cards" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "select",
+      "id": "mobile_cards",
+      "label": "Cards to Show on Mobile",
+      "options": [
+        { "value": "1", "label": "1 Card" },
+        { "value": "2", "label": "2 Cards" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Top Badge Text",
+      "default": "UP TO 10% OFF"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "color",
+      "id": "primary_color",
+      "label": "Primary Theme Color (Badge/Btn)",
+      "default": "#00A074"
+    },
+    {
+      "type": "color",
+      "id": "arrow_color",
+      "label": "Arrow Button Color",
+      "default": "#E98926"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Product Carousel",
+      "category": "Products"
+    }
+  ]
+}
+{% endschema %}

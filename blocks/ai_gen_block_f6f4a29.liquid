@@ -1,0 +1,1537 @@
+{% doc %}
+  @prompt
+    Create a complete custom marine store header section for Shopify with ALL of the following features:
+    
+    DESKTOP LAYOUT:
+    Row 1: Logo (left) | Predictive search bar (center) | Shop by Engine gold button | Account icon | Cart icon
+    Row 2: Full-width mega menu nav bar
+    Width setting: toggle between page-width and full-width
+    
+    SHOP BY ENGINE POPUP:
+    Click button → modal opens
+    Left side: uploadable image
+    Right side: multiple dropdown fields (merchant adds field labels + options in settings)
+    Gold Search button at bottom
+    
+    ACCOUNT ICON HOVER DROPDOWN:
+    Hover account icon → dropdown menu appears
+    Merchant configures menu items (label + URL) in theme settings
+    Items like: Sign In, Create Account, Order Status, Rewards, etc.
+    
+    MEGA MENU (full viewport width):
+    Hover parent nav item → full-width dropdown opens
+    Left column: sub-category text links with right arrow (e.g. Outboard >, WaveRunner >)
+    Right grid: 5 items per row
+    Smart detection: if child URL contains /products/ → product card (image, title, price); else → text link
+    Menu items pulled from Shopify navigation linklist (merchant selects menu in settings)
+    Proper z-index above all content
+    
+    MOBILE LAYOUT:
+    Top bar: Logo (left) | Account icon | Cart icon | Hamburger (right)
+    Search bar below top bar
+    Hamburger → slide-in drawer from LEFT
+    Drawer header: logo + account + cart + X close
+    Drawer body: search bar, Shop by Engine gold button, menu items list
+    Each parent with children shows right arrow >
+    Tapping parent → slides to sub-menu panel with Back button + parent title
+    Sub-menu: product URLs → 2-column product card grid; other URLs → text links
+    
+    CART DRAWER:
+    Cart icon → slide-in drawer from right
+    Shows cart items (image, title, qty controls, price), subtotal, Checkout btn, View Cart link
+    AUTO-OPEN: intercept add-to-cart form submit events, fetch cart via AJAX, auto-open drawer
+    Cart icon shows live item count badge
+    
+    DESIGN:
+    Dark navy #0a1628 background, white text, gold #f5a623 accents
+    Sticky header on scroll
+    All colors, labels, menu selections configurable in theme editor settings
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .marine-header-{{ ai_gen_id }} {
+    display: block;
+    background-color: {{ block.settings.header_bg_color }};
+    color: {{ block.settings.header_text_color }};
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+  }
+
+  .marine-header-container-{{ ai_gen_id }} {
+    {% if block.settings.header_width == 'page-width' %}
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    {% else %}
+      width: 100%;
+      padding: 0 20px;
+    {% endif %}
+  }
+
+  .marine-header-row1-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+    gap: 20px;
+  }
+
+  .marine-header-logo-{{ ai_gen_id }} {
+    flex-shrink: 0;
+  }
+
+  .marine-header-logo-{{ ai_gen_id }} img {
+    max-height: 50px;
+    width: auto;
+  }
+
+  .marine-header-search-{{ ai_gen_id }} {
+    flex-grow: 1;
+    max-width: 500px;
+  }
+
+  .marine-header-search-form-{{ ai_gen_id }} {
+    position: relative;
+  }
+
+  .marine-header-search-input-{{ ai_gen_id }} {
+    width: 100%;
+    padding: 12px 40px 12px 16px;
+    border: 1px solid {{ block.settings.search_border_color }};
+    border-radius: 8px;
+    background-color: {{ block.settings.search_bg_color }};
+    color: {{ block.settings.header_text_color }};
+    font-size: 14px;
+  }
+
+  .marine-header-search-icon-{{ ai_gen_id }} {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: {{ block.settings.header_text_color }};
+  }
+
+  .marine-header-actions-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .marine-header-engine-btn-{{ ai_gen_id }} {
+    background-color: {{ block.settings.gold_button_color }};
+    color: {{ block.settings.gold_button_text_color }};
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .marine-header-engine-btn-{{ ai_gen_id }}:hover {
+    opacity: 0.9;
+  }
+
+  .marine-header-icon-btn-{{ ai_gen_id }} {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: {{ block.settings.header_text_color }};
+    position: relative;
+    padding: 8px;
+  }
+
+  .marine-header-icon-btn-{{ ai_gen_id }} svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .marine-header-cart-count-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: {{ block.settings.gold_button_color }};
+    color: {{ block.settings.gold_button_text_color }};
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+  }
+
+  .marine-header-account-dropdown-{{ ai_gen_id }} {
+    position: relative;
+  }
+
+  .marine-header-account-menu-{{ ai_gen_id }} {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: {{ block.settings.dropdown_bg_color }};
+    border: 1px solid {{ block.settings.dropdown_border_color }};
+    border-radius: 8px;
+    min-width: 200px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 100;
+    margin-top: 8px;
+  }
+
+  .marine-header-account-dropdown-{{ ai_gen_id }}:hover .marine-header-account-menu-{{ ai_gen_id }} {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .marine-header-account-menu-{{ ai_gen_id }} a {
+    display: block;
+    padding: 12px 16px;
+    color: {{ block.settings.dropdown_text_color }};
+    text-decoration: none;
+    font-size: 14px;
+  }
+
+  .marine-header-account-menu-{{ ai_gen_id }} a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .marine-header-row2-{{ ai_gen_id }} {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .marine-header-nav-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    padding: 15px 0;
+  }
+
+  .marine-header-nav-item-{{ ai_gen_id }} {
+    position: relative;
+  }
+
+  .marine-header-nav-link-{{ ai_gen_id }} {
+    color: {{ block.settings.header_text_color }};
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 8px 0;
+    display: block;
+  }
+
+  .marine-header-nav-link-{{ ai_gen_id }}:hover {
+    color: {{ block.settings.gold_button_color }};
+  }
+
+  .marine-header-megamenu-{{ ai_gen_id }} {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    background-color: {{ block.settings.megamenu_bg_color }};
+    border-top: 1px solid {{ block.settings.dropdown_border_color }};
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 999;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+  }
+
+  .marine-header-nav-item-{{ ai_gen_id }}:hover .marine-header-megamenu-{{ ai_gen_id }} {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .marine-header-megamenu-inner-{{ ai_gen_id }} {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 20px;
+    display: flex;
+    gap: 40px;
+  }
+
+  .marine-header-megamenu-left-{{ ai_gen_id }} {
+    min-width: 200px;
+  }
+
+  .marine-header-megamenu-category-{{ ai_gen_id }} {
+    display: block;
+    color: {{ block.settings.megamenu_text_color }};
+    text-decoration: none;
+    padding: 10px 0;
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .marine-header-megamenu-category-{{ ai_gen_id }}:hover {
+    color: {{ block.settings.gold_button_color }};
+  }
+
+  .marine-header-megamenu-category-{{ ai_gen_id }}::after {
+    content: '›';
+    margin-left: 8px;
+    font-size: 18px;
+  }
+
+  .marine-header-megamenu-right-{{ ai_gen_id }} {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+  }
+
+  .marine-header-megamenu-product-{{ ai_gen_id }} {
+    text-decoration: none;
+    color: {{ block.settings.megamenu_text_color }};
+  }
+
+  .marine-header-megamenu-product-img-{{ ai_gen_id }} {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+
+  .marine-header-megamenu-product-title-{{ ai_gen_id }} {
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+
+  .marine-header-megamenu-product-price-{{ ai_gen_id }} {
+    font-size: 14px;
+    font-weight: 600;
+    color: {{ block.settings.gold_button_color }};
+  }
+
+  .marine-header-megamenu-link-{{ ai_gen_id }} {
+    color: {{ block.settings.megamenu_text_color }};
+    text-decoration: none;
+    font-size: 14px;
+    padding: 8px 0;
+    display: block;
+  }
+
+  .marine-header-megamenu-link-{{ ai_gen_id }}:hover {
+    color: {{ block.settings.gold_button_color }};
+  }
+
+  .marine-header-modal-{{ ai_gen_id }} {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .marine-header-modal-{{ ai_gen_id }}.active {
+    display: flex;
+  }
+
+  .marine-header-modal-content-{{ ai_gen_id }} {
+    background-color: {{ block.settings.modal_bg_color }};
+    border-radius: 12px;
+    max-width: 800px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .marine-header-modal-close-{{ ai_gen_id }} {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: {{ block.settings.modal_text_color }};
+    font-size: 24px;
+    padding: 5px;
+  }
+
+  .marine-header-modal-body-{{ ai_gen_id }} {
+    display: flex;
+    gap: 30px;
+    padding: 40px;
+  }
+
+  .marine-header-modal-left-{{ ai_gen_id }} {
+    flex: 1;
+  }
+
+  .marine-header-modal-left-{{ ai_gen_id }} img {
+    width: 100%;
+    border-radius: 8px;
+  }
+
+  .marine-header-modal-right-{{ ai_gen_id }} {
+    flex: 1;
+  }
+
+  .marine-header-modal-title-{{ ai_gen_id }} {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: {{ block.settings.modal_text_color }};
+  }
+
+  .marine-header-modal-field-{{ ai_gen_id }} {
+    margin-bottom: 15px;
+  }
+
+  .marine-header-modal-label-{{ ai_gen_id }} {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: {{ block.settings.modal_text_color }};
+  }
+
+  .marine-header-modal-select-{{ ai_gen_id }} {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid {{ block.settings.dropdown_border_color }};
+    border-radius: 6px;
+    background-color: {{ block.settings.search_bg_color }};
+    color: {{ block.settings.modal_text_color }};
+    font-size: 14px;
+  }
+
+  .marine-header-modal-search-btn-{{ ai_gen_id }} {
+    width: 100%;
+    background-color: {{ block.settings.gold_button_color }};
+    color: {{ block.settings.gold_button_text_color }};
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 16px;
+    margin-top: 20px;
+  }
+
+  .marine-header-drawer-{{ ai_gen_id }} {
+    position: fixed;
+    top: 0;
+    height: 100%;
+    background-color: {{ block.settings.drawer_bg_color }};
+    z-index: 2000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    width: 320px;
+    overflow-y: auto;
+  }
+
+  .marine-header-drawer-{{ ai_gen_id }}.active {
+    transform: translateX(0);
+  }
+
+  .marine-header-drawer-{{ ai_gen_id }}.right {
+    left: auto;
+    right: 0;
+    transform: translateX(100%);
+  }
+
+  .marine-header-drawer-{{ ai_gen_id }}.right.active {
+    transform: translateX(0);
+  }
+
+  .marine-header-drawer-overlay-{{ ai_gen_id }} {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1999;
+    display: none;
+  }
+
+  .marine-header-drawer-overlay-{{ ai_gen_id }}.active {
+    display: block;
+  }
+
+  .marine-header-drawer-header-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    border-bottom: 1px solid {{ block.settings.dropdown_border_color }};
+  }
+
+  .marine-header-drawer-close-{{ ai_gen_id }} {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: {{ block.settings.drawer_text_color }};
+    font-size: 24px;
+    padding: 5px;
+  }
+
+  .marine-header-drawer-body-{{ ai_gen_id }} {
+    padding: 20px;
+  }
+
+  .marine-header-mobile-menu-{{ ai_gen_id }} {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .marine-header-mobile-menu-item-{{ ai_gen_id }} {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .marine-header-mobile-menu-link-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+    color: {{ block.settings.drawer_text_color }};
+    text-decoration: none;
+    font-size: 15px;
+  }
+
+  .marine-header-mobile-submenu-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: {{ block.settings.drawer_bg_color }};
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+  }
+
+  .marine-header-mobile-submenu-{{ ai_gen_id }}.active {
+    transform: translateX(0);
+  }
+
+  .marine-header-mobile-back-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+    border-bottom: 1px solid {{ block.settings.dropdown_border_color }};
+    background: none;
+    border: none;
+    color: {{ block.settings.drawer_text_color }};
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+  }
+
+  .marine-header-mobile-products-grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 20px;
+  }
+
+  .marine-header-cart-item-{{ ai_gen_id }} {
+    display: flex;
+    gap: 15px;
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .marine-header-cart-item-img-{{ ai_gen_id }} {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+
+  .marine-header-cart-item-info-{{ ai_gen_id }} {
+    flex-grow: 1;
+  }
+
+  .marine-header-cart-item-title-{{ ai_gen_id }} {
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: {{ block.settings.drawer_text_color }};
+  }
+
+  .marine-header-cart-item-price-{{ ai_gen_id }} {
+    font-size: 14px;
+    font-weight: 600;
+    color: {{ block.settings.gold_button_color }};
+  }
+
+  .marine-header-cart-qty-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .marine-header-cart-qty-btn-{{ ai_gen_id }} {
+    background-color: {{ block.settings.search_bg_color }};
+    border: 1px solid {{ block.settings.dropdown_border_color }};
+    color: {{ block.settings.drawer_text_color }};
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .marine-header-cart-qty-input-{{ ai_gen_id }} {
+    width: 40px;
+    text-align: center;
+    border: 1px solid {{ block.settings.dropdown_border_color }};
+    background-color: {{ block.settings.search_bg_color }};
+    color: {{ block.settings.drawer_text_color }};
+    padding: 5px;
+    border-radius: 4px;
+  }
+
+  .marine-header-cart-footer-{{ ai_gen_id }} {
+    padding: 20px;
+    border-top: 1px solid {{ block.settings.dropdown_border_color }};
+  }
+
+  .marine-header-cart-subtotal-{{ ai_gen_id }} {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    font-size: 16px;
+    font-weight: 600;
+    color: {{ block.settings.drawer_text_color }};
+  }
+
+  .marine-header-cart-checkout-btn-{{ ai_gen_id }} {
+    width: 100%;
+    background-color: {{ block.settings.gold_button_color }};
+    color: {{ block.settings.gold_button_text_color }};
+    padding: 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .marine-header-cart-view-link-{{ ai_gen_id }} {
+    display: block;
+    text-align: center;
+    color: {{ block.settings.drawer_text_color }};
+    text-decoration: underline;
+    font-size: 14px;
+  }
+
+  @media screen and (max-width: 990px) {
+    .marine-header-row1-{{ ai_gen_id }} {
+      padding: 10px 0;
+    }
+
+    .marine-header-search-{{ ai_gen_id }} {
+      display: none;
+    }
+
+    .marine-header-engine-btn-{{ ai_gen_id }} {
+      display: none;
+    }
+
+    .marine-header-row2-{{ ai_gen_id }} {
+      display: none;
+    }
+
+    .marine-header-mobile-search-{{ ai_gen_id }} {
+      display: block;
+      padding: 10px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .marine-header-hamburger-{{ ai_gen_id }} {
+      display: block;
+    }
+
+    .marine-header-megamenu-right-{{ ai_gen_id }} {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media screen and (min-width: 991px) {
+    .marine-header-mobile-search-{{ ai_gen_id }} {
+      display: none;
+    }
+
+    .marine-header-hamburger-{{ ai_gen_id }} {
+      display: none;
+    }
+  }
+{% endstyle %}
+
+<marine-header-{{ ai_gen_id }} class="marine-header-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="marine-header-container-{{ ai_gen_id }}">
+    <div class="marine-header-row1-{{ ai_gen_id }}">
+      <div class="marine-header-logo-{{ ai_gen_id }}">
+        {% if block.settings.logo %}
+          <a href="/">
+            <img src="{{ block.settings.logo | image_url: width: 200 }}" alt="{{ shop.name }}">
+          </a>
+        {% else %}
+          <a href="/" style="font-size: 20px; font-weight: 700; color: {{ block.settings.header_text_color }}; text-decoration: none;">
+            {{ shop.name }}
+          </a>
+        {% endif %}
+      </div>
+
+      <div class="marine-header-search-{{ ai_gen_id }}">
+        <form action="/search" method="get" class="marine-header-search-form-{{ ai_gen_id }}">
+          <input
+            type="search"
+            name="q"
+            class="marine-header-search-input-{{ ai_gen_id }}"
+            placeholder="{{ block.settings.search_placeholder }}"
+            autocomplete="off"
+          >
+          <span class="marine-header-search-icon-{{ ai_gen_id }}">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="8" cy="8" r="6"></circle>
+              <path d="M13 13l5 5"></path>
+            </svg>
+          </span>
+        </form>
+      </div>
+
+      <div class="marine-header-actions-{{ ai_gen_id }}">
+        <button class="marine-header-engine-btn-{{ ai_gen_id }}" data-engine-modal>
+          {{ block.settings.engine_button_text }}
+        </button>
+
+        <div class="marine-header-account-dropdown-{{ ai_gen_id }}">
+          <button class="marine-header-icon-btn-{{ ai_gen_id }}">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </button>
+          <div class="marine-header-account-menu-{{ ai_gen_id }}">
+            {% for i in (1..5) %}
+              {% assign label_key = 'account_menu_' | append: i | append: '_label' %}
+              {% assign url_key = 'account_menu_' | append: i | append: '_url' %}
+              {% if block.settings[label_key] != blank %}
+                <a href="{{ block.settings[url_key] }}">{{ block.settings[label_key] }}</a>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+
+        <button class="marine-header-icon-btn-{{ ai_gen_id }}" data-cart-drawer>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          <span class="marine-header-cart-count-{{ ai_gen_id }}" data-cart-count>{{ cart.item_count }}</span>
+        </button>
+
+        <button class="marine-header-icon-btn-{{ ai_gen_id }} marine-header-hamburger-{{ ai_gen_id }}" data-menu-drawer>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="marine-header-mobile-search-{{ ai_gen_id }}">
+      <form action="/search" method="get" class="marine-header-search-form-{{ ai_gen_id }}">
+        <input
+          type="search"
+          name="q"
+          class="marine-header-search-input-{{ ai_gen_id }}"
+          placeholder="{{ block.settings.search_placeholder }}"
+          autocomplete="off"
+        >
+        <span class="marine-header-search-icon-{{ ai_gen_id }}">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="8" cy="8" r="6"></circle>
+            <path d="M13 13l5 5"></path>
+          </svg>
+        </span>
+      </form>
+    </div>
+
+    <div class="marine-header-row2-{{ ai_gen_id }}">
+      <nav class="marine-header-nav-{{ ai_gen_id }}">
+        {% if block.settings.main_menu != blank %}
+          {% for link in linklists[block.settings.main_menu].links %}
+            <div class="marine-header-nav-item-{{ ai_gen_id }}">
+              <a href="{{ link.url }}" class="marine-header-nav-link-{{ ai_gen_id }}">{{ link.title }}</a>
+              {% if link.links.size > 0 %}
+                <div class="marine-header-megamenu-{{ ai_gen_id }}">
+                  <div class="marine-header-megamenu-inner-{{ ai_gen_id }}">
+                    <div class="marine-header-megamenu-left-{{ ai_gen_id }}">
+                      {% for child_link in link.links %}
+                        <a href="{{ child_link.url }}" class="marine-header-megamenu-category-{{ ai_gen_id }}">
+                          {{ child_link.title }}
+                        </a>
+                      {% endfor %}
+                    </div>
+                    <div class="marine-header-megamenu-right-{{ ai_gen_id }}">
+                      {% for child_link in link.links limit: 10 %}
+                        {% if child_link.url contains '/products/' %}
+                          {% assign product_handle = child_link.url | split: '/products/' | last | split: '?' | first %}
+                          {% assign product = all_products[product_handle] %}
+                          {% if product %}
+                            <a href="{{ product.url }}" class="marine-header-megamenu-product-{{ ai_gen_id }}">
+                              {% if product.featured_image %}
+                                <img src="{{ product.featured_image | image_url: width: 200 }}" alt="{{ product.title }}" class="marine-header-megamenu-product-img-{{ ai_gen_id }}">
+                              {% endif %}
+                              <div class="marine-header-megamenu-product-title-{{ ai_gen_id }}">{{ product.title }}</div>
+                              <div class="marine-header-megamenu-product-price-{{ ai_gen_id }}">{{ product.price | money }}</div>
+                            </a>
+                          {% endif %}
+                        {% else %}
+                          <a href="{{ child_link.url }}" class="marine-header-megamenu-link-{{ ai_gen_id }}">
+                            {{ child_link.title }}
+                          </a>
+                        {% endif %}
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        {% endif %}
+      </nav>
+    </div>
+  </div>
+
+  <div class="marine-header-modal-{{ ai_gen_id }}" data-engine-modal-container>
+    <div class="marine-header-modal-content-{{ ai_gen_id }}">
+      <button class="marine-header-modal-close-{{ ai_gen_id }}" data-modal-close>&times;</button>
+      <div class="marine-header-modal-body-{{ ai_gen_id }}">
+        <div class="marine-header-modal-left-{{ ai_gen_id }}">
+          {% if block.settings.engine_modal_image %}
+            <img src="{{ block.settings.engine_modal_image | image_url: width: 500 }}" alt="Shop by Engine">
+          {% else %}
+            <div style="background: #f4f4f4; padding: 60px; text-align: center; border-radius: 8px;">
+              <svg width="100" height="100" viewBox="0 0 100 100" fill="#ccc">
+                <rect width="100" height="100" rx="8"/>
+              </svg>
+            </div>
+          {% endif %}
+        </div>
+        <div class="marine-header-modal-right-{{ ai_gen_id }}">
+          <h2 class="marine-header-modal-title-{{ ai_gen_id }}">{{ block.settings.engine_modal_title }}</h2>
+          <form action="/search" method="get">
+            {% for i in (1..5) %}
+              {% assign label_key = 'engine_field_' | append: i | append: '_label' %}
+              {% assign options_key = 'engine_field_' | append: i | append: '_options' %}
+              {% if block.settings[label_key] != blank %}
+                <div class="marine-header-modal-field-{{ ai_gen_id }}">
+                  <label class="marine-header-modal-label-{{ ai_gen_id }}">{{ block.settings[label_key] }}</label>
+                  <select name="field_{{ i }}" class="marine-header-modal-select-{{ ai_gen_id }}">
+                    <option value="">Select {{ block.settings[label_key] }}</option>
+                    {% assign options = block.settings[options_key] | split: ',' %}
+                    {% for option in options %}
+                      <option value="{{ option | strip }}">{{ option | strip }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              {% endif %}
+            {% endfor %}
+            <button type="submit" class="marine-header-modal-search-btn-{{ ai_gen_id }}">Search</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="marine-header-drawer-overlay-{{ ai_gen_id }}" data-drawer-overlay></div>
+
+  <div class="marine-header-drawer-{{ ai_gen_id }}" data-menu-drawer-container>
+    <div class="marine-header-drawer-header-{{ ai_gen_id }}">
+      <div class="marine-header-logo-{{ ai_gen_id }}">
+        {% if block.settings.logo %}
+          <img src="{{ block.settings.logo | image_url: width: 120 }}" alt="{{ shop.name }}" style="max-height: 40px;">
+        {% else %}
+          <span style="font-size: 18px; font-weight: 700; color: {{ block.settings.drawer_text_color }};">{{ shop.name }}</span>
+        {% endif %}
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <button class="marine-header-icon-btn-{{ ai_gen_id }}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </button>
+        <button class="marine-header-icon-btn-{{ ai_gen_id }}" data-cart-drawer>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+        </button>
+        <button class="marine-header-drawer-close-{{ ai_gen_id }}" data-drawer-close>&times;</button>
+      </div>
+    </div>
+    <div class="marine-header-drawer-body-{{ ai_gen_id }}">
+      <div style="margin-bottom: 20px;">
+        <form action="/search" method="get" class="marine-header-search-form-{{ ai_gen_id }}">
+          <input
+            type="search"
+            name="q"
+            class="marine-header-search-input-{{ ai_gen_id }}"
+            placeholder="{{ block.settings.search_placeholder }}"
+            autocomplete="off"
+          >
+        </form>
+      </div>
+      <button class="marine-header-engine-btn-{{ ai_gen_id }}" data-engine-modal style="width: 100%; margin-bottom: 20px;">
+        {{ block.settings.engine_button_text }}
+      </button>
+      <ul class="marine-header-mobile-menu-{{ ai_gen_id }}" data-mobile-menu>
+        {% if block.settings.main_menu != blank %}
+          {% for link in linklists[block.settings.main_menu].links %}
+            <li class="marine-header-mobile-menu-item-{{ ai_gen_id }}">
+              {% if link.links.size > 0 %}
+                <a href="#" class="marine-header-mobile-menu-link-{{ ai_gen_id }}" data-parent-link="{{ forloop.index }}">
+                  {{ link.title }}
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </a>
+                <div class="marine-header-mobile-submenu-{{ ai_gen_id }}" data-submenu="{{ forloop.index }}">
+                  <button class="marine-header-mobile-back-{{ ai_gen_id }}" data-back-btn>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                    {{ link.title }}
+                  </button>
+                  <div class="marine-header-mobile-products-grid-{{ ai_gen_id }}">
+                    {% for child_link in link.links %}
+                      {% if child_link.url contains '/products/' %}
+                        {% assign product_handle = child_link.url | split: '/products/' | last | split: '?' | first %}
+                        {% assign product = all_products[product_handle] %}
+                        {% if product %}
+                          <a href="{{ product.url }}" class="marine-header-megamenu-product-{{ ai_gen_id }}">
+                            {% if product.featured_image %}
+                              <img src="{{ product.featured_image | image_url: width: 150 }}" alt="{{ product.title }}" class="marine-header-megamenu-product-img-{{ ai_gen_id }}">
+                            {% endif %}
+                            <div class="marine-header-megamenu-product-title-{{ ai_gen_id }}">{{ product.title }}</div>
+                            <div class="marine-header-megamenu-product-price-{{ ai_gen_id }}">{{ product.price | money }}</div>
+                          </a>
+                        {% endif %}
+                      {% else %}
+                        <a href="{{ child_link.url }}" class="marine-header-megamenu-link-{{ ai_gen_id }}">
+                          {{ child_link.title }}
+                        </a>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+              {% else %}
+                <a href="{{ link.url }}" class="marine-header-mobile-menu-link-{{ ai_gen_id }}">{{ link.title }}</a>
+              {% endif %}
+            </li>
+          {% endfor %}
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="marine-header-drawer-{{ ai_gen_id }} right" data-cart-drawer-container>
+    <div class="marine-header-drawer-header-{{ ai_gen_id }}">
+      <h3 style="margin: 0; color: {{ block.settings.drawer_text_color }};">Cart</h3>
+      <button class="marine-header-drawer-close-{{ ai_gen_id }}" data-cart-close>&times;</button>
+    </div>
+    <div class="marine-header-drawer-body-{{ ai_gen_id }}" data-cart-items>
+      {% if cart.item_count > 0 %}
+        {% for item in cart.items %}
+          <div class="marine-header-cart-item-{{ ai_gen_id }}">
+            <img src="{{ item.image | image_url: width: 160 }}" alt="{{ item.title }}" class="marine-header-cart-item-img-{{ ai_gen_id }}">
+            <div class="marine-header-cart-item-info-{{ ai_gen_id }}">
+              <div class="marine-header-cart-item-title-{{ ai_gen_id }}">{{ item.product.title }}</div>
+              <div class="marine-header-cart-item-price-{{ ai_gen_id }}">{{ item.final_line_price | money }}</div>
+              <div class="marine-header-cart-qty-{{ ai_gen_id }}">
+                <button class="marine-header-cart-qty-btn-{{ ai_gen_id }}" data-qty-change="{{ item.key }}" data-qty="{{ item.quantity | minus: 1 }}">-</button>
+                <input type="number" value="{{ item.quantity }}" class="marine-header-cart-qty-input-{{ ai_gen_id }}" readonly>
+                <button class="marine-header-cart-qty-btn-{{ ai_gen_id }}" data-qty-change="{{ item.key }}" data-qty="{{ item.quantity | plus: 1 }}">+</button>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p style="text-align: center; padding: 40px 20px; color: {{ block.settings.drawer_text_color }};">Your cart is empty</p>
+      {% endif %}
+    </div>
+    {% if cart.item_count > 0 %}
+      <div class="marine-header-cart-footer-{{ ai_gen_id }}">
+        <div class="marine-header-cart-subtotal-{{ ai_gen_id }}">
+          <span>Subtotal</span>
+          <span data-cart-total>{{ cart.total_price | money }}</span>
+        </div>
+        <button class="marine-header-cart-checkout-btn-{{ ai_gen_id }}" onclick="window.location.href='/checkout'">Checkout</button>
+        <a href="/cart" class="marine-header-cart-view-link-{{ ai_gen_id }}">View Cart</a>
+      </div>
+    {% endif %}
+  </div>
+</marine-header-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class MarineHeader{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.engineModalBtn = this.querySelectorAll('[data-engine-modal]');
+        this.engineModal = this.querySelector('[data-engine-modal-container]');
+        this.modalClose = this.querySelector('[data-modal-close]');
+        this.menuDrawerBtn = this.querySelector('[data-menu-drawer]');
+        this.menuDrawer = this.querySelector('[data-menu-drawer-container]');
+        this.cartDrawerBtn = this.querySelectorAll('[data-cart-drawer]');
+        this.cartDrawer = this.querySelector('[data-cart-drawer-container]');
+        this.drawerOverlay = this.querySelector('[data-drawer-overlay]');
+        this.drawerCloseBtns = this.querySelectorAll('[data-drawer-close]');
+        this.cartCloseBtn = this.querySelector('[data-cart-close]');
+        this.parentLinks = this.querySelectorAll('[data-parent-link]');
+        this.backBtns = this.querySelectorAll('[data-back-btn]');
+        this.qtyChangeBtns = this.querySelectorAll('[data-qty-change]');
+      }
+
+      connectedCallback() {
+        this.engineModalBtn.forEach(btn => {
+          btn.addEventListener('click', () => this.openEngineModal());
+        });
+
+        if (this.modalClose) {
+          this.modalClose.addEventListener('click', () => this.closeEngineModal());
+        }
+
+        if (this.engineModal) {
+          this.engineModal.addEventListener('click', (e) => {
+            if (e.target === this.engineModal) {
+              this.closeEngineModal();
+            }
+          });
+        }
+
+        if (this.menuDrawerBtn) {
+          this.menuDrawerBtn.addEventListener('click', () => this.openMenuDrawer());
+        }
+
+        this.cartDrawerBtn.forEach(btn => {
+          btn.addEventListener('click', () => this.openCartDrawer());
+        });
+
+        this.drawerCloseBtns.forEach(btn => {
+          btn.addEventListener('click', () => this.closeDrawers());
+        });
+
+        if (this.cartCloseBtn) {
+          this.cartCloseBtn.addEventListener('click', () => this.closeDrawers());
+        }
+
+        if (this.drawerOverlay) {
+          this.drawerOverlay.addEventListener('click', () => this.closeDrawers());
+        }
+
+        this.parentLinks.forEach(link => {
+          link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const index = link.getAttribute('data-parent-link');
+            const submenu = this.querySelector(`[data-submenu="${index}"]`);
+            if (submenu) {
+              submenu.classList.add('active');
+            }
+          });
+        });
+
+        this.backBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const submenu = btn.closest('.marine-header-mobile-submenu-{{ ai_gen_id }}');
+            if (submenu) {
+              submenu.classList.remove('active');
+            }
+          });
+        });
+
+        this.qtyChangeBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const key = btn.getAttribute('data-qty-change');
+            const qty = parseInt(btn.getAttribute('data-qty'));
+            this.updateCartQty(key, qty);
+          });
+        });
+
+        this.interceptAddToCart();
+      }
+
+      openEngineModal() {
+        if (this.engineModal) {
+          this.engineModal.classList.add('active');
+        }
+      }
+
+      closeEngineModal() {
+        if (this.engineModal) {
+          this.engineModal.classList.remove('active');
+        }
+      }
+
+      openMenuDrawer() {
+        if (this.menuDrawer) {
+          this.menuDrawer.classList.add('active');
+          this.drawerOverlay.classList.add('active');
+        }
+      }
+
+      openCartDrawer() {
+        if (this.cartDrawer) {
+          this.cartDrawer.classList.add('active');
+          this.drawerOverlay.classList.add('active');
+        }
+      }
+
+      closeDrawers() {
+        if (this.menuDrawer) {
+          this.menuDrawer.classList.remove('active');
+        }
+        if (this.cartDrawer) {
+          this.cartDrawer.classList.remove('active');
+        }
+        if (this.drawerOverlay) {
+          this.drawerOverlay.classList.remove('active');
+        }
+      }
+
+      updateCartQty(key, qty) {
+        fetch('/cart/change.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: key,
+            quantity: qty
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          this.refreshCart();
+        });
+      }
+
+      refreshCart() {
+        fetch('/cart.js')
+          .then(response => response.json())
+          .then(cart => {
+            const cartCount = this.querySelector('[data-cart-count]');
+            if (cartCount) {
+              cartCount.textContent = cart.item_count;
+            }
+
+            const cartTotal = this.querySelector('[data-cart-total]');
+            if (cartTotal) {
+              cartTotal.textContent = this.formatMoney(cart.total_price);
+            }
+
+            const cartItemsContainer = this.querySelector('[data-cart-items]');
+            if (cartItemsContainer) {
+              this.renderCartItems(cart);
+            }
+          });
+      }
+
+      renderCartItems(cart) {
+        const cartItemsContainer = this.querySelector('[data-cart-items]');
+        if (!cartItemsContainer) return;
+
+        if (cart.item_count === 0) {
+          cartItemsContainer.innerHTML = '<p style="text-align: center; padding: 40px 20px; color: {{ block.settings.drawer_text_color }};">Your cart is empty</p>';
+          const footer = this.querySelector('.marine-header-cart-footer-{{ ai_gen_id }}');
+          if (footer) footer.style.display = 'none';
+          return;
+        }
+
+        let html = '';
+        cart.items.forEach(item => {
+          html += `
+            <div class="marine-header-cart-item-{{ ai_gen_id }}">
+              <img src="${item.image}" alt="${item.title}" class="marine-header-cart-item-img-{{ ai_gen_id }}">
+              <div class="marine-header-cart-item-info-{{ ai_gen_id }}">
+                <div class="marine-header-cart-item-title-{{ ai_gen_id }}">${item.product_title}</div>
+                <div class="marine-header-cart-item-price-{{ ai_gen_id }}">${this.formatMoney(item.final_line_price)}</div>
+                <div class="marine-header-cart-qty-{{ ai_gen_id }}">
+                  <button class="marine-header-cart-qty-btn-{{ ai_gen_id }}" data-qty-change="${item.key}" data-qty="${item.quantity - 1}">-</button>
+                  <input type="number" value="${item.quantity}" class="marine-header-cart-qty-input-{{ ai_gen_id }}" readonly>
+                  <button class="marine-header-cart-qty-btn-{{ ai_gen_id }}" data-qty-change="${item.key}" data-qty="${item.quantity + 1}">+</button>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        cartItemsContainer.innerHTML = html;
+
+        const footer = this.querySelector('.marine-header-cart-footer-{{ ai_gen_id }}');
+        if (footer) footer.style.display = 'block';
+
+        this.qtyChangeBtns = this.querySelectorAll('[data-qty-change]');
+        this.qtyChangeBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const key = btn.getAttribute('data-qty-change');
+            const qty = parseInt(btn.getAttribute('data-qty'));
+            this.updateCartQty(key, qty);
+          });
+        });
+      }
+
+      interceptAddToCart() {
+        document.addEventListener('submit', (e) => {
+          if (e.target.matches('form[action="/cart/add"]')) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+
+            fetch('/cart/add.js', {
+              method: 'POST',
+              body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+              this.refreshCart();
+              this.openCartDrawer();
+            });
+          }
+        });
+      }
+
+      formatMoney(cents) {
+        const dollars = (cents / 100).toFixed(2);
+        return `$${dollars}`;
+      }
+    }
+
+    customElements.define('marine-header-{{ ai_gen_id }}', MarineHeader{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Marine store header444",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "header_width",
+      "label": "Header width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "Page width"
+        },
+        {
+          "value": "full-width",
+          "label": "Full width"
+        }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "header_bg_color",
+      "label": "Background",
+      "default": "#0a1628"
+    },
+    {
+      "type": "color",
+      "id": "header_text_color",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "gold_button_color",
+      "label": "Gold button background",
+      "default": "#f5a623"
+    },
+    {
+      "type": "color",
+      "id": "gold_button_text_color",
+      "label": "Gold button text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "search_bg_color",
+      "label": "Search background",
+      "default": "#1a2638"
+    },
+    {
+      "type": "color",
+      "id": "search_border_color",
+      "label": "Search border",
+      "default": "#2a3648"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_bg_color",
+      "label": "Dropdown background",
+      "default": "#0a1628"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_text_color",
+      "label": "Dropdown text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_border_color",
+      "label": "Dropdown border",
+      "default": "#2a3648"
+    },
+    {
+      "type": "color",
+      "id": "megamenu_bg_color",
+      "label": "Mega menu background",
+      "default": "#0a1628"
+    },
+    {
+      "type": "color",
+      "id": "megamenu_text_color",
+      "label": "Mega menu text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "modal_bg_color",
+      "label": "Modal background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "modal_text_color",
+      "label": "Modal text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "drawer_bg_color",
+      "label": "Drawer background",
+      "default": "#0a1628"
+    },
+    {
+      "type": "color",
+      "id": "drawer_text_color",
+      "label": "Drawer text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Search"
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search placeholder",
+      "default": "Search products..."
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "link_list",
+      "id": "main_menu",
+      "label": "Main menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "header",
+      "content": "Shop by engine button"
+    },
+    {
+      "type": "text",
+      "id": "engine_button_text",
+      "label": "Button text",
+      "default": "Shop by Engine"
+    },
+    {
+      "type": "header",
+      "content": "Shop by engine modal"
+    },
+    {
+      "type": "text",
+      "id": "engine_modal_title",
+      "label": "Modal title",
+      "default": "Find Parts for Your Engine"
+    },
+    {
+      "type": "image_picker",
+      "id": "engine_modal_image",
+      "label": "Modal image"
+    },
+    {
+      "type": "text",
+      "id": "engine_field_1_label",
+      "label": "Field 1 label",
+      "default": "Engine Type"
+    },
+    {
+      "type": "textarea",
+      "id": "engine_field_1_options",
+      "label": "Field 1 options",
+      "default": "Outboard, Inboard, Sterndrive",
+      "info": "Separate options with commas"
+    },
+    {
+      "type": "text",
+      "id": "engine_field_2_label",
+      "label": "Field 2 label",
+      "default": "Brand"
+    },
+    {
+      "type": "textarea",
+      "id": "engine_field_2_options",
+      "label": "Field 2 options",
+      "default": "Mercury, Yamaha, Honda, Suzuki",
+      "info": "Separate options with commas"
+    },
+    {
+      "type": "text",
+      "id": "engine_field_3_label",
+      "label": "Field 3 label",
+      "default": "Horsepower"
+    },
+    {
+      "type": "textarea",
+      "id": "engine_field_3_options",
+      "label": "Field 3 options",
+      "default": "25HP, 50HP, 75HP, 100HP, 150HP, 200HP",
+      "info": "Separate options with commas"
+    },
+    {
+      "type": "text",
+      "id": "engine_field_4_label",
+      "label": "Field 4 label",
+      "default": "Year"
+    },
+    {
+      "type": "textarea",
+      "id": "engine_field_4_options",
+      "label": "Field 4 options",
+      "default": "2024, 2023, 2022, 2021, 2020",
+      "info": "Separate options with commas"
+    },
+    {
+      "type": "text",
+      "id": "engine_field_5_label",
+      "label": "Field 5 label"
+    },
+    {
+      "type": "textarea",
+      "id": "engine_field_5_options",
+      "label": "Field 5 options",
+      "info": "Separate options with commas"
+    },
+    {
+      "type": "header",
+      "content": "Account menu"
+    },
+    {
+      "type": "text",
+      "id": "account_menu_1_label",
+      "label": "Menu item 1 label",
+      "default": "Sign In"
+    },
+    {
+      "type": "url",
+      "id": "account_menu_1_url",
+      "label": "Menu item 1 URL"
+    },
+    {
+      "type": "text",
+      "id": "account_menu_2_label",
+      "label": "Menu item 2 label",
+      "default": "Create Account"
+    },
+    {
+      "type": "url",
+      "id": "account_menu_2_url",
+      "label": "Menu item 2 URL"
+    },
+    {
+      "type": "text",
+      "id": "account_menu_3_label",
+      "label": "Menu item 3 label",
+      "default": "Order Status"
+    },
+    {
+      "type": "url",
+      "id": "account_menu_3_url",
+      "label": "Menu item 3 URL"
+    },
+    {
+      "type": "text",
+      "id": "account_menu_4_label",
+      "label": "Menu item 4 label",
+      "default": "Rewards"
+    },
+    {
+      "type": "url",
+      "id": "account_menu_4_url",
+      "label": "Menu item 4 URL"
+    },
+    {
+      "type": "text",
+      "id": "account_menu_5_label",
+      "label": "Menu item 5 label"
+    },
+    {
+      "type": "url",
+      "id": "account_menu_5_url",
+      "label": "Menu item 5 URL"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Marine store heade44r"
+    }
+  ]
+}
+{% endschema %}

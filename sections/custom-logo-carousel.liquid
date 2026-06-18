@@ -1,0 +1,228 @@
+{%- style -%}
+  .logo-slider-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    background-color: {{ section.settings.bg_color }};
+    overflow: hidden;
+  }
+  .logo-slider-wrapper {
+    position: relative;
+    max-width: {{ section.settings.page_width }}px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+  .logo-slider-container {
+    display: grid;
+    grid-auto-flow: column;
+    /* Mobile default: 2 logos */
+    grid-auto-columns: calc((100% - 15px) / 2); 
+    gap: 15px;
+    overflow-x: hidden; /* Infinite loop ke liye scroll hide karna zaroori hai */
+    scroll-behavior: smooth;
+    transition: all 0.3s ease;
+  }
+  .logo-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    width: 100%;
+  }
+  .logo-item img, .logo-item svg {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    filter: grayscale(0%);
+    transition: all 0.3s ease;
+  }
+  
+  /* Navigation Arrows */
+  .slider-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background: #f4d03f;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: background 0.3s;
+  }
+  .slider-arrow:hover {
+    background: #e1b72e;
+  }
+  .arrow-prev { left: 0; }
+  .arrow-next { right: 0; }
+  .slider-arrow svg { width: 14px; height: 14px; fill: #000; }
+
+  /* Desktop Responsive Columns */
+  @media screen and (min-width: 750px) {
+    .logo-slider-container {
+      grid-auto-columns: calc((100% - (30px * ({{ section.settings.logos_per_row_desktop }} - 1))) / {{ section.settings.logos_per_row_desktop }});
+      gap: 30px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="logo-slider-{{ section.id }} logo-slider-main">
+  <div class="logo-slider-wrapper">
+    
+    {%- if section.blocks.size > 0 -%}
+      <button class="slider-arrow arrow-prev" aria-label="Previous slide" onclick="scrollSliderInfinite('{{ section.id }}', -1)">
+        <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+      </button>
+
+      <div class="logo-slider-container" id="Slider-{{ section.id }}">
+        {%- for block in section.blocks -%}
+          <div class="logo-item" {{ block.shopify_attributes }}>
+            {%- if block.settings.link != blank -%}
+              <a href="{{ block.settings.link }}" style="display: block; width: 100%;">
+            {%- endif -%}
+            
+            {%- if block.settings.image != blank -%}
+              {%- assign img_url = block.settings.image | img_url: 'master' -%}
+              <img src="{{ img_url }}" 
+                   alt="{{ block.settings.image.alt | escape }}" 
+                   loading="lazy" 
+                   width="{{ block.settings.image.width }}" 
+                   height="{{ block.settings.image.height }}">
+            {%- else -%}
+              {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+            {%- endif -%}
+
+            {%- if block.settings.link != blank -%}</a>{%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+
+      <button class="slider-arrow arrow-next" aria-label="Next slide" onclick="scrollSliderInfinite('{{ section.id }}', 1)">
+        <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+      </button>
+    {%- endif -%}
+
+  </div>
+</div>
+
+<script>
+function scrollSliderInfinite(sectionId, direction) {
+  const container = document.getElementById(`Slider-${sectionId}`);
+  if (!container) return;
+  
+  const items = container.querySelectorAll('.logo-item');
+  if (items.length <= 1) return;
+
+  const itemWidth = items[0].offsetWidth;
+  const gap = parseInt(window.getComputedStyle(container).gap) || 0;
+  const totalScroll = itemWidth + gap;
+
+  // Pehle dynamic smooth scroll execute hoga
+  container.style.scrollBehavior = 'smooth';
+  
+  if (direction === 1) {
+    // Right Click: Scroll forward karo fir pehle item ko append karo
+    container.scrollLeft += totalScroll;
+    
+    setTimeout(() => {
+      container.style.scrollBehavior = 'auto';
+      container.appendChild(items[0]);
+      container.scrollLeft -= totalScroll;
+    }, 300); // 300ms transition time ke baad DOM change hoga
+    
+  } else {
+    // Left Click: Aakhiri item ko utha kar turant start me rakho aur scroll adjust karo
+    container.style.scrollBehavior = 'auto';
+    container.insertBefore(items[items.length - 1], items[0]);
+    container.scrollLeft += totalScroll;
+    
+    setTimeout(() => {
+      container.style.scrollBehavior = 'smooth';
+      container.scrollLeft -= totalScroll;
+    }, 10);
+  }
+}
+</script>
+
+{% schema %}
+{
+  "name": "Responsive Logo Slider",
+  "settings": [
+    {
+      "type": "range",
+      "id": "logos_per_row_desktop",
+      "min": 4,
+      "max": 6,
+      "step": 1,
+      "default": 5,
+      "label": "Logos per row (Desktop)"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "page_width",
+      "min": 1000,
+      "max": 1600,
+      "step": 50,
+      "default": 1200,
+      "label": "Section Max Width (px)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 40,
+      "label": "Padding Top"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 40,
+      "label": "Padding Bottom"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "logo",
+      "name": "Logo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Logo Image"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Logo Link (Optional)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Responsive Logo Slider",
+      "blocks": [
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" }
+      ]
+    }
+  ]
+}
+{% endschema %}

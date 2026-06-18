@@ -1,0 +1,458 @@
+{%- style -%}
+  .custom-promo-section-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    padding-left: 15px;
+    padding-right: 15px;
+    width: 100%;
+    margin: 0 auto;
+    {% if section.settings.full_width %}
+      max-width: 100%;
+    {% else %}
+      max-width: {{ section.settings.custom_width }}px;
+    {% endif %}
+  }
+  
+  .promo-grid-container-{{ section.id }} {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    width: 100%;
+  }
+
+  .promo-card-{{ section.id }} {
+    position: relative;
+    overflow: hidden;
+    padding: 20px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 440px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1;
+    box-sizing: border-box;
+  }
+
+  .promo-card-{{ section.id }}::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: var(--bg-overlay);
+    z-index: -1;
+  }
+
+  .promo-header-wrap-template--22617970213108__dual_promo_grid_KjXqe7 img{
+    max-width: 310px !important;
+  }
+
+  .promo-header-wrap-{{ section.id }} {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+  }
+
+  .promo-brand-img {
+    max-width: 250px;
+    height: auto;
+    object-fit: scale-down;
+    margin: 0 auto 12px auto;
+    display: block;
+  }
+
+  .promo-title-{{ section.id }} {
+    margin: 0 auto;
+    font-family: 'Bebas Neue', sans-serif; /* Applied Bebas Neue Font Family Here */
+    font-size: 28px; /* Slightly increased for impact like Bebas style */
+    font-weight: 400; /* Bebas Neue is bold by default */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+
+  .promo-content-row-{{ section.id }} {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
+    width: 100%;
+    margin-bottom: 0px;
+    flex-grow: 1;
+  }
+
+  .promo-inner-img-wrapper-{{ section.id }} {
+    flex: 1;
+    max-width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .promo-inner-img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
+  }
+
+  .promo-text-wrapper-{{ section.id }} {
+    flex: 1;
+    max-width: 50%;
+    font-size: 16px;
+    line-height: 1.5;
+    text-align: left;
+  }
+
+  .promo-text-wrapper-{{ section.id }} p {
+    margin: 0;
+  }
+
+  .promo-text-wrapper-{{ section.id }} ul {
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  .promo-text-wrapper-{{ section.id }} li {
+    margin-bottom: 8px;
+  }
+
+  .promo-btn-wrap-{{ section.id }} {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: auto;
+    padding-top: 5px;
+  }
+
+  .promo-action-btn-{{ section.id }} {
+    display: inline-block;
+    padding: 14px 50px;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    text-align: center;
+    border-radius: 0px;
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+  }
+
+  .promo-action-btn-{{ section.id }}:hover {
+    opacity: 0.95;
+  }
+
+  @media screen and (max-width: 991px) {
+    .promo-grid-container-{{ section.id }} {
+      grid-template-columns: 1fr;
+      gap: 25px;
+    }
+    .promo-card-{{ section.id }} {
+      min-height: auto;
+      padding: 35px 20px;
+    }
+  }
+
+  @media screen and (max-width: 576px) {
+    .promo-content-row-{{ section.id }} {
+      flex-direction: column;
+      gap: 20px;
+    }
+    .promo-inner-img-wrapper-{{ section.id }}, 
+    .promo-text-wrapper-{{ section.id }} {
+      max-width: 100%;
+      width: 100%;
+      text-align: center;
+    }
+    .promo-text-wrapper-{{ section.id }} ul {
+      display: inline-block;
+      text-align: left;
+    }
+    .promo-brand-img {
+      max-width: 200px;
+    }
+    .promo-title-{{ section.id }} {
+      font-size: 24px;
+    }
+    .promo-action-btn-{{ section.id }} {
+      width: 100%;
+    }
+  }
+{%- endstyle -%}
+
+<div class="custom-promo-section-{{ section.id }}">
+  <div class="promo-grid-container-{{ section.id }}">
+    
+    {%- comment -%} BOX 1 {%- endcomment -%}
+    <div class="promo-card-{{ section.id }}" style="
+      --bg-overlay: {{ section.settings.box1_bg_color }};
+      {% if section.settings.box1_bg_img != blank %}
+        background-image: url('{{ section.settings.box1_bg_img | image_url: width: 1200 }}');
+      {% endif %}
+    ">
+      <div class="promo-header-wrap-{{ section.id }}">
+        {%- if section.settings.box1_brand_img != blank -%}
+          {{ section.settings.box1_brand_img | image_url: width: 400 | image_tag: class: 'promo-brand-img', loading: 'lazy', alt: section.settings.box1_title }}
+        {%- endif -%}
+        {%- if section.settings.box1_title != blank -%}
+          <h3 class="promo-title-{{ section.id }}" style="color: {{ section.settings.box1_title_color }};">{{ section.settings.box1_title }}</h3>
+        {%- endif -%}
+      </div>
+
+      <div class="promo-content-row-{{ section.id }}">
+        <div class="promo-inner-img-wrapper-{{ section.id }}">
+          {%- if section.settings.box1_product_img != blank -%}
+            {{ section.settings.box1_product_img | image_url: width: 600 | image_tag: class: 'promo-inner-img', loading: 'lazy', alt: 'Product Image' }}
+          {%- endif -%}
+        </div>
+        <div class="promo-text-wrapper-{{ section.id }}" style="color: {{ section.settings.box1_text_color }};">
+          {{ section.settings.box1_text }}
+        </div>
+      </div>
+
+      {%- if section.settings.box1_btn_text != blank -%}
+        <div class="promo-btn-wrap-{{ section.id }}">
+          <a href="{{ section.settings.box1_btn_link | default: '#' }}" class="promo-action-btn-{{ section.id }}" style="background-color: {{ section.settings.box1_btn_bg }}; color: {{ section.settings.box1_btn_text_color }};">
+            {{ section.settings.box1_btn_text }}
+          </a>
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} BOX 2 {%- endcomment -%}
+    <div class="promo-card-{{ section.id }}" style="
+      --bg-overlay: {{ section.settings.box2_bg_color }};
+      {% if section.settings.box2_bg_img != blank %}
+        background-image: url('{{ section.settings.box2_bg_img | image_url: width: 1200 }}');
+      {% endif %}
+    ">
+      <div class="promo-header-wrap-{{ section.id }}">
+        {%- if section.settings.box2_brand_img != blank -%}
+          {{ section.settings.box2_brand_img | image_url: width: 400 | image_tag: class: 'promo-brand-img', loading: 'lazy', alt: section.settings.box2_title }}
+        {%- endif -%}
+        {%- if section.settings.box2_title != blank -%}
+          <h3 class="promo-title-{{ section.id }}" style="color: {{ section.settings.box2_title_color }};">{{ section.settings.box2_title }}</h3>
+        {%- endif -%}
+      </div>
+
+      <div class="promo-content-row-{{ section.id }}">
+        <div class="promo-inner-img-wrapper-{{ section.id }}">
+          {%- if section.settings.box2_product_img != blank -%}
+            {{ section.settings.box2_product_img | image_url: width: 600 | image_tag: class: 'promo-inner-img', loading: 'lazy', alt: 'Product Image' }}
+          {%- endif -%}
+        </div>
+        <div class="promo-text-wrapper-{{ section.id }}" style="color: {{ section.settings.box2_text_color }};">
+          {{ section.settings.box2_text }}
+        </div>
+      </div>
+
+      {%- if section.settings.box2_btn_text != blank -%}
+        <div class="promo-btn-wrap-{{ section.id }}">
+          <a href="{{ section.settings.box2_btn_link | default: '#' }}" class="promo-action-btn-{{ section.id }}" style="background-color: {{ section.settings.box2_btn_bg }}; color: {{ section.settings.box2_btn_text_color }};">
+            {{ section.settings.box2_btn_text }}
+          </a>
+        </div>
+      {%- endif -%}
+    </div>
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Dual Promo Grid",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Width & Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Enable Full Width Layout",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "custom_width",
+      "min": 1000,
+      "max": 1600,
+      "step": 50,
+      "unit": "px",
+      "label": "Custom Page Width (If Full Width Disabled)",
+      "default": 1400
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top Padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom Padding",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "BOX 1 CONFIGURATION"
+    },
+    {
+      "type": "color",
+      "id": "box1_bg_color",
+      "label": "Background Color",
+      "default": "#052242"
+    },
+    {
+      "type": "image_picker",
+      "id": "box1_bg_img",
+      "label": "Background Image (Optional)"
+    },
+    {
+      "type": "image_picker",
+      "id": "box1_brand_img",
+      "label": "Top Brand Logo Image"
+    },
+    {
+      "type": "text",
+      "id": "box1_title",
+      "label": "Sub-title Text",
+      "default": "BATTERIES, CHARGERS, & MORE"
+    },
+    {
+      "type": "color",
+      "id": "box1_title_color",
+      "label": "Sub-title Color",
+      "default": "#FFCC00"
+    },
+    {
+      "type": "image_picker",
+      "id": "box1_product_img",
+      "label": "Left Content Image"
+    },
+    {
+      "type": "richtext",
+      "id": "box1_text",
+      "label": "Right Content Text",
+      "default": "<p>Explore cutting-edge Lithium Iron Phosphate (LiFePO4) technology</p>"
+    },
+    {
+      "type": "color",
+      "id": "box1_text_color",
+      "label": "Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "text",
+      "id": "box1_btn_text",
+      "label": "Button Text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "box1_btn_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "color",
+      "id": "box1_btn_bg",
+      "label": "Button BG Color",
+      "default": "#00A676"
+    },
+    {
+      "type": "color",
+      "id": "box1_btn_text_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "BOX 2 CONFIGURATION"
+    },
+    {
+      "type": "color",
+      "id": "box2_bg_color",
+      "label": "Background Color",
+      "default": "#052242"
+    },
+    {
+      "type": "image_picker",
+      "id": "box2_bg_img",
+      "label": "Background Image (Optional)"
+    },
+    {
+      "type": "image_picker",
+      "id": "box2_brand_img",
+      "label": "Top Brand Logo Image"
+    },
+    {
+      "type": "text",
+      "id": "box2_title",
+      "label": "Sub-title Text",
+      "default": "OEM-QUALITY FILTERS"
+    },
+    {
+      "type": "color",
+      "id": "box2_title_color",
+      "label": "Sub-title Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "image_picker",
+      "id": "box2_product_img",
+      "label": "Left Content Image"
+    },
+    {
+      "type": "richtext",
+      "id": "box2_text",
+      "label": "Right Content Text",
+      "default": "<ul><li>Up to 40% less than OEM</li><li>Superior corrosion resistance</li></ul>"
+    },
+    {
+      "type": "color",
+      "id": "box2_text_color",
+      "label": "Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "text",
+      "id": "box2_btn_text",
+      "label": "Button Text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "box2_btn_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "color",
+      "id": "box2_btn_bg",
+      "label": "Button BG Color",
+      "default": "#00A676"
+    },
+    {
+      "type": "color",
+      "id": "box2_btn_text_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dual Promo Grid"
+    }
+  ]
+}
+{% endschema %}
