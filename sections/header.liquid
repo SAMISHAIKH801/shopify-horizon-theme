@@ -541,6 +541,23 @@
   padding: 8px 12px 10px;
 }
 
+
+
+/* Mobile: logo left mein force karo */
+@media (max-width: 749px) {
+  .header__columns .header-logo {
+    grid-area: center !important;
+    justify-self: start;
+    padding-left: 12px;
+  }
+}
+
+#header-component[data-menu-style='drawer'] .header__columns .header-logo {
+  grid-area: center !important;
+  justify-self: start;
+  padding-left: 12px;
+}
+
 /* ── SHOP BY ENGINE BUTTON ── */
 .header-search-engine-wrap {
   display: flex;
