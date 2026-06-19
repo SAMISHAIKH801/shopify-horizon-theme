@@ -362,109 +362,10 @@
     {% endif %}
   "
 >
-  <div class="header__underlay header__underlay-closed"></div>
-  <div
-    class="header__underlay header__underlay-open"
-  ></div>
-  {%- if request.page_type == 'index' -%}
-    <h1 class="visually-hidden">{{ shop.name }}</h1>
-  {%- endif -%}
-  {% for row in rows %}
-    {% liquid
-      assign background = 'background_color_' | append: row
-      assign row_setting = 'background_color_' | append: row
-      assign text_setting = 'text_color_' | append: row
-      assign row_class_id = row | append: '-' | append: section.id
-      assign row_class = ' color-custom-' | append: row_class_id
-      assign class = 'header__row header__row--[row] color-[row_background] section section--full-width-margin section--[section-width]' | replace: '[row]', row | replace: '[row_background]', section.settings[background] | replace: '[section-width]', section.settings.section_width
-
-      case row
-        when 'top'
-          assign first = drawer_menu
-
-          if bottom_row_blocks.size > 0 and section.settings.divider_size == 'page-width'
-            assign class = class | append: ' divider--page-width'
-          endif
-
-          if bottom_row_blocks.size > 0
-            assign border_bottom_setting_id = 'divider_width'
-            assign border_bottom_color_setting_id = 'divider_color'
-          else
-            assign border_bottom_setting_id = 'border_width'
-            assign border_bottom_color_setting_id = 'bottom_border_color'
-          endif
-        when 'bottom'
-          assign first = ''
-          assign class = class | append: ' mobile:hidden'
-
-          assign border_bottom_setting_id = 'border_width'
-          assign border_bottom_color_setting_id = 'bottom_border_color'
-      endcase
-
-      assign style = '--border-bottom-width: [width]px; ' | replace: '[width]', section.settings[border_bottom_setting_id]
-
-      assign border_bottom_color_value = section.settings[border_bottom_color_setting_id]
-      if border_bottom_color_value != blank
-        assign style = style | append: '--border-bottom-color: [color]; ' | replace: '[color]', border_bottom_color_value
-      endif
-
-      if row == 'top'
-        assign custom_color_styles = true
-        assign class = class | append: row_class
-        assign style = style | append: '--border-bottom-width-mobile: [width]px; ' | replace: '[width]', section.settings.border_width
-
-        assign mobile_border_color = section.settings.bottom_border_color | default: 'var(--color-border)'
-        assign style = style | append: '--border-bottom-color-mobile: [color]; ' | replace: '[color]', mobile_border_color
-      elsif bottom_row_blocks.size > 0
-        assign custom_color_styles = true
-        assign class = class | append: row_class
-      else
-        assign custom_color_styles = false
-      endif
-    %}
-
-    {% comment %} {% capture content %}
-      {% if custom_color_styles %}
-        {% render 'contrast-override', background_color: section.settings[row_setting], text_color: section.settings[text_setting], section_id: row_class_id %}
-      {% endif %}
-      {% render 'header-row',
-        row: row,
-        order: order,
-        settings: section.settings,
-        first: first,
-        logo: logo,
-        menu: menu,
-        actions: actions,
-        localization: localization_markup,
-        search: search,
-        drawer_search: drawer_search
-      %}
-    {% endcapture %}
-
-    {% assign content = content | strip %}
-    {% if content != blank %}
-      <div
-        class="{{ class | strip }}"
-        ref="headerRowTop"
-        {%- if style != blank -%}
-          style="{{ style | strip }}"
-        {%- endif -%}
-      >
-        <div class="header__columns spacing-style">
-          {{ content }}
-        </div>
-      </div>
-    {% endif %}
-  {% endfor %}
-
-  {% if navigation_bar != blank %}
-    <div class="header__row header__navigation-bar-row">
-      {{ navigation_bar }}
-    </div>
-  {% endif %} {% endcomment %}
 
 
-  {% comment %} --- {% endcomment %}
+
+    {% comment %} --- {% endcomment %}
   <div class="custom-header-desktop-wrapper mobile:hidden" style="display: flex; align-items: center; justify-content: space-between; gap: 20px; width: 100%; max-width: var(--page-width); margin: 0 auto; padding: 10px 20px;">
   
   <div class="custom-logo-zone">
@@ -566,7 +467,71 @@
   </div>
 </div>
 
- {% capture content %}
+
+
+
+  <div class="header__underlay header__underlay-closed"></div>
+  <div
+    class="header__underlay header__underlay-open"
+  ></div>
+  {%- if request.page_type == 'index' -%}
+    <h1 class="visually-hidden">{{ shop.name }}</h1>
+  {%- endif -%}
+  {% for row in rows %}
+    {% liquid
+      assign background = 'background_color_' | append: row
+      assign row_setting = 'background_color_' | append: row
+      assign text_setting = 'text_color_' | append: row
+      assign row_class_id = row | append: '-' | append: section.id
+      assign row_class = ' color-custom-' | append: row_class_id
+      assign class = 'header__row header__row--[row] color-[row_background] section section--full-width-margin section--[section-width]' | replace: '[row]', row | replace: '[row_background]', section.settings[background] | replace: '[section-width]', section.settings.section_width
+
+      case row
+        when 'top'
+          assign first = drawer_menu
+
+          if bottom_row_blocks.size > 0 and section.settings.divider_size == 'page-width'
+            assign class = class | append: ' divider--page-width'
+          endif
+
+          if bottom_row_blocks.size > 0
+            assign border_bottom_setting_id = 'divider_width'
+            assign border_bottom_color_setting_id = 'divider_color'
+          else
+            assign border_bottom_setting_id = 'border_width'
+            assign border_bottom_color_setting_id = 'bottom_border_color'
+          endif
+        when 'bottom'
+          assign first = ''
+          assign class = class | append: ' mobile:hidden'
+
+          assign border_bottom_setting_id = 'border_width'
+          assign border_bottom_color_setting_id = 'bottom_border_color'
+      endcase
+
+      assign style = '--border-bottom-width: [width]px; ' | replace: '[width]', section.settings[border_bottom_setting_id]
+
+      assign border_bottom_color_value = section.settings[border_bottom_color_setting_id]
+      if border_bottom_color_value != blank
+        assign style = style | append: '--border-bottom-color: [color]; ' | replace: '[color]', border_bottom_color_value
+      endif
+
+      if row == 'top'
+        assign custom_color_styles = true
+        assign class = class | append: row_class
+        assign style = style | append: '--border-bottom-width-mobile: [width]px; ' | replace: '[width]', section.settings.border_width
+
+        assign mobile_border_color = section.settings.bottom_border_color | default: 'var(--color-border)'
+        assign style = style | append: '--border-bottom-color-mobile: [color]; ' | replace: '[color]', mobile_border_color
+      elsif bottom_row_blocks.size > 0
+        assign custom_color_styles = true
+        assign class = class | append: row_class
+      else
+        assign custom_color_styles = false
+      endif
+    %}
+
+    {% capture content %}
       {% if custom_color_styles %}
         {% render 'contrast-override', background_color: section.settings[row_setting], text_color: section.settings[text_setting], section_id: row_class_id %}
       {% endif %}
@@ -605,6 +570,110 @@
       {{ navigation_bar }}
     </div>
   {% endif %}
+
+
+  {% comment %} --- {% endcomment %}
+  {% comment %} <div class="custom-header-desktop-wrapper mobile:hidden" style="display: flex; align-items: center; justify-content: space-between; gap: 20px; width: 100%; max-width: var(--page-width); margin: 0 auto; padding: 10px 20px;">
+  
+  <div class="custom-logo-zone">
+    {{ logo }}
+  </div>
+
+  <div class="custom-center-actions" style="display: flex; align-items: center; flex-grow: 1; max-width: 700px; gap: 15px; position: relative;">
+    
+    <div class="custom-search-bar-container" style="flex-grow: 1; position: relative;">
+      <form action="{{ routes.search_url }}" method="get" role="search" class="custom-search-form">
+        <input 
+          type="search" 
+          name="q" 
+          id="custom-desktop-search-input"
+          placeholder="Search for products" 
+          autocomplete="off"
+          style="width: 100%; height: 45px; padding: 0 45px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px;"
+        >
+        <span style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); opacity: 0.7;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </span>
+        <span style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); opacity: 0.7; cursor: pointer;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v11M19 8c0 3.87-3.13 7-7 7s-7-3.13-7-7"></path></svg>
+        </span>
+      </form>
+      
+      <div id="custom-search-results-pop" class="custom-popup-dropdown" style="display: none;">
+        <div style="padding: 15px; color: #333;">
+          <p style="font-size: 12px; color: #888; margin: 0 0 10px 0;">Trending Products & Quick Links</p>
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
+            <li><a href="/search?q=yamaha" style="color:#002244; text-decoration: none; font-size: 14px;">Yamaha Outboard Parts</a></li>
+            <li><a href="/search?q=mercury" style="color:#002244; text-decoration: none; font-size: 14px;">Mercury Marine Kit</a></li>
+            <li><a href="/search?q=filter" style="color:#002244; text-decoration: none; font-size: 14px;">Oil Filters & Fuel Pumps</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <button type="button" id="shop-by-engine-trigger" class="shop-by-engine-btn">
+      Shop by Engine
+    </button>
+
+    <div id="engine-lookup-popup" class="engine-popup-modal" style="display: none;">
+      <div class="engine-popup-content">
+        <button type="button" id="close-engine-popup" class="close-popup-x">&times;</button>
+        <div class="engine-grid-container">
+          <div class="engine-image-side" style="background-image: url('https://cdn.shopify.com/s/files/1/0000/0000/files/engines-placeholder.jpg'); background-size: cover; background-position: center; min-height: 250px;">
+            <div class="image-overlay-text" style="padding: 20px; color: white; background: rgba(0,0,0,0.4); height: 100%; display: flex; align-items: flex-end;">
+              <h3 style="margin:0; font-size: 24px; text-transform: uppercase;">Premium Marine Power</h3>
+            </div>
+          </div>
+          <div class="engine-form-side" style="padding: 25px; background: #002244; color: white;">
+            <h2 style="margin: 0 0 20px 0; font-size: 20px; text-transform: uppercase; font-weight: bold; border-bottom: 2px solid #f2b71a; padding-bottom: 5px;">Shop Parts By Engine</h2>
+            <form action="/collections/all" method="get" style="display: flex; flex-direction: column; gap: 15px;">
+              <div>
+                <label style="display:block; font-size:12px; margin-bottom:5px; text-transform: uppercase;">Select Brand</label>
+                <select name="brand" style="width:100%; height:40px; padding: 5px; border-radius:4px; color: #000;"><option>Yamaha</option><option>Mercury</option><option>Suzuki</option><option>Honda</option></select>
+              </div>
+              <div>
+                <label style="display:block; font-size:12px; margin-bottom:5px; text-transform: uppercase;">Select Year</label>
+                <select name="year" style="width:100%; height:40px; padding: 5px; border-radius:4px; color: #000;"><option>2026</option><option>2025</option><option>2024</option><option>2023</option></select>
+              </div>
+              <div>
+                <label style="display:block; font-size:12px; margin-bottom:5px; text-transform: uppercase;">Select Engine Model</label>
+                <select name="model" style="width:100%; height:40px; padding: 5px; border-radius:4px; color: #000;"><option>150HP Four Stroke</option><option>200HP V6</option><option>250HP Pro XS</option></select>
+              </div>
+              <button type="submit" style="background:#f2b71a; color:black; border:none; padding:12px; font-weight:bold; text-transform:uppercase; border-radius:4px; cursor:pointer; margin-top:10px;">Search Engine Parts</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="custom-right-utility" style="display: flex; align-items: center; gap: 20px;">
+    {{ actions }}
+  </div>
+
+</div>
+
+<div class="custom-mobile-header-wrapper desktop:hidden" style="display: none; background: #002244; padding: 10px 15px; flex-direction: column; gap: 10px;">
+  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+    <div class="mobile-logo-area">{{ logo }}</div>
+    <div style="display: flex; align-items: center; gap: 0px;">
+      {{ actions }}
+      <div class="mobile-hamburger-nav-holder">
+         {{ drawer_menu }}
+      </div>
+    </div>
+  </div>
+  <div class="mobile-search-row-container" style="width: 100%; position: relative;">
+     <form action="{{ routes.search_url }}" method="get" role="search">
+        <input type="search" name="q" placeholder="Search for products" style="width:100%; height:40px; padding: 0 40px; border-radius:4px; border:none;">
+        <span style="position: absolute; left: 12px; top:50%; transform:translateY(-50%); color:#666;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </span>
+     </form>
+  </div>
+</div> {% endcomment %}
+
 
 
 </header-component>
@@ -672,8 +741,8 @@
 }
 
 #header-component {
-    /* flex-direction: column-reverse !important; */
-    /* display: flex !important; */
+    flex-direction: column-reverse !important;
+    display: flex !important;
 }
 .header__row.header__row--top.color-\#ffffff.section.section--full-width-margin.section--page-width.divider--page-width.color-custom-top-sections--22617970540788__header_section {
     display: none !important;
