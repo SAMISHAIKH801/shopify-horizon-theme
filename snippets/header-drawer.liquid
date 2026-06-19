@@ -97,6 +97,46 @@
         "
         aria-label="{{ 'accessibility.header_navigation_label' | t }}"
       >
+
+
+
+
+
+
+         <div class="custom-engine-drawer-header">
+  <button type="button" class="custom-engine-btn" id="openEnginePopup">
+    Shop by Engine
+  </button>
+</div>
+
+<div id="enginePopupModal" class="engine-popup-modal">
+  <div class="engine-popup-content">
+    <span class="close-popup">&times;</span>
+    <h3>SHOP PARTS BY ENGINE</h3>
+    
+    <form action="/search" method="get">
+      <div class="form-group">
+        <select name="pf_v_engine_make" id="engineMake">
+          <option value="">Engine Make</option>
+          <option value="mercury">Mercury Marine</option>
+          <option value="yamaha">Yamaha</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <select name="pf_v_model" id="engineModel">
+          <option value="">Model</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <select name="pf_v_year" id="engineYear">
+          <option value="">Year</option>
+        </select>
+      </div>
+      <button type="submit" class="engine-search-submit">Search</button>
+    </form>
+  </div>
+</div>
+
         <ul
           class="menu-drawer__menu has-submenu"
           role="list"
