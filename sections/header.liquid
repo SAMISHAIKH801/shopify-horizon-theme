@@ -100,6 +100,16 @@
     render 'header-actions', customer_account_menu: section.settings.customer_account_menu, display_style: section.settings.actions_display_style, section: section
   endcapture
 
+%}
+{% capture shop_by_engine_btn %}
+  <button class="btn-shop-by-engine" onclick="window.openShopByEngine && window.openShopByEngine()">
+    Shop by Engine
+  </button>
+{% endcapture %}
+
+
+{% liquid
+
   if shop.customer_accounts_enabled
     assign search_class = 'search-action--hidden-on-drawer'
   endif
@@ -438,7 +448,8 @@
         actions: actions,
         localization: localization_markup,
         search: search,
-        drawer_search: drawer_search
+        drawer_search: drawer_search,
+        shop_by_engine: shop_by_engine_btn
       %}
     {% endcapture %}
 
@@ -479,7 +490,198 @@
 
 
 
+/* ── SHOP BY ENGINE BUTTON ── */
+.header-search-engine-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
 
+.btn-shop-by-engine {
+  flex-shrink: 0;
+  background: #f5a623;
+  color: #071a2d;
+  border: none;
+  border-radius: 6px;
+  height: 44px;
+  padding: 0 18px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  transition: background 0.15s;
+}
+.btn-shop-by-engine:hover { background: #e09410; }
+
+/* ── SHOP BY ENGINE POPUP ── */
+.sbe-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 99999;
+  justify-content: center;
+  align-items: center;
+}
+.sbe-overlay.sbe-active { display: flex; }
+
+.sbe-modal {
+  background: #0d2b45;
+  border-radius: 10px;
+  overflow: hidden;
+  width: 820px;
+  max-width: 94vw;
+  display: flex;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+  position: relative;
+}
+
+.sbe-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.7);
+  font-size: 26px;
+  cursor: pointer;
+  line-height: 1;
+  z-index: 2;
+}
+.sbe-close:hover { color: #fff; }
+
+/* Left image side */
+.sbe-img-side {
+  flex: 1;
+  background: #0b2e46;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 24px 20px;
+  min-height: 360px;
+}
+.sbe-engines {
+  display: flex;
+  gap: 14px;
+  align-items: flex-end;
+}
+.sbe-engine-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.sbe-engine-img {
+  width: 88px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  object-fit: cover;
+  display: block;
+}
+.sbe-engine-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* If no real images, show placeholder blocks */
+.sbe-engine-placeholder {
+  width: 88px;
+  background: linear-gradient(160deg,#1a4d6e,#0d2b45);
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.3);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Right form side */
+.sbe-form-side {
+  width: 320px;
+  background: #071a2d;
+  padding: 36px 26px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.sbe-title {
+  font-size: 19px;
+  font-weight: 800;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.25;
+  margin-bottom: 4px;
+}
+.sbe-title span { color: #f5a623; }
+
+.sbe-select {
+  width: 100%;
+  height: 48px;
+  background: #0e3a56;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 15px;
+  padding: 0 36px 0 14px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+}
+.sbe-select:focus { outline: none; border-color: #f5a623; }
+.sbe-select option { background: #0d2b45; }
+.sbe-select:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.sbe-btn-search {
+  width: 100%;
+  height: 50px;
+  background: #f5a623;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #071a2d;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-top: 4px;
+}
+.sbe-btn-search:hover { background: #e09410; }
+
+/* Mobile responsive */
+@media (max-width: 749px) {
+  .sbe-modal {
+    flex-direction: column;
+    max-height: 88vh;
+    overflow-y: auto;
+  }
+  .sbe-img-side { min-height: 160px; padding: 16px; }
+  .sbe-form-side { width: 100%; padding: 22px 18px 24px; }
+  .btn-shop-by-engine { display: none; }
+}
+
+
+
+
+
+
+
+
+/* ----------- */
 
 
 
@@ -1190,6 +1392,148 @@
     hydrate('{{ section.id }}', url);
   </script>
 {% endunless %}
+
+
+
+
+
+
+{% comment %} ── SHOP BY ENGINE POPUP ── {% endcomment %}
+<div class="sbe-overlay" id="sbeOverlay">
+  <div class="sbe-modal" role="dialog" aria-modal="true" aria-label="Shop Parts by Engine">
+    <button class="sbe-close" id="sbeClose" aria-label="Close">&#x2715;</button>
+
+    {%- comment -%} Left: engine visuals {%- endcomment -%}
+    <div class="sbe-img-side">
+      <div class="sbe-engines">
+        <div class="sbe-engine-col">
+          <div class="sbe-engine-placeholder" style="height:110px;">Yamaha</div>
+          <span class="sbe-engine-label">Yamaha</span>
+        </div>
+        <div class="sbe-engine-col">
+          <div class="sbe-engine-placeholder" style="height:145px;">Mercury</div>
+          <span class="sbe-engine-label">Mercury</span>
+        </div>
+        <div class="sbe-engine-col">
+          <div class="sbe-engine-placeholder" style="height:120px;">Suzuki</div>
+          <span class="sbe-engine-label">Suzuki</span>
+        </div>
+      </div>
+    </div>
+
+    {%- comment -%} Right: form {%- endcomment -%}
+    <div class="sbe-form-side">
+      <div class="sbe-title">Shop Parts<br><span>By Engine</span></div>
+
+      <select class="sbe-select" id="sbeMake">
+        <option value="">Engine Make</option>
+        <option value="yamaha">Yamaha</option>
+        <option value="mercury">Mercury</option>
+        <option value="mercruiser">MerCruiser</option>
+        <option value="suzuki">Suzuki</option>
+        <option value="honda">Honda</option>
+      </select>
+
+      <select class="sbe-select" id="sbeModel" disabled>
+        <option value="">Model</option>
+      </select>
+
+      <select class="sbe-select" id="sbeYear" disabled>
+        <option value="">Year</option>
+      </select>
+
+      <button class="sbe-btn-search" id="sbeSearchBtn">Search</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var sbeModels = {
+    yamaha: ['F4','F6','F8','F9.9','F15','F20','F25','F40','F50','F60','F70','F75','F90','F100','F115','F150','F175','F200','F225','F250','F300','F350'],
+    mercury: ['2.5','3.5','4','5','6','8','9.9','15','20','25','30','40','50','60','75','90','115','150','175','200','225','250','300','350','400 Verado'],
+    mercruiser: ['3.0L TKS','3.0L MPI','4.3L MPI','5.0L MPI','5.7L MPI','6.2L MPI','8.1L MPI','350 MAG','496 MAG','QSD 2.0','QSD 4.2'],
+    suzuki: ['DF2.5','DF4','DF6','DF8','DF9.9','DF15','DF20','DF25','DF40','DF50','DF60','DF70','DF90','DF115','DF140','DF150','DF175','DF200','DF225','DF250','DF300','DF350'],
+    honda: ['BF2.3','BF4','BF5','BF6','BF8','BF9.9','BF15','BF20','BF25','BF30','BF40','BF50','BF60','BF75','BF90','BF115','BF135','BF150','BF175','BF200','BF225','BF250']
+  };
+
+  function openSbe() {
+    document.getElementById('sbeOverlay').classList.add('sbe-active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSbe() {
+    document.getElementById('sbeOverlay').classList.remove('sbe-active');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('sbeClose').addEventListener('click', closeSbe);
+  document.getElementById('sbeOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeSbe();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeSbe();
+  });
+
+  document.getElementById('sbeMake').addEventListener('change', function() {
+    var make = this.value;
+    var modelSel = document.getElementById('sbeModel');
+    var yearSel = document.getElementById('sbeYear');
+    modelSel.innerHTML = '<option value="">Model</option>';
+    yearSel.innerHTML = '<option value="">Year</option>';
+    modelSel.disabled = true;
+    yearSel.disabled = true;
+    if (make && sbeModels[make]) {
+      sbeModels[make].forEach(function(m) {
+        var o = document.createElement('option');
+        o.value = m; o.textContent = m;
+        modelSel.appendChild(o);
+      });
+      modelSel.disabled = false;
+    }
+  });
+
+  document.getElementById('sbeModel').addEventListener('change', function() {
+    var yearSel = document.getElementById('sbeYear');
+    yearSel.innerHTML = '<option value="">Year</option>';
+    yearSel.disabled = true;
+    if (this.value) {
+      for (var y = 2025; y >= 1985; y--) {
+        var o = document.createElement('option');
+        o.value = y; o.textContent = y;
+        yearSel.appendChild(o);
+      }
+      yearSel.disabled = false;
+    }
+  });
+
+  document.getElementById('sbeSearchBtn').addEventListener('click', function() {
+    var make = document.getElementById('sbeMake').value;
+    var model = document.getElementById('sbeModel').value;
+    var year = document.getElementById('sbeYear').value;
+    if (!make || !model || !year) {
+      alert('Please select Engine Make, Model, and Year.');
+      return;
+    }
+    window.location.href = '/search?q=' + encodeURIComponent(make + ' ' + model + ' ' + year);
+  });
+
+  // Expose globally so the button in header can call it
+  window.openShopByEngine = openSbe;
+})();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 {% schema %}
 {
