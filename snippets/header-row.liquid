@@ -80,8 +80,16 @@
               {{ menu }}
             {% when 'localization' %}
               {{ localization }}
-            {% when 'search' %}
-              {{ search }}
+            {% comment %} {% when 'search' %}
+              {{ search }} {% endcomment %}
+
+              {% when 'search' %}
+  {{ search }}
+  {% if shop_by_engine != blank %}
+    {{ shop_by_engine }}
+  {% endif %}
+
+  
             {% when 'drawer_search' %}
               {{ drawer_search }}
             {% when 'actions' %}
