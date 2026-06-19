@@ -577,11 +577,16 @@
   }
 
   /* Logo left side pe */
-  .header__columns .header-logo {
+  /* .header__columns .header-logo {
     grid-area: center !important;
     justify-self: start !important;
     padding-inline-start: 4px !important;
-  }
+  } */
+
+  .header__columns .header-logo {
+  grid-area: leftA !important;
+  justify-self: start !important;
+}
 
   /* Account rightA pe */
   .header__columns header-actions {
@@ -593,12 +598,17 @@
   grid-area: rightB !important;
 }
 
-#header-component[data-menu-style='drawer'] .header__columns .header-logo {
+/* #header-component[data-menu-style='drawer'] .header__columns .header-logo {
   grid-area: center !important;
   justify-self: start !important;
   padding-inline-start: 4px !important;
+} */
+#header-component[data-menu-style='drawer'] .header__columns .header-logo {
+  grid-area: leftA !important;
+  justify-self: start !important;
+  padding-inline-start: 0 !important;
+  padding-left: 0 !important;
 }
-
 #header-component[data-menu-style='drawer'] .header__columns header-actions {
   grid-area: rightA !important;
 }
