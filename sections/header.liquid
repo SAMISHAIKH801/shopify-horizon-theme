@@ -491,7 +491,11 @@
 
 
 
-
+#header-component {
+    gap: 15px !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
 
 /* ── DESKTOP: search center column stretch ── */
 .header__column--center {
@@ -507,6 +511,13 @@
 
 /* Desktop pe drawer_search (mobile-search-bar) hide karo */
 @media (min-width: 750px) {
+
+  #header-component {
+    gap: 0px !important;
+}
+
+
+
   .custom-search-bar.mobile-search-bar {
     display: none !important;
   }
