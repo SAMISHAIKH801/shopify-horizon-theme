@@ -542,14 +542,65 @@
 }
 
 
-
-/* Mobile: logo left mein force karo */
+/* ── MOBILE: hamburger rightB mein, logo left-center mein ── */
 @media (max-width: 749px) {
+  .header__columns .header__icon--menu,
+  .header__columns [data-testid="header-top-left"] > *:first-child {
+    grid-area: rightB !important;
+    order: 5;
+  }
+
+  .header__columns .header-logo {
+    grid-area: center !important;
+    justify-self: start;
+    padding-left: 4px;
+  }
+}
+
+#header-component[data-menu-style='drawer'] .header__columns .header__icon--menu,
+#header-component[data-menu-style='drawer'] .header__columns details > summary {
+  grid-area: rightB !important;
+}
+/* Mobile: logo left mein force karo */
+/* @media (max-width: 749px) {
   .header__columns .header-logo {
     grid-area: center !important;
     justify-self: start;
     padding-left: 12px;
   }
+} */
+
+@media (max-width: 749px) {
+  /* Hamburger ko rightB mein le jao */
+  .header__columns details {
+    grid-area: rightB !important;
+  }
+
+  /* Logo left side pe */
+  .header__columns .header-logo {
+    grid-area: center !important;
+    justify-self: start !important;
+    padding-inline-start: 4px !important;
+  }
+
+  /* Account rightA pe */
+  .header__columns header-actions {
+    grid-area: rightA !important;
+  }
+}
+
+#header-component[data-menu-style='drawer'] .header__columns details {
+  grid-area: rightB !important;
+}
+
+#header-component[data-menu-style='drawer'] .header__columns .header-logo {
+  grid-area: center !important;
+  justify-self: start !important;
+  padding-inline-start: 4px !important;
+}
+
+#header-component[data-menu-style='drawer'] .header__columns header-actions {
+  grid-area: rightA !important;
 }
 
 #header-component[data-menu-style='drawer'] .header__columns .header-logo {
