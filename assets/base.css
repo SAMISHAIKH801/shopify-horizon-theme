@@ -4324,3 +4324,9 @@ a.size-style.button.button--ASzZhVVhNOUMzZ01rN__button_8ML6g9 {
 .header__row.header__row--top.color-\#ffffff.section.section--full-width-margin.section--page-width.divider--page-width.color-custom-top-sections--22642676924660__header_section {
     display: none !important;
 }
+
+.header__row.header__row--bottom.color-\#062743.section.section--full-width-margin.section--page-width.mobile\:hidden.color-custom-bottom-sections--22642676924660__header_section {
+    padding: 5px 0px 10px;
+}
+
+
