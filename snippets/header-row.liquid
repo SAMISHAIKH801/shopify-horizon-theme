@@ -139,10 +139,16 @@
     assign item_row = settings[row_key] | default: 'top'
     assign item_column = settings[column_key] | default: 'left'
 
+  
+
     case item
-      when 'actions'
-        assign item_column = 'right'
-    endcase
+  when 'actions'
+    assign item_column = 'right'
+  when 'search'
+    assign item_column = 'center'
+endcase
+
+
 
     if item_row == row
       case item_column
