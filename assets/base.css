@@ -4330,3 +4330,6 @@ a.size-style.button.button--ASzZhVVhNOUMzZ01rN__button_8ML6g9 {
 }
 
 
+.header__columns {
+    --header-left: 5fr !important;
+}
