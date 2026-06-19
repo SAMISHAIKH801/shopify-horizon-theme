@@ -81,7 +81,12 @@
             {% when 'localization' %}
               {{ localization }}
             {% when 'search' %}
-              {{ search }}
+              {% comment %} {{ search }} {% endcomment %}
+              {% if shop_by_engine != blank %}
+  <div class="header-shop-engine-wrap">
+    {{ shop_by_engine }}
+  </div>
+{% endif %}
             {% when 'drawer_search' %}
               {{ drawer_search }}
             {% when 'actions' %}
