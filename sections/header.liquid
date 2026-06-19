@@ -457,11 +457,11 @@
     {% endif %}
   {% endfor %}
 
-  {% if navigation_bar != blank %}
+  {% comment %} {% if navigation_bar != blank %}
     <div class="header__row header__navigation-bar-row">
       {{ navigation_bar }}
     </div>
-  {% endif %}
+  {% endif %} {% endcomment %}
 
 
   {% comment %} --- {% endcomment %}
@@ -565,6 +565,15 @@
      </form>
   </div>
 </div>
+
+
+  {% if navigation_bar != blank %}
+    <div class="header__row header__navigation-bar-row">
+      {{ navigation_bar }}
+    </div>
+  {% endif %}
+
+  
 </header-component>
 
 
