@@ -356,272 +356,289 @@
 
 
 {%- doc -%}
-  Renders mega menu list markup and optional featured content.
-  CUSTOMIZED: Split layout (Left Text Navigation | Right 5-Column Dynamic Grid) Like PartsVu reference.
+  Renders a highly dynamic mega menu lookalike to PartsVu.
+  - Automatically detects if it needs a Split Layout or Full Grid.
+  - Controls hover states via CSS/JS for switching child items.
 {%- enddoc -%}
 
 {% liquid
-  assign open_column_span = false
-  assign column_count = 0
-  assign links_before_wrap = 10
-  assign max_menu_columns = grid_columns_count | default: 6
-  assign max_menu_columns_tablet = grid_columns_count_tablet | default: 4
-
-  assign eager_loading = false
-  if section.index == blank
-    assign eager_loading = true
-  endif
-
-  if menu_content_type == 'collection_images'
-    assign collection_links = parent_link.links | where: 'type', 'collection_link'
-    assign catalog_links = parent_link.links | where: 'type', 'catalog_link'
-    assign collection_list_links = parent_link.links | where: 'type', 'collections_link'
-    if collection_links.size == 0 and catalog_links.size == 0 and collection_list_links.size == 0
-      assign menu_content_type = 'text'
+  assign has_sub_categories = false
+  for link in parent_link.links
+    if link.links != blank
+      assign has_sub_categories = true
+      break
     endif
-  endif
+  endfor
 
-  if menu_content_type == 'featured_products'
-    if parent_link.type == 'collection_link'
-      assign collection_object = parent_link.object
-    elsif parent_link.type == 'catalog_link' or parent_link.type == 'collections_link'
-      assign collection_object = collections.all
-    else
-      assign menu_content_type = 'text'
-    endif
+  # Fallback check if menu content type forces specific logic
+  if menu_content_type == 'featured_products' or menu_content_type == 'collection_images'
+    # Treat these as straight grid renders if desired
   endif
 %}
 
 {% style %}
-  /* ============================================================
-     PARTSVU LOOKALIKE SPLIT LAYOUT CONFIGURATION
-  ============================================================ */
-  
-  /* Main wrapper that holds everything inside the mega menu dropdown */
-  [data-menu-grid-id="{{ id }}"] {
+  /* MAIN MEGA MENU CONTAINER */
+  .parts-menu__wrapper {
     display: flex !important;
-    flex-direction: row !important;
     width: 100% !important;
-    max-width: 1300px !important;
+    max-width: 1340px !important;
     margin: 0 auto !important;
     background: #ffffff !important;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
-    border-radius: 4px !important;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.12) !important;
+    border-radius: 6px !important;
     overflow: hidden !important;
+    border: 1px solid #e1e4e6 !important;
   }
 
-  /* LEFT SIDE PANEL: For Categories / Pages text links */
-  .parts-menu__left-nav {
-    width: 25% !important;
-    min-width: 240px !important;
-    border-right: 1px solid #e5e5e5 !important;
-    padding: 20px !important;
-    background: #fafafa !important;
+  /* CONDITION 1: SPLIT LAYOUT */
+  .parts-menu--split {
+    flex-direction: row !important;
   }
 
-  .parts-menu__left-nav ul {
-    list-style: none !important;
-    padding: 0 !important;
+  /* CONDITION 2: FULL WIDTH LAYOUT (No Left Panel) */
+  .parts-menu--full-width {
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  /* LEFT SIDE PANEL (TAB SYSTEM) */
+  .parts-menu__left-sidebar {
+    width: 22% !important;
+    min-width: 220px !important;
+    background: #f8f9fa !important;
+    border-right: 1px solid #eef1f3 !important;
+    padding: 15px 0 !important;
     margin: 0 !important;
+    list-style: none !important;
   }
 
-  .parts-menu__left-nav .mega-menu__link--parent {
-    font-size: 14px !important;
-    font-weight: 700 !important;
-    color: #002244 !important;
+  .parts-menu__tab-item {
+    position: relative !important;
+  }
+
+  .parts-menu__tab-btn {
+    width: 100% !important;
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    padding: 10px 8px !important;
-    border-bottom: 1px solid #f0f0f0 !important;
+    padding: 12px 20px !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #002244 !important;
     text-decoration: none !important;
+    text-align: left !important;
+    transition: background 0.2s, color 0.2s !important;
+    border: none !important;
+    background: transparent !important;
+    cursor: pointer !important;
   }
 
-  .parts-menu__left-nav .mega-menu__link--parent:hover {
+  /* HOVER CONTENT TRIGGER LOGIC via CSS */
+  .parts-menu__tab-item:hover .parts-menu__tab-btn {
     background: #e6f0fa !important;
     color: #004b93 !important;
   }
 
-  /* RIGHT SIDE PANEL: Main content dashboard (Products or Multi-Tier child item grids) */
-  .parts-menu__right-content {
-    width: 75% !important;
-    padding: 25px !important;
+  /* RIGHT SIDE CONTENT BODY */
+  .parts-menu__right-pane {
+    width: 78% !important;
+    padding: 20px !important;
     background: #ffffff !important;
+    position: relative !important;
   }
 
-  /* 5-COLUMN GENERIC CARD/TILE ARCHITECTURE */
-  .parts-menu__five-column-grid {
+  .parts-menu--full-width .parts-menu__right-pane {
+    width: 100% !important;
+    padding: 25px !important;
+  }
+
+  /* TARGET GRIDS CONTAINER */
+  .parts-menu__grid-content {
+    display: none; /* Hidden by default, toggled on hover */
+    width: 100% !important;
+  }
+
+  /* Show the first active layout by default, or switch on tab hover */
+  .parts-menu__tab-item:first-child .parts-menu__grid-content,
+  .parts-menu__tab-item:hover .parts-menu__grid-content {
+    display: block !important;
+  }
+
+  /* If it's a full-width grid, it must display always */
+  .parts-menu--full-width .parts-menu__grid-content {
+    display: block !important;
+  }
+
+  /* Move right pane on hover via absolute position overlay strategy if multi-tier */
+  @media (min-width: 990px) {
+    .parts-menu--split .parts-menu__grid-content {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      padding: 20px !important;
+      background: #ffffff !important;
+      z-index: 10 !important;
+    }
+    /* Force first child content layer below hover elements unless hover active */
+    .parts-menu__tab-item:first-child .parts-menu__grid-content {
+      z-index: 1 !important;
+    }
+    .parts-menu__tab-item:hover .parts-menu__grid-content {
+      z-index: 50 !important;
+    }
+  }
+
+  /* STRICT 5-COLUMN DYNAMIC GRID */
+  .parts-menu__five-grid {
     display: grid !important;
-    grid-template-columns: repeat(5, 1fr) !important;
-    gap: 16px !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 12px !important;
     list-style: none !important;
     padding: 0 !important;
     margin: 0 !important;
     width: 100% !important;
   }
 
-  /* CARD INTERIOR STYLING (Square Box + Grey BG like PartsVu) */
-  .parts-menu__card-box {
+  /* COMPACT CARD INTERIOR */
+  .parts-menu__card {
     background: #ffffff !important;
-    border: 1px solid #eaeaea !important;
-    border-radius: 6px !important;
-    padding: 10px !important;
-    text-align: center !important;
-    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
-  }
-
-  .parts-menu__card-box:hover {
-    transform: translateY(-3px) !important;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.08) !important;
-  }
-
-  .parts-menu__img-wrapper {
-    background: #f4f6f8 !important; /* Cool grey background from ref images */
-    aspect-ratio: 1 / 1 !important;
+    border: 1px solid #e9ecef !important;
     border-radius: 4px !important;
+    padding: 8px !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    transition: box-shadow 0.2s ease, transform 0.2s ease !important;
+  }
+
+  .parts-menu__card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+  }
+
+  /* IMAGE BOX WITH SHARP CLIPPING AND PERFECT BG COVER */
+  .parts-menu__image-holder {
+    background: #f4f6f8 !important;
+    aspect-ratio: 1 / 1 !important;
+    border-radius: 3px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     overflow: hidden !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 8px !important;
+    width: 100% !important;
   }
 
-  .parts-menu__img-wrapper img {
-    max-width: 90% !important;
-    max-height: 90% !important;
+  .parts-menu__image-holder img {
+    max-width: 95% !important;
+    max-height: 95% !important;
     object-fit: contain !important;
+    width: auto !important;
+    height: auto !important;
   }
 
-  .parts-menu__card-title {
-    font-size: 13px !important;
+  /* CARD METADATA */
+  .parts-menu__card-link {
+    font-size: 12px !important;
     font-weight: 600 !important;
     color: #002244 !important;
     line-height: 1.3 !important;
-    margin: 6px 0 4px 0 !important;
     text-decoration: none !important;
+    margin: 4px 0 !important;
     display: -webkit-box !important;
     -webkit-line-clamp: 2 !important;
     -webkit-box-orient: vertical !important;
     overflow: hidden !important;
+    height: 32px !important; /* Fixed bounds prevent layout breaking */
+  }
+
+  .parts-menu__card-link:hover {
+    color: #004b93 !important;
   }
 
   .parts-menu__card-price {
-    font-size: 13px !important;
-    color: #444444 !important;
-    font-weight: bold !important;
-  }
-
-  /* Responsive Fixes */
-  @media screen and (max-width: 1024px) {
-    .parts-menu__five-column-grid {
-      grid-template-columns: repeat(3, 1fr) !important;
-    }
+    font-size: 12px !important;
+    color: #333333 !important;
+    font-weight: 700 !important;
+    margin-top: auto !important;
   }
 {% endstyle %}
 
-<div class="parts-menu__left-nav">
-  <ul class="list-unstyled">
-    {% for link in parent_link.links %}
-      <li>
-        <a href="{{ link.url }}" class="mega-menu__link {% if link.links != blank %}mega-menu__link--parent{% endif %}">
-          <span class="wrap-text">{{ link.title }}</span>
-          {% if link.links != blank %}<span>&rsaquo;</span>{% endif %}
-        </a>
-        
-        {% comment %}
-          If there are deep nested sub-text items that shouldn't render as grids 
-          (e.g., fallback stack inside left sidebar)
-        {% endcomment %}
-        {% if link.links != blank and menu_content_type == 'text' %}
-          <ul style="padding-left: 12px; margin-top: 4px; margin-bottom: 12px;">
-            {% for childLink in link.links %}
-              <li>
-                <a href="{{ childLink.url }}" style="font-size: 12px; color: #555; padding: 4px 0; display: block;">
-                  {{ childLink.title }}
-                </a>
-              </li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-      </li>
-    {% endfor %}
-  </ul>
-</div>
-
-<div class="parts-menu__right-content">
+<div class="parts-menu__wrapper {% if has_sub_categories %}parts-menu--split{% else %}parts-menu--full-width{% endif %}" data-menu-grid-id="{{ id }}">
   
-  {% comment %} 
-    Scenario 1: If direct child content includes Featured Products
-  {% endcomment %}
-  {% if menu_content_type == 'featured_products' %}
-    <ul class="parts-menu__five-column-grid">
-      {% if eager_loading %}
-        {% paginate collection_object.products by 10 %}
-          {% for item in collection_object.products %}
-            <li class="parts-menu__card-box">
-              <div class="parts-menu__img-wrapper">
-                {% if item.featured_image != blank %}
-                  <img src="{{ item.featured_image | img_url: '300x300' }}" alt="{{ item.title | escape }}" loading="lazy">
+  {% if has_sub_categories %}
+    <ul class="parts-menu__left-sidebar">
+      {% for link in parent_link.links %}
+        <li class="parts-menu__tab-item">
+          <a href="{{ link.url }}" class="parts-menu__tab-btn">
+            <span>{{ link.title }}</span>
+            {% if link.links != blank %}<span>&rsaquo;</span>{% endif %}
+          </a>
+
+          <div class="parts-menu__grid-content">
+            <ul class="parts-menu__five-grid">
+              {% if link.links != blank %}
+                {% for grandChildLink in link.links %}
+                  <li class="parts-menu__card">
+                    <div class="parts-menu__image-holder">
+                      {% if grandChildLink.type == 'product_link' and grandChildLink.object.featured_image != blank %}
+                        <img src="{{ grandChildLink.object.featured_image | img_url: '240x240' }}" alt="{{ grandChildLink.title | escape }}" loading="lazy">
+                      {% elsif grandChildLink.type == 'collection_link' and grandChildLink.object.image != blank %}
+                        <img src="{{ grandChildLink.object.image | img_url: '240x240' }}" alt="{{ grandChildLink.title | escape }}" loading="lazy">
+                      {% elsif grandChildLink.type == 'collection_link' and grandChildLink.object.products.first.featured_image != blank %}
+                        <img src="{{ grandChildLink.object.products.first.featured_image | img_url: '240x240' }}" alt="{{ grandChildLink.title | escape }}" loading="lazy">
+                      {% else %}
+                        {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                      {% endif %}
+                    </div>
+                    <a href="{{ grandChildLink.url }}" class="parts-menu__card-link">{{ grandChildLink.title }}</a>
+                    {% if grandChildLink.type == 'product_link' %}
+                      <div class="parts-menu__card-price">{{ grandChildLink.object.price | money }}</div>
+                    {% endif %}
+                  </li>
+                {% endfor %}
+              {% else %}
+                {% endif %}
+            </ul>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <div class="parts-menu__right-pane">
+       </div>
+
+  {% else %}
+    
+    <div class="parts-menu__right-pane">
+      <div class="parts-menu__grid-content">
+        <ul class="parts-menu__five-grid">
+          {% for link in parent_link.links %}
+            <li class="parts-menu__card">
+              <div class="parts-menu__image-holder">
+                {% if link.type == 'product_link' and link.object.featured_image != blank %}
+                  <img src="{{ link.object.featured_image | img_url: '240x240' }}" alt="{{ link.title | escape }}" loading="lazy">
+                {% elsif link.type == 'collection_link' and link.object.image != blank %}
+                  <img src="{{ link.object.image | img_url: '240x240' }}" alt="{{ link.title | escape }}" loading="lazy">
+                {% elsif link.type == 'collection_link' and link.object.products.first.featured_image != blank %}
+                  <img src="{{ link.object.products.first.featured_image | img_url: '240x240' }}" alt="{{ link.title | escape }}" loading="lazy">
                 {% else %}
                   {{ 'product-1' | placeholder_svg_tag }}
                 {% endif %}
               </div>
-              <a href="{{ item.url }}" class="parts-menu__card-title">{{ item.title }}</a>
-              <div class="parts-menu__card-price">{{ item.price | money }}</div>
-            </li>
-          {% endfor %}
-        {% endpaginate %}
-      {% endif %}
-    </ul>
-
-  {% comment %} 
-    Scenario 2: If child are Collections with Images (Category Tile Layout like Yamaha sub-items)
-  {% endcomment %}
-  {% elsif menu_content_type == 'collection_images' %}
-    <ul class="parts-menu__five-column-grid">
-      {% for link in parent_link.links %}
-        <li class="parts-menu__card-box">
-          <div class="parts-menu__img-wrapper">
-            {% if link.type == 'collection_link' and link.object.image != blank %}
-              <img src="{{ link.object.image | img_url: '300x300' }}" alt="{{ link.title | escape }}" loading="lazy">
-            {% elsif link.type == 'collection_link' and link.object.products.first.featured_image != blank %}
-              <img src="{{ link.object.products.first.featured_image | img_url: '300x300' }}" alt="{{ link.title | escape }}" loading="lazy">
-            {% else %}
-              {{ 'collection-1' | placeholder_svg_tag }}
-            {% endif %}
-          </div>
-          <a href="{{ link.url }}" class="parts-menu__card-title">{{ link.title }}</a>
-        </li>
-      {% endfor %}
-
-  {% comment %} 
-    Scenario 3: Deep nested structural checking (Grandchild Evaluation)
-    If the child of the main menu has its own children which are items, loop them into cards.
-  {% endcomment %}
-  {% else %}
-    <ul class="parts-menu__five-column-grid">
-      {% for link in parent_link.links %}
-        {% if link.links != blank %}
-          {% for grandChildLink in link.links %}
-            <li class="parts-menu__card-box">
-              <div class="parts-menu__img-wrapper">
-                {% if grandChildLink.type == 'product_link' and grandChildLink.object.featured_image != blank %}
-                  <img src="{{ grandChildLink.object.featured_image | img_url: '300x300' }}" alt="{{ grandChildLink.title | escape }}" loading="lazy">
-                {% elsif grandChildLink.type == 'collection_link' and grandChildLink.object.image != blank %}
-                  <img src="{{ grandChildLink.object.image | img_url: '300x300' }}" alt="{{ grandChildLink.title | escape }}" loading="lazy">
-                {% else %}
-                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
-                {% endif %}
-              </div>
-              <a href="{{ grandChildLink.url }}" class="parts-menu__card-title">{{ grandChildLink.title }}</a>
-              {% if grandChildLink.type == 'product_link' %}
-                <div class="parts-menu__card-price">{{ grandChildLink.object.price | money }}</div>
+              <a href="{{ link.url }}" class="parts-menu__card-link">{{ link.title }}</a>
+              {% if link.type == 'product_link' %}
+                <div class="parts-menu__card-price">{{ link.object.price | money }}</div>
               {% endif %}
             </li>
           {% endfor %}
-        {% endif %}
-      {% endfor %}
-    </ul>
+        </ul>
+      </div>
+    </div>
   {% endif %}
-  
+
 </div>
