@@ -481,6 +481,28 @@
 </header-component>
 
 
+{% render 'custom-mobile-drawer', linklist: section.settings.menu %}
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // 1. Aapki file ka default selector jo hamburger target karta hai
+    var originalHamburger = document.querySelector(".header__icon--menu, .menu-drawer-container summary, header-drawer summary");
+    var customDrawer = document.getElementById("customMobileDrawer");
+
+    if (originalHamburger && customDrawer) {
+      // Jab bhi user default toggle click karega, hum use intercept karke apna panel open karwaenge
+      originalHamburger.addEventListener("click", function(e) {
+        // Agar default overlay open ho rahi ho to use disable/hide karne ke liye prevent kar sakte hain
+        e.preventDefault();
+        e.stopPropagation();
+        
+        customDrawer.classList.add("is-open");
+      });
+    }
+  });
+</script>
+
+
 <script
   src="{{ 'header.js' | asset_url }}"
   type="module"
