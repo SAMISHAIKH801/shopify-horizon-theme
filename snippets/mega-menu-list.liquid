@@ -514,15 +514,33 @@
   }
 
   /* CARD METADATA — fixed height block so every card lines up */
-  .parts-menu__card-link {
-    font-size: 12px !important;
-    font-weight: 600 !important;
-    color: #002244 !important;
-    line-height: 1.3 !important;
-    text-decoration: none !important;
-    margin: 4px 0 !important;
-    
-  }
+  /* CARD METADATA — fixed height block so every card lines up */
+.parts-menu__card-link {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #222222 !important;
+  line-height: 1.4 !important;
+  text-decoration: none !important;
+  margin: 6px 0 4px 0 !important;
+  
+  /* Pura text wrap karne aur standard grid maintain rakhne ke liye */
+  display: block !important;
+  width: 100% !important;
+  text-align: left !important; /* Agar left alignment rakhni hai PartsVu jesi */
+  word-wrap: break-word !important;
+  white-space: normal !important;
+  
+  /* Max 2 lines lock aur overflow handle karne ka perfect tareeqa */
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  
+  /* Height ko static auto padding ya min-height par rkho taake overlap na ho */
+  min-height: 36px !important; 
+  height: auto !important;
+}
 
   .parts-menu__card-link:hover {
     color: #004b93 !important;
