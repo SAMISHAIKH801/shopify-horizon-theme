@@ -116,7 +116,7 @@
 
   # Handle localization positioning
   if section.settings.localization_position == 'left'
-    if section.settings.search_position == 'left'
+    if section.settings.search_position == 'center'
       if shop.customer_accounts_enabled
         assign order = 'drawer_search,logo,search,localization,menu,actions'
       else
@@ -130,7 +130,7 @@
       endif
     endif
   else
-    if section.settings.search_position == 'left'
+    if section.settings.search_position == 'center'
       if shop.customer_accounts_enabled
         assign order = 'drawer_search,logo,search,menu,localization,actions'
       else
@@ -146,7 +146,7 @@
   # Always render if search_row is bottom
   # Don't render when shop.customer_accounts_enabled is false and search_position is left and search_style is not none
   assign skip_drawer_search = false
-  if shop.customer_accounts_enabled == false and section.settings.search_position == 'left' and search_style != 'none'
+  if shop.customer_accounts_enabled == false and section.settings.search_position == 'center' and search_style != 'none'
     assign skip_drawer_search = true
   endif
 
