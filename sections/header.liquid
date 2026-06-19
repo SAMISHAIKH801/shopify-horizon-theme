@@ -488,13 +488,18 @@
 
 {% stylesheet %}
 
-
+.header__columns {
+    --header-left: 0fr !important;
+    --header-center: auto;
+    --header-right: 0fr !important;
+ }
 
 
 #header-component {
     gap: 15px !important;
     display: flex !important;
     flex-direction: column !important;
+    
 }
 
 /* ── DESKTOP: search center column stretch ── */
