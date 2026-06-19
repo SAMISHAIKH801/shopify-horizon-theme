@@ -356,8 +356,8 @@
 
 {%- doc -%}
   Renders a highly dynamic mega menu lookalike to PartsVu.
-  - Automatically detects if it needs a Split Layout or Full Grid.
-  - Controls hover states via CSS/JS for switching child items.
+  - Automatically detects if it needs a Split Layout (left tab sidebar) or Full Grid.
+  - Switches right-pane content via hover (CSS) + JS fallback for reliability.
 {%- enddoc -%}
 
 {% liquid
@@ -368,11 +368,6 @@
       break
     endif
   endfor
-
-  # Fallback check if menu content type forces specific logic
-  if menu_content_type == 'featured_products' or menu_content_type == 'collection_images'
-    # Treat these as straight grid renders if desired
-  endif
 %}
 
 {% style %}
@@ -387,11 +382,13 @@
     border-radius: 6px !important;
     overflow: hidden !important;
     border: 1px solid #e1e4e6 !important;
+    position: relative !important;
   }
 
   /* CONDITION 1: SPLIT LAYOUT */
   .parts-menu--split {
     flex-direction: row !important;
+    align-items: stretch !important;
   }
 
   /* CONDITION 2: FULL WIDTH LAYOUT (No Left Panel) */
@@ -433,8 +430,8 @@
     cursor: pointer !important;
   }
 
-  /* HOVER CONTENT TRIGGER LOGIC via CSS */
-  .parts-menu__tab-item:hover .parts-menu__tab-btn {
+  .parts-menu__tab-item:hover .parts-menu__tab-btn,
+  .parts-menu__tab-item.is-active .parts-menu__tab-btn {
     background: #e6f0fa !important;
     color: #004b93 !important;
   }
@@ -452,42 +449,19 @@
     padding: 25px !important;
   }
 
-  /* TARGET GRIDS CONTAINER */
+  /* EACH TAB'S GRID PANEL LIVES INSIDE THE RIGHT PANE, ONE PER CHILD */
   .parts-menu__grid-content {
-    display: none; /* Hidden by default, toggled on hover */
+    display: none !important;
     width: 100% !important;
   }
 
-  /* Show the first active layout by default, or switch on tab hover */
-  .parts-menu__tab-item:first-child .parts-menu__grid-content,
-  .parts-menu__tab-item:hover .parts-menu__grid-content {
+  .parts-menu__grid-content.is-active {
     display: block !important;
   }
 
-  /* If it's a full-width grid, it must display always */
+  /* full-width menus only ever have one panel, always shown */
   .parts-menu--full-width .parts-menu__grid-content {
     display: block !important;
-  }
-
-  /* Move right pane on hover via absolute position overlay strategy if multi-tier */
-  @media (min-width: 990px) {
-    .parts-menu--split .parts-menu__grid-content {
-      position: absolute !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
-      padding: 20px !important;
-      background: #ffffff !important;
-      z-index: 10 !important;
-    }
-    /* Force first child content layer below hover elements unless hover active */
-    .parts-menu__tab-item:first-child .parts-menu__grid-content {
-      z-index: 1 !important;
-    }
-    .parts-menu__tab-item:hover .parts-menu__grid-content {
-      z-index: 50 !important;
-    }
   }
 
   /* STRICT 5-COLUMN DYNAMIC GRID */
@@ -499,9 +473,10 @@
     padding: 0 !important;
     margin: 0 !important;
     width: 100% !important;
+    align-items: stretch !important;
   }
 
-  /* COMPACT CARD INTERIOR */
+  /* COMPACT CARD INTERIOR — equal height for every card */
   .parts-menu__card {
     background: #ffffff !important;
     border: 1px solid #e9ecef !important;
@@ -510,7 +485,7 @@
     text-align: center !important;
     display: flex !important;
     flex-direction: column !important;
-    justify-content: space-between !important;
+    height: 100% !important;
     transition: box-shadow 0.2s ease, transform 0.2s ease !important;
   }
 
@@ -530,6 +505,7 @@
     overflow: hidden !important;
     margin-bottom: 8px !important;
     width: 100% !important;
+    flex-shrink: 0 !important;
   }
 
   .parts-menu__image-holder img {
@@ -540,7 +516,7 @@
     height: auto !important;
   }
 
-  /* CARD METADATA */
+  /* CARD METADATA — fixed height block so every card lines up */
   .parts-menu__card-link {
     font-size: 12px !important;
     font-weight: 600 !important;
@@ -552,7 +528,8 @@
     -webkit-line-clamp: 2 !important;
     -webkit-box-orient: vertical !important;
     overflow: hidden !important;
-    height: 32px !important; /* Fixed bounds prevent layout breaking */
+    height: 32px !important;
+    flex-shrink: 0 !important;
   }
 
   .parts-menu__card-link:hover {
@@ -564,57 +541,57 @@
     color: #333333 !important;
     font-weight: 700 !important;
     margin-top: auto !important;
+    min-height: 16px !important;
   }
 {% endstyle %}
 
 <div class="parts-menu__wrapper {% if has_sub_categories %}parts-menu--split{% else %}parts-menu--full-width{% endif %}" data-menu-grid-id="{{ id }}">
-  
+
   {% if has_sub_categories %}
+
     <ul class="parts-menu__left-sidebar">
       {% for link in parent_link.links %}
-        <li class="parts-menu__tab-item">
+        <li class="parts-menu__tab-item{% if forloop.first %} is-active{% endif %}" data-tab-index="{{ forloop.index }}">
           <a href="{{ link.url }}" class="parts-menu__tab-btn">
             <span>{{ link.title }}</span>
             {% if link.links != blank %}<span>&rsaquo;</span>{% endif %}
           </a>
-
-          <div class="parts-menu__grid-content">
-            <ul class="parts-menu__five-grid">
-              {% if link.links != blank %}
-                {% for grandChildLink in link.links %}
-                  <li class="parts-menu__card">
-                    <div class="parts-menu__image-holder">
-                      {% if grandChildLink.type == 'product_link' and grandChildLink.object.featured_image != blank %}
-                        <img src="{{ grandChildLink.object.featured_image | img_url: '240x240' }}" alt="{{ grandChildLink.title | escape }}" loading="lazy">
-                      {% elsif grandChildLink.type == 'collection_link' and grandChildLink.object.image != blank %}
-                        <img src="{{ grandChildLink.object.image | img_url: '240x240' }}" alt="{{ grandChildLink.title | escape }}" loading="lazy">
-                      {% elsif grandChildLink.type == 'collection_link' and grandChildLink.object.products.first.featured_image != blank %}
-                        <img src="{{ grandChildLink.object.products.first.featured_image | img_url: '240x240' }}" alt="{{ grandChildLink.title | escape }}" loading="lazy">
-                      {% else %}
-                        {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
-                      {% endif %}
-                    </div>
-                    <a href="{{ grandChildLink.url }}" class="parts-menu__card-link">{{ grandChildLink.title }}</a>
-                    {% if grandChildLink.type == 'product_link' %}
-                      <div class="parts-menu__card-price">{{ grandChildLink.object.price | money }}</div>
-                    {% endif %}
-                  </li>
-                {% endfor %}
-              {% else %}
-                {% endif %}
-            </ul>
-          </div>
         </li>
       {% endfor %}
     </ul>
 
     <div class="parts-menu__right-pane">
-       </div>
+      {% for link in parent_link.links %}
+        <div class="parts-menu__grid-content{% if forloop.first %} is-active{% endif %}" data-panel-index="{{ forloop.index }}">
+          <ul class="parts-menu__five-grid">
+            {% for grandChildLink in link.links %}
+              <li class="parts-menu__card">
+                <div class="parts-menu__image-holder">
+                  {% if grandChildLink.type == 'product_link' and grandChildLink.object.featured_image != blank %}
+                    <img src="{{ grandChildLink.object.featured_image | img_url: '240x240' }}" alt="{{ grandChildLink.title | escape }}" loading="lazy">
+                  {% elsif grandChildLink.type == 'collection_link' and grandChildLink.object.image != blank %}
+                    <img src="{{ grandChildLink.object.image | img_url: '240x240' }}" alt="{{ grandChildLink.title | escape }}" loading="lazy">
+                  {% elsif grandChildLink.type == 'collection_link' and grandChildLink.object.products.first.featured_image != blank %}
+                    <img src="{{ grandChildLink.object.products.first.featured_image | img_url: '240x240' }}" alt="{{ grandChildLink.title | escape }}" loading="lazy">
+                  {% else %}
+                    {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                  {% endif %}
+                </div>
+                <a href="{{ grandChildLink.url }}" class="parts-menu__card-link">{{ grandChildLink.title }}</a>
+                <div class="parts-menu__card-price">
+                  {% if grandChildLink.type == 'product_link' %}{{ grandChildLink.object.price | money }}{% endif %}
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+    </div>
 
   {% else %}
-    
+
     <div class="parts-menu__right-pane">
-      <div class="parts-menu__grid-content">
+      <div class="parts-menu__grid-content is-active">
         <ul class="parts-menu__five-grid">
           {% for link in parent_link.links %}
             <li class="parts-menu__card">
@@ -630,14 +607,41 @@
                 {% endif %}
               </div>
               <a href="{{ link.url }}" class="parts-menu__card-link">{{ link.title }}</a>
-              {% if link.type == 'product_link' %}
-                <div class="parts-menu__card-price">{{ link.object.price | money }}</div>
-              {% endif %}
+              <div class="parts-menu__card-price">
+                {% if link.type == 'product_link' %}{{ link.object.price | money }}{% endif %}
+              </div>
             </li>
           {% endfor %}
         </ul>
       </div>
     </div>
+
   {% endif %}
 
 </div>
+
+{% if has_sub_categories %}
+<script>
+  (function () {
+    var wrapper = document.querySelector('.parts-menu__wrapper[data-menu-grid-id="{{ id }}"]');
+    if (!wrapper) return;
+    var tabs = wrapper.querySelectorAll('.parts-menu__tab-item');
+    var panels = wrapper.querySelectorAll('.parts-menu__grid-content');
+
+    function activate(index) {
+      tabs.forEach(function (tab) {
+        tab.classList.toggle('is-active', tab.getAttribute('data-tab-index') === index);
+      });
+      panels.forEach(function (panel) {
+        panel.classList.toggle('is-active', panel.getAttribute('data-panel-index') === index);
+      });
+    }
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('mouseenter', function () {
+        activate(tab.getAttribute('data-tab-index'));
+      });
+    });
+  })();
+</script>
+{% endif %}
