@@ -116,7 +116,7 @@
 
   # Handle localization positioning
   if section.settings.localization_position == 'left'
-    if section.settings.search_position == 'center'
+    if section.settings.search_position == 'left'
       if shop.customer_accounts_enabled
         assign order = 'drawer_search,logo,search,localization,menu,actions'
       else
@@ -130,7 +130,7 @@
       endif
     endif
   else
-    if section.settings.search_position == 'center'
+    if section.settings.search_position == 'left'
       if shop.customer_accounts_enabled
         assign order = 'drawer_search,logo,search,menu,localization,actions'
       else
@@ -146,7 +146,7 @@
   # Always render if search_row is bottom
   # Don't render when shop.customer_accounts_enabled is false and search_position is left and search_style is not none
   assign skip_drawer_search = false
-  if shop.customer_accounts_enabled == false and section.settings.search_position == 'center' and search_style != 'none'
+  if shop.customer_accounts_enabled == false and section.settings.search_position == 'left' and search_style != 'none'
     assign skip_drawer_search = true
   endif
 
@@ -488,7 +488,66 @@
 
 {% stylesheet %}
 
+/* ── DESKTOP: search center column stretch ── */
+.header__column--center {
+  flex: 1;
+}
 
+.header__column--center .custom-search-bar {
+  width: 100%;
+  max-width: 700px;
+}
+
+/* ── MOBILE: search bar bottom row ── */
+.mobile-search-form {
+  display: none;
+  position: relative;
+  align-items: center;
+  width: 100%;
+  background: #fff;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.mobile-search-icon {
+  position: absolute;
+  left: 12px;
+  color: #999;
+  pointer-events: none;
+}
+
+.mobile-search-input {
+  width: 100%;
+  height: 42px;
+  border: none;
+  border-radius: 6px;
+  padding: 0 14px 0 42px;
+  font-size: 15px;
+  color: #222;
+  background: #fff;
+  outline: none;
+}
+
+/* Mobile: show drawer_search as full-width bottom row */
+@media (max-width: 749px) {
+  .mobile-search-form {
+    display: flex;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin: 0 12px 10px;
+  }
+
+  /* Desktop search bar hide on mobile */
+  .custom-search-bar:not(.mobile-search-form) {
+    display: none !important;
+  }
+}
+
+@media (min-width: 750px) {
+  .mobile-search-form {
+    display: none !important;
+  }
+}
 
 /* ── SHOP BY ENGINE BUTTON ── */
 .header-search-engine-wrap {
