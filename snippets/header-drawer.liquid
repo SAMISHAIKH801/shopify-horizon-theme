@@ -1431,7 +1431,7 @@
 
 
 
-
+{%- assign mobile_menu = linklist | default: section.settings.menu | default: menus[section.settings.menu] -%}
 
 
 
@@ -1457,7 +1457,7 @@
 
     <nav class="custom-m-nav" id="mNavLayer1">
       <ul class="custom-m-menu-list">
-        {%- for link in linklist.links -%}
+        {%- for link in mobile_menu.links -%}
           <li class="custom-m-menu-item">
             {%- if link.links != blank -%}
               <button type="button" class="custom-m-menu-link has-children" data-target="submenu-{{ forloop.index }}">
