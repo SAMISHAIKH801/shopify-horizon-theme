@@ -350,9 +350,382 @@
 
 
 
+{%- doc -%}
+  Renders a highly dynamic mega menu lookalike to PartsVu.
+  - Automatically detects if it needs a Split Layout (left tab sidebar) or Full Grid.
+  - Switches right-pane content via hover (CSS) + JS fallback for reliability.
+  - FIXED: No flicker on hover, all cards/links fully clickable.
+{%- enddoc -%}
+
+{% liquid
+  assign has_sub_categories = false
+  for link in parent_link.links
+    if link.links != blank
+      assign has_sub_categories = true
+      break
+    endif
+  endfor
+%}
+
+{% style %}
+  /* MAIN MEGA MENU CONTAINER */
+  .parts-menu__wrapper {
+    display: flex !important;
+    width: 100% !important;
+    max-width: 1340px !important;
+    margin: 0 auto !important;
+    background: #ffffff !important;
+    border-radius: 6px !important;
+    overflow: hidden !important;
+    position: relative !important;
+  }
+
+  /* CONDITION 1: SPLIT LAYOUT */
+  .parts-menu--split {
+    flex-direction: row !important;
+    align-items: stretch !important;
+  }
+
+  /* CONDITION 2: FULL WIDTH LAYOUT (No Left Panel) */
+  .parts-menu--full-width {
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  /* LEFT SIDE PANEL (TAB SYSTEM) */
+  .parts-menu__left-sidebar {
+    width: 22% !important;
+    min-width: 220px !important;
+    background: #f8f9fa !important;
+    border-right: 1px solid #eef1f3 !important;
+    padding: 15px 0 !important;
+    margin: 0 !important;
+    list-style: none !important;
+  }
+
+  .parts-menu__tab-item {
+    position: relative !important;
+  }
+
+  .parts-menu__tab-btn {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 12px 20px !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #002244 !important;
+    text-decoration: none !important;
+    text-align: left !important;
+    transition: background 0.2s, color 0.2s !important;
+    border: none !important;
+    background: transparent !important;
+    cursor: pointer !important;
+    /* Make entire button area clickable */
+    pointer-events: all !important;
+  }
+
+  .parts-menu__tab-item:hover .parts-menu__tab-btn,
+  .parts-menu__tab-item.is-active .parts-menu__tab-btn {
+    background: #e6f0fa !important;
+    color: #004b93 !important;
+  }
+
+  /* RIGHT SIDE CONTENT BODY */
+  .parts-menu__right-pane {
+    width: 78% !important;
+    padding: 20px !important;
+    background: #ffffff !important;
+    position: relative !important;
+  }
+
+  .parts-menu--full-width .parts-menu__right-pane {
+    width: 100% !important;
+    padding: 25px !important;
+  }
+
+  /* EACH TAB'S GRID PANEL LIVES INSIDE THE RIGHT PANE, ONE PER CHILD */
+  .parts-menu__grid-content {
+    display: none !important;
+    width: 100% !important;
+  }
+
+  .parts-menu__grid-content.is-active {
+    display: block !important;
+  }
+
+  /* full-width menus only ever have one panel, always shown */
+  .parts-menu--full-width .parts-menu__grid-content {
+    display: block !important;
+  }
+
+  /* STRICT 5-COLUMN DYNAMIC GRID */
+  .parts-menu__five-grid {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    align-items: stretch !important;
+  }
+
+  /* COMPACT CARD INTERIOR — equal height for every card */
+  .parts-menu__card {
+    background: #ffffff !important;
+    border: 0px solid #e9ecef !important;
+    border-radius: 4px !important;
+    padding: 0px !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    transition: box-shadow 0.2s ease, transform 0.2s ease !important;
+    /* Ensure card itself is clickable */
+    position: relative !important;
+  }
+
+  .parts-menu__card:hover {
+    transform: translateY(-2px) !important;
+  }
+
+  /* IMAGE BOX WITH SHARP CLIPPING AND PERFECT BG COVER */
+  .parts-menu__image-holder {
+    background: #f4f6f8 !important;
+    aspect-ratio: 1 / 1 !important;
+    border-radius: 3px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    margin-bottom: 8px !important;
+    width: 100% !important;
+    flex-shrink: 0 !important;
+    /* Image holder bhi clickable ho */
+    pointer-events: none !important;
+  }
+
+  .parts-menu__image-holder img {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: cover !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important;
+  }
+
+  /* CARD LINK — full card cover via pseudo-element so entire card is clickable */
+  .parts-menu__card-link {
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: #222222 !important;
+    line-height: 1.4 !important;
+    text-decoration: none !important;
+    margin: 6px 0 4px 0 !important;
+    display: block !important;
+    width: 100% !important;
+    text-align: left !important;
+    word-wrap: break-word !important;
+    white-space: normal !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    min-height: 36px !important;
+    height: auto !important;
+    /* Stretch link over entire card using pseudo-element */
+    position: static !important;
+    z-index: 1 !important;
+  }
+
+  /* Pseudo-element stretches clickable area over the whole card */
+  .parts-menu__card-link::after {
+    content: '' !important;
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 0 !important;
+    display: block !important;
+  }
+
+  .parts-menu__card-link:hover {
+    color: #004b93 !important;
+  }
+
+  .parts-menu__card-price {
+    font-size: 12px !important;
+    color: #333333 !important;
+    font-weight: 700 !important;
+    margin-top: auto !important;
+    min-height: 16px !important;
+    position: relative !important;
+    z-index: 1 !important;
+  }
+{% endstyle %}
+
+<div class="parts-menu__wrapper {% if has_sub_categories %}parts-menu--split{% else %}parts-menu--full-width{% endif %}" data-menu-grid-id="{{ id }}">
+
+  {% if has_sub_categories %}
+
+    <ul class="parts-menu__left-sidebar">
+      {% for link in parent_link.links %}
+        <li class="parts-menu__tab-item{% if forloop.first %} is-active{% endif %}" data-tab-index="{{ forloop.index }}">
+          <a href="{{ link.url }}" class="parts-menu__tab-btn">
+            <span>{{ link.title }}</span>
+            {% if link.links != blank %}<span>&rsaquo;</span>{% endif %}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <div class="parts-menu__right-pane">
+      {% for link in parent_link.links %}
+        <div class="parts-menu__grid-content{% if forloop.first %} is-active{% endif %}" data-panel-index="{{ forloop.index }}">
+          <ul class="parts-menu__five-grid">
+            {% for grandChildLink in link.links %}
+              <li class="parts-menu__card">
+                <div class="parts-menu__image-holder">
+                  {% if grandChildLink.type == 'product_link' and grandChildLink.object.featured_image != blank %}
+                    <img src="{{ grandChildLink.object.featured_image | img_url: '240x240' }}" alt="{{ grandChildLink.title | escape }}" loading="lazy">
+                  {% elsif grandChildLink.type == 'collection_link' and grandChildLink.object.image != blank %}
+                    <img src="{{ grandChildLink.object.image | img_url: '240x240' }}" alt="{{ grandChildLink.title | escape }}" loading="lazy">
+                  {% elsif grandChildLink.type == 'collection_link' and grandChildLink.object.products.first.featured_image != blank %}
+                    <img src="{{ grandChildLink.object.products.first.featured_image | img_url: '240x240' }}" alt="{{ grandChildLink.title | escape }}" loading="lazy">
+                  {% else %}
+                    {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                  {% endif %}
+                </div>
+                <a href="{{ grandChildLink.url }}" class="parts-menu__card-link">{{ grandChildLink.title }}</a>
+                <div class="parts-menu__card-price">
+                  {% if grandChildLink.type == 'product_link' %}{{ grandChildLink.object.price | money }}{% endif %}
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+    </div>
+
+  {% else %}
+
+    <div class="parts-menu__right-pane">
+      <div class="parts-menu__grid-content is-active">
+        <ul class="parts-menu__five-grid">
+          {% for link in parent_link.links %}
+            <li class="parts-menu__card">
+              <div class="parts-menu__image-holder">
+                {% if link.type == 'product_link' and link.object.featured_image != blank %}
+                  <img src="{{ link.object.featured_image | img_url: '240x240' }}" alt="{{ link.title | escape }}" loading="lazy">
+                {% elsif link.type == 'collection_link' and link.object.image != blank %}
+                  <img src="{{ link.object.image | img_url: '240x240' }}" alt="{{ link.title | escape }}" loading="lazy">
+                {% elsif link.type == 'collection_link' and link.object.products.first.featured_image != blank %}
+                  <img src="{{ link.object.products.first.featured_image | img_url: '240x240' }}" alt="{{ link.title | escape }}" loading="lazy">
+                {% else %}
+                  {{ 'product-1' | placeholder_svg_tag }}
+                {% endif %}
+              </div>
+              <a href="{{ link.url }}" class="parts-menu__card-link">{{ link.title }}</a>
+              <div class="parts-menu__card-price">
+                {% if link.type == 'product_link' %}{{ link.object.price | money }}{% endif %}
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+  {% endif %}
+
+</div>
+
+{% if has_sub_categories %}
+<script>
+  (function () {
+    var wrapper = document.querySelector('.parts-menu__wrapper[data-menu-grid-id="{{ id }}"]');
+    if (!wrapper) return;
+    var tabs = wrapper.querySelectorAll('.parts-menu__tab-item');
+    var panels = wrapper.querySelectorAll('.parts-menu__grid-content');
+
+    function activate(index) {
+      tabs.forEach(function (tab) {
+        tab.classList.toggle('is-active', tab.getAttribute('data-tab-index') === index);
+      });
+      panels.forEach(function (panel) {
+        panel.classList.toggle('is-active', panel.getAttribute('data-panel-index') === index);
+      });
+    }
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('mouseenter', function () {
+        activate(tab.getAttribute('data-tab-index'));
+      });
+    });
+  })();
+</script>
+{% endif %}
 
 
+{% style %}
+/* ============================================
+   PARTSVU MEGA MENU — FLICKER FIX
+   Paste in: Online Store > Themes > Edit Code
+   File: assets/custom.css  OR  theme.liquid <head>
+   ============================================ */
 
+/* 1. Nav parent item ke neeche invisible bridge banao
+      taake mouse gap cross karte waqt menu band na ho */
+.header__nav-item--has-dropdown > a::after,
+.site-nav__item--has-dropdown > a::after,
+[data-has-dropdown] > a::after {
+  content: '';
+  position: absolute;
+  bottom: -12px; /* Adjust karo agar gap zyada ho */
+  left: 0;
+  width: 100%;
+  height: 12px;
+  display: block;
+}
+
+/* 2. Mega menu wrapper pe bhi top padding do
+      taake mouse enter karne pe turant close na ho */
+.mega-menu,
+.mega-menu__content,
+.header__dropdown,
+[class*="mega-menu"] {
+  padding-top: 4px !important;
+  margin-top: 0 !important;
+}
+
+/* 3. Delay lagao close hone mein (CSS transition trick) */
+.header__nav-item--has-dropdown .mega-menu,
+.site-nav__item--has-dropdown .header__dropdown {
+  transition-delay: 0.08s !important;
+  pointer-events: all !important;
+}
+
+/* 4. Product card — puri card clickable (already in liquid via ::after) */
+.parts-menu__card {
+  position: relative !important;
+}
+
+.parts-menu__card-link::after {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+}
+
+.parts-menu__card-link {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+{% endstyle %}
+
+{% comment %} 
 
 {%- doc -%}
   Renders a highly dynamic mega menu lookalike to PartsVu.
@@ -654,4 +1027,4 @@
     });
   })();
 </script>
-{% endif %}
+{% endif %} {% endcomment %}
