@@ -1430,6 +1430,9 @@
 
 
 
+
+
+
 {%- assign mobile_menu = linklist | default: section.settings.menu | default: menus[section.settings.menu] -%}
 
 <button type="button" class="custom-hamburger-trigger" id="openMobileDrawer" aria-label="Open Menu">
@@ -1495,43 +1498,38 @@
 
             {%- for childlink in link.links -%}
               
-              {%- assign is_product = false -%}
-              {%- assign raw_product = childlink.object -%}
+              {%- assign is_product_item = false -%}
+              {%- assign product_obj = childlink.object -%}
               
               {%- if childlink.type == 'product_link' -%}
-                {%- assign is_product = true -%}
+                {%- assign is_product_item = true -%}
+              {%- comment -%} Check if the link falls under standard shopify product routing paths {%- endcomment -%}
               {%- elsif childlink.url contains '/products/' -%}
-                {%- assign url_parts = childlink.url | split: '/' -%}
-                {%- assign product_handle = url_parts | last | split: '?' | first -%}
-                {%- assign raw_product = all_products[product_handle] -%}
-                {%- if raw_product != blank -%}
-                  {%- assign is_product = true -%}-
+                {%- assign url_chunks = childlink.url | split: '/' -%}
+                {%- assign extracted_handle = url_chunks | last | split: '?' | first -%}
+                {%- assign product_obj = all_products[extracted_handle] -%}
+                {%- if product_obj != blank -%}
+                  {%- assign is_product_item = true -%}
                 {%- endif -%}
               {%- endif -%}
 
               <div class="custom-m-product-card">
                 <a href="{{ childlink.url }}">
                   <div class="product-card-image-wrapper">
-                    {%- if is_product and raw_product.featured_image != blank -%}
-                      <img src="{{ raw_product.featured_image | img_url: '300x300', crop: 'center' }}" alt="{{ childlink.title | escape }}" loading="lazy">
-                    
+                    {%- if is_product_item and product_obj.featured_image != blank -%}
+                      <img src="{{ product_obj.featured_image | img_url: '300x300', crop: 'center' }}" alt="{{ childlink.title | escape }}" loading="lazy">
+                    {%- comment -%} Fallback if link is a nested sub-collection link instead {%- endcomment -%}
                     {%- elsif childlink.type == 'collection_link' and childlink.object.image -%}
                       <img src="{{ childlink.object.image | img_url: '300x300', crop: 'center' }}" alt="{{ childlink.title | escape }}" loading="lazy">
-                    
                     {%- elsif childlink.type == 'collection_link' and childlink.object.products.first.featured_image -%}
                       <img src="{{ childlink.object.products.first.featured_image | img_url: '300x300', crop: 'center' }}" alt="{{ childlink.title | escape }}" loading="lazy">
-                    
                     {%- else -%}
                       <img src="{{ 'product-1' | placeholder_svg_tag }}" class="placeholder-svg" alt="placeholder">
                     {%- endif -%}
                   </div>
                   
                   <div class="product-card-title">
-                    {%- if childlink.title != blank -%}
-                      {{ childlink.title | escape }}
-                    {%- else -%}
-                      {{ raw_product.title | escape }}
-                    {%- endif -%}
+                    {%- if childlink.title != blank -%}{{ childlink.title | escape }}{%- else -%}{{ product_obj.title | escape }}{%- endif -%}
                   </div>
                 </a>
               </div>
@@ -1574,7 +1572,7 @@
 
 <style>
   /* ==========================================
-     1. HAMBURGER & DRAWER LAYOUT
+     1. MAIN INTERFACE FRAMEWORKS
      ========================================== */
   .custom-hamburger-trigger {
     display: none;
@@ -1601,7 +1599,6 @@
     width: 100%;
     max-width: 100vw;
     height: 100vh;
-    height: -webkit-fill-available;
     background: #fff;
     z-index: 99999;
     transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1642,11 +1639,12 @@
     letter-spacing: 0.5px;
   }
 
+  /* Layer 1 Navigation List Styling Overhaul */
   .custom-m-nav { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-  .custom-m-menu-list { list-style: none; padding: 0; margin: 0; }
-  .custom-m-menu-item { border-bottom: 1px solid #e5e5e5; }
+  .custom-m-menu-list { list-style: none; padding: 0; margin: 0; display: block !important; }
+  .custom-m-menu-item { border-bottom: 1px solid #e5e5e5; display: block !important; }
   .custom-m-menu-link {
-    display: flex;
+    display: flex !important;
     justify-content: space-between;
     align-items: center;
     width: 100%;
@@ -1659,21 +1657,22 @@
     color: #000;
     text-decoration: none;
     cursor: pointer;
+    box-sizing: border-box;
   }
   .arrow-forward { color: #000; font-size: 14px; font-weight: bold; pointer-events: none; }
 
   /* ==========================================
-     2. DYNAMIC GRID VIEW FOR SUBMENUS
+     2. LAYER 2: 2-COLUMN CARDS GRID SYSTEM
      ========================================== */
   .custom-m-submenu-panel {
     position: absolute;
-    top: 0;
+    top: 0; /* Pure Top se set takay structural overlay clean rahe */
     left: 100%;
     width: 100%;
     height: 100%;
     background: #fff;
     transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 5;
+    z-index: 10;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
@@ -1696,25 +1695,28 @@
   .custom-m-submenu-header-bar { padding: 20px 20px 10px 20px; flex-shrink: 0; }
   .custom-m-submenu-title { margin: 0; font-size: 24px; color: #000; font-weight: 800; text-transform: capitalize; }
 
-  /* 1 Row me Exact 2 Cards Columns layout */
+  /* 2 Column Responsive Flexible Grid Container Layout */
   .custom-m-products-grid {
     flex: 1;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    padding: 10px 20px 30px 20px;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* Force layout conversion to exactly 2 columns split */
+    gap: 16px;
+    padding: 10px 20px 40px 20px;
     background: #fff;
+    box-sizing: border-box;
   }
 
+  /* Individual Grid Product Block Structure */
   .custom-m-product-card {
     background: #fff;
-    display: flex;
-    flex-direction: column;
+    display: flex !important;
+    flex-direction: column !important;
     align-items: center;
     text-align: center;
     box-sizing: border-box;
+    width: 100% !important;
   }
   .custom-m-product-card a {
     text-decoration: none;
@@ -1723,11 +1725,12 @@
     display: block;
   }
   
+  /* Image Block Framework */
   .product-card-image-wrapper {
     width: 100%;
-    aspect-ratio: 1 / 1; /* Square Shape like image 3 */
+    aspect-ratio: 1 / 1; /* Aspect scale set to exact square */
     background-color: #f7f7f7;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
     padding: 10px;
@@ -1742,6 +1745,7 @@
   .placeholder-icon-box { font-size: 32px; }
   .placeholder-svg { width: 100%; height: 100%; fill: #ddd; }
 
+  /* Typography Design */
   .product-card-title {
     margin-top: 8px;
     font-size: 13px;
@@ -1750,7 +1754,7 @@
     color: #000;
     padding: 0 4px;
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* Truncate if long */
+    -webkit-line-clamp: 2; /* Maximum text wrap height to avoid alignment breakdown */
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
@@ -1759,7 +1763,7 @@
   .shop-all-card .product-card-title { color: #002d62; font-weight: 700; }
 
   /* ==========================================
-     3. ENGINE FILTER POPUP MODAL
+     3. MODAL POPUP DESIGNS
      ========================================== */
   .engine-popup-modal { display: none; position: fixed; z-index: 9999999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
   .engine-popup-content { background-color: #002d62; margin: 20% auto; padding: 25px 20px; width: 90%; max-width: 380px; position: relative; }
@@ -1800,7 +1804,7 @@
       });
     }
 
-    // Dynamic Click Handler for Layer Links
+    // Secondary Submenu Panels Trigger Actions
     document.addEventListener("click", function(e) {
       var trigger = e.target.closest(".custom-m-menu-link.has-children");
       if(trigger) {
@@ -1813,7 +1817,7 @@
       }
     });
 
-    // Back Button Layer Triggers
+    // Panel Back Action Buttons Setup
     document.addEventListener("click", function(e) {
       var backBtn = e.target.closest(".custom-m-back-btn");
       if(backBtn) {
@@ -1822,7 +1826,7 @@
       }
     });
 
-    // Engine Filter Pop-up Modal
+    // Engine Selector Popup Controllers
     var modal = document.getElementById("enginePopupModal");
     var engineBtn = document.getElementById("openEnginePopup");
     var closePopup = document.querySelector(".close-popup");
@@ -1847,3 +1851,318 @@
     });
   });
 </script>
+{% comment %} 
+{%- assign mobile_menu = linklist | default: section.settings.menu | default: menus[section.settings.menu] -%}
+
+
+
+<button type="button" class="custom-hamburger-trigger" id="openMobileDrawer" aria-label="Open Menu">
+  <span class="hamburger-bar"></span>
+  <span class="hamburger-bar"></span>
+  <span class="hamburger-bar"></span>
+</button>
+
+<div id="customMobileDrawer" class="custom-m-drawer">
+  <div class="custom-m-drawer-inner">
+    
+    <div class="custom-m-drawer-header">
+      <span class="custom-drawer-logo">MENU</span>
+      <button type="button" id="closeMobileDrawer" class="custom-drawer-close">&times;</button>
+    </div>
+
+    <div class="custom-m-engine-section">
+      <button type="button" class="custom-m-engine-btn" id="openEnginePopup">
+        Shop by Engine
+      </button>
+    </div>
+
+    <nav class="custom-m-nav" id="mNavLayer1">
+      <ul class="custom-m-menu-list">
+        {%- for link in mobile_menu.links -%}
+          <li class="custom-m-menu-item">
+            {%- if link.links != blank -%}
+              <button type="button" class="custom-m-menu-link has-children" data-target="submenu-{{ forloop.index }}">
+                {{ link.title | escape }}
+                <span class="arrow-forward">&#10095;</span>
+              </button>
+            {%- else -%}
+              <a href="{{ link.url }}" class="custom-m-menu-link">{{ link.title | escape }}</a>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+
+    {%- for link in mobile_menu.links -%}
+      {%- if link.links != blank -%}
+        <div class="custom-m-submenu-panel" id="submenu-{{ forloop.index }}">
+          <button type="button" class="custom-m-back-btn">&#10094; Back</button>
+          <h3 class="custom-m-submenu-title">{{ link.title | escape }}</h3>
+          
+          <ul class="custom-m-menu-list">
+            <li class="custom-m-menu-item">
+              <a href="{{ link.url }}" class="custom-m-menu-link shop-all-link">Shop All {{ link.title | escape }}</a>
+            </li>
+            {%- for childlink in link.links -%}
+              <li class="custom-m-menu-item">
+                <a href="{{ childlink.url }}" class="custom-m-menu-link">{{ childlink.title | escape }}</a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+
+  </div>
+</div>
+
+<div id="enginePopupModal" class="engine-popup-modal">
+  <div class="engine-popup-content">
+    <span class="close-popup">&times;</span>
+    <h3>SHOP PARTS BY ENGINE</h3>
+    <form action="/search" method="get">
+      <div class="form-group">
+        <select name="pf_v_engine_make" id="engineMake">
+          <option value="">Engine Make</option>
+          <option value="mercury">Mercury Marine</option>
+          <option value="yamaha">Yamaha</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <select name="pf_v_model" id="engineModel">
+          <option value="">Model</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <select name="pf_v_year" id="engineYear">
+          <option value="">Year</option>
+        </select>
+      </div>
+      <button type="submit" class="engine-search-submit">Search</button>
+    </form>
+  </div>
+</div>
+
+<style>
+  /* Hamburger Button Trigger */
+  .custom-hamburger-trigger {
+    display: none; /* Desktop par hidden rahega */
+    flex-direction: column;
+    justify-content: space-between;
+    width: 24px;
+    height: 18px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 99;
+  }
+  .hamburger-bar {
+    width: 100%;
+    height: 3px;
+    background-color: #002d62; /* Theme color */
+    border-radius: 2px;
+  }
+
+  /* Main Drawer Layout */
+  .custom-m-drawer {
+    position: fixed;
+    top: 0;
+    left: -100%; /* Shuru me slide out rahega */
+    width: 100%;
+    max-width: 400px;
+    height: 100%;
+    background: #fff;
+    z-index: 99999;
+    box-shadow: 5px 0 15px rgba(0,0,0,0.2);
+    transition: left 0.3s ease-in-out;
+    overflow: hidden;
+  }
+  .custom-m-drawer.is-open {
+    left: 0;
+  }
+  .custom-m-drawer-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .custom-m-drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #002d62;
+    color: #fff;
+  }
+  .custom-drawer-logo { font-weight: bold; font-size: 16px; }
+  .custom-drawer-close { background: none; border: none; color: #fff; font-size: 28px; cursor: pointer; }
+
+  /* Shop By Engine Button styling like your yellow bar */
+  .custom-m-engine-section { padding: 10px 15px; background: #f4f4f4; }
+  .custom-m-engine-btn {
+    width: 100%;
+    padding: 14px;
+    background: #ffcc00; /* Yellow Button */
+    color: #000;
+    border: none;
+    font-weight: bold;
+    font-size: 15px;
+    text-transform: uppercase;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+  }
+
+  /* Navigation Links and Tabs List */
+  .custom-m-nav { flex: 1; overflow-y: auto; }
+  .custom-m-menu-list { list-style: none; padding: 0; margin: 0; }
+  .custom-m-menu-item { border-bottom: 1px solid #e5e5e5; }
+  .custom-m-menu-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 16px 20px;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .arrow-forward { color: #888; font-size: 14px; }
+  .shop-all-link { color: #002d62; font-style: italic; }
+
+  /* Submenus Sliding Panels Layer 2 */
+  .custom-m-submenu-panel {
+    position: absolute;
+    top: 110px; /* Engine bar ke niche se shuru hoga */
+    left: 100%;
+    width: 100%;
+    height: calc(100% - 110px);
+    background: #fff;
+    transition: left 0.3s ease-in-out;
+    overflow-y: auto;
+    z-index: 2;
+  }
+  .custom-m-submenu-panel.is-active {
+    left: 0;
+  }
+  .custom-m-back-btn {
+    width: 100%;
+    padding: 12px 15px;
+    background: #f9f9f9;
+    border: none;
+    border-bottom: 1px solid #e5e5e5;
+    text-align: left;
+    font-size: 14px;
+    font-weight: bold;
+    color: #555;
+    cursor: pointer;
+  }
+  .custom-m-submenu-title { padding: 15px 20px 5px 20px; margin: 0; font-size: 18px; color: #002d62; }
+
+  /* Engine Popup Modal Styling */
+  .engine-popup-modal {
+    display: none;
+    position: fixed;
+    z-index: 999999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    backdrop-filter: blur(3px);
+  }
+  .engine-popup-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 25px;
+    width: 85%;
+    max-width: 420px;
+    border-radius: 6px;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .close-popup { position: absolute; right: 15px; top: 10px; color: #555; font-size: 28px; font-weight: bold; cursor: pointer; }
+  .engine-popup-content h3 { text-align: center; margin-top: 0; margin-bottom: 20px; color: #002d62; font-size: 18px; }
+  .form-group { margin-bottom: 15px; }
+  .form-group select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+  .engine-search-submit { width: 100%; padding: 12px; background: #ffcc00; color: #000; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; border-radius: 4px; }
+
+  /* Mobile Screens Toggle Trigger display */
+  @media screen and (max-width: 990px) {
+    .custom-hamburger-trigger { display: flex; }
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Drawer Panel Logic
+    var drawer = document.getElementById("customMobileDrawer");
+    var openBtn = document.getElementById("openMobileDrawer");
+    var closeBtn = document.getElementById("closeMobileDrawer");
+
+    if(openBtn && drawer) {
+      openBtn.addEventListener("click", function() {
+        drawer.classList.add("is-open");
+        document.body.style.overflow = "hidden"; // Page scroll stop karne k liye
+      });
+    }
+
+    if(closeBtn && drawer) {
+      closeBtn.addEventListener("click", function() {
+        drawer.classList.remove("is-open");
+        document.body.style.overflow = "";
+        // Saare active submenus bhi reset kardo back to layer 1
+        document.querySelectorAll('.custom-m-submenu-panel').forEach(function(panel) {
+          panel.classList.remove('is-active');
+        });
+      });
+    }
+
+    // Submenu Sliding Tabs Logic (Click on link -> Layer 2 Open)
+    var menuTriggers = document.querySelectorAll(".custom-m-menu-link.has-children");
+    menuTriggers.forEach(function(trigger) {
+      trigger.addEventListener("click", function() {
+        var targetId = this.getAttribute("data-target");
+        var targetPanel = document.getElementById(targetId);
+        if(targetPanel) {
+          targetPanel.classList.add("is-active");
+        }
+      });
+    });
+
+    // Back Buttons Logic (Layer 2 -> Layer 1)
+    var backButtons = document.querySelectorAll(".custom-m-back-btn");
+    backButtons.forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        this.parentElement.classList.remove("is-active");
+      });
+    });
+
+    // Shop by Engine Popup Modal Logic inside Drawer
+    var modal = document.getElementById("enginePopupModal");
+    var engineBtn = document.getElementById("openEnginePopup");
+    var closePopup = document.querySelector(".close-popup");
+
+    if(engineBtn && modal) {
+      engineBtn.addEventListener("click", function() {
+        modal.style.display = "block";
+      });
+    }
+    if(closePopup && modal) {
+      closePopup.addEventListener("click", function() {
+        modal.style.display = "none";
+      });
+    }
+    window.addEventListener("click", function(e) {
+      if (e.target == modal) {
+        modal.style.display = "none";
+      }
+    });
+  });
+</script> {% endcomment %}
