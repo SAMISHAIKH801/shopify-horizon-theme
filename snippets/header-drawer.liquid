@@ -1489,7 +1489,7 @@
 
             <span class="custom-m-submenu-title">{{ link.title | escape }}</span>
             <span class="custom-m-submenu-title">{{ childlink.title | escape }}</span>
-            
+
             <button type="button" class="custom-m-back-btn">
               &#10094; {{ link.title | escape }}
             </button>
@@ -1706,17 +1706,16 @@
   border-radius: 2px;
 }
 .custom-m-drawer {
-  position: fixed;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  max-width: 400px;
-  height: 100%;
-  background: #fff;
-  z-index: 99999;
-  box-shadow: 5px 0 15px rgba(0,0,0,0.2);
-  transition: left 0.3s ease-in-out;
-  overflow: hidden;
+    position: fixed;
+    top: 122px;
+    left: -100%;
+    width: 100%;
+    max-width: 100%;
+    background: #fff;
+    z-index: 99999;
+    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
+    transition: left 0.3s ease-in-out;
+    overflow: hidden;
 }
 .custom-m-drawer.is-open { left: 0; }
 .custom-m-drawer-inner {
