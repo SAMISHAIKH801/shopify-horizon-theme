@@ -1487,8 +1487,7 @@
         <div class="custom-m-submenu-panel" id="submenu-L1-{{ forloop.index }}">
           <div class="custom-m-submenu-header">
 
-            <span class="custom-m-submenu-title">{{ link.title | escape }}</span>
-            <span class="custom-m-submenu-title">{{ childlink.title | escape }}</span>
+            
 
             <button type="button" class="custom-m-back-btn">
               &#10094; {{ link.title | escape }}
@@ -1496,6 +1495,9 @@
             <button type="button" class="custom-m-submenu-close">&times;</button>
           </div>
 
+          <span class="custom-m-submenu-title">{{ link.title | escape }}</span>
+            <span class="custom-m-submenu-title">{{ childlink.title | escape }}</span>
+            
           {%- comment -%} Check if children are products {%- endcomment -%}
           {%- assign l2_has_products = false -%}
           {%- for childlink in link.links -%}
@@ -1547,14 +1549,17 @@
             <div class="custom-m-submenu-panel" id="submenu-L2-{{ forloop.parentloop.index }}-{{ forloop.index }}">
               <div class="custom-m-submenu-header">
 
-                <span class="custom-m-submenu-title">{{ link.title | escape }}</span>
-                <span class="custom-m-submenu-title">{{ childlink.title | escape }}</span>
+                
 
                 <button type="button" class="custom-m-back-btn">
                   &#10094; {{ childlink.title | escape }}
                 </button>
                 <button type="button" class="custom-m-submenu-close">&times;</button>
               </div>
+
+              <span class="custom-m-submenu-title">{{ link.title | escape }}</span>
+                <span class="custom-m-submenu-title">{{ childlink.title | escape }}</span>
+
 
               {%- assign l3_has_products = false -%}
               {%- for grandchild in childlink.links -%}
