@@ -481,7 +481,7 @@
 </header-component>
 
 
-{% render 'custom-mobile-drawer', linklist: section.settings.menu %}
+{% comment %} {% render 'custom-mobile-drawer', linklist: section.settings.menu %}
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
@@ -500,7 +500,7 @@
       });
     }
   });
-</script>
+</script> {% endcomment %}
 
 
 <script

@@ -1,4 +1,518 @@
-{% comment %} <button type="button" class="custom-hamburger-trigger" id="openMobileDrawer" aria-label="Open Menu">
+
+
+
+{%- assign mobile_menu = linklist | default: section.settings.menu | default: menus[section.settings.menu] -%}
+
+<button type="button" class="custom-hamburger-trigger" id="openMobileDrawer" aria-label="Open Menu">
+  <span class="hamburger-bar"></span>
+  <span class="hamburger-bar"></span>
+  <span class="hamburger-bar"></span>
+</button>
+
+<div id="customMobileDrawer" class="custom-m-drawer">
+  <div class="custom-m-drawer-inner">
+
+    <div class="custom-m-drawer-header">
+      <span class="custom-drawer-logo">MENU</span>
+      <button type="button" id="closeMobileDrawer" class="custom-drawer-close">&times;</button>
+    </div>
+
+    <div class="custom-m-engine-section">
+      <button type="button" class="custom-m-engine-btn" id="openEnginePopup">
+        Shop by Engine
+      </button>
+    </div>
+
+    {%- comment -%} Layer 1: Root menu {%- endcomment -%}
+    <nav class="custom-m-nav" id="mNavLayer1">
+      <ul class="custom-m-menu-list">
+        {%- for link in mobile_menu.links -%}
+          <li class="custom-m-menu-item">
+            {%- if link.links != blank -%}
+              <button type="button" class="custom-m-menu-link has-children" data-target="submenu-L1-{{ forloop.index }}">
+                {{ link.title | escape }}
+                <span class="arrow-forward">&#10095;</span>
+              </button>
+            {%- else -%}
+              <a href="{{ link.url }}" class="custom-m-menu-link">{{ link.title | escape }}</a>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+
+    {%- comment -%} Level 2 panels {%- endcomment -%}
+    {%- for link in mobile_menu.links -%}
+      {%- if link.links != blank -%}
+        <div class="custom-m-submenu-panel" id="submenu-L1-{{ forloop.index }}">
+          <div class="custom-m-submenu-header">
+            <button type="button" class="custom-m-back-btn">
+              &#10094; {{ link.title | escape }}
+            </button>
+            <button type="button" class="custom-m-submenu-close">&times;</button>
+          </div>
+
+          {%- comment -%} Check if children are products {%- endcomment -%}
+          {%- assign l2_has_products = false -%}
+          {%- for childlink in link.links -%}
+            {%- if childlink.type == 'product_link' -%}{%- assign l2_has_products = true -%}{%- endif -%}
+          {%- endfor -%}
+
+          {%- if l2_has_products -%}
+            <div class="custom-m-products-grid">
+              {%- for childlink in link.links -%}
+                {%- if childlink.type == 'product_link' -%}
+                  {%- assign product = childlink.object -%}
+                  <a href="{{ childlink.url }}" class="custom-m-product-card">
+                    <div class="custom-m-product-img-wrap">
+                      {%- if product.featured_image -%}
+                        <img src="{{ product.featured_image | image_url: width: 300 }}" alt="{{ product.title | escape }}" loading="lazy" width="150" height="150">
+                      {%- else -%}
+                        <div class="custom-m-no-img"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9l4-4 4 4 4-4 4 4"/><circle cx="8.5" cy="13.5" r="1.5"/></svg></div>
+                      {%- endif -%}
+                    </div>
+                    <div class="custom-m-product-info">
+                      <span class="custom-m-product-title">{{ product.title | escape | truncate: 40 }}</span>
+                      <span class="custom-m-product-price">{{ product.price | money }}</span>
+                    </div>
+                  </a>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          {%- else -%}
+            <ul class="custom-m-menu-list">
+              {%- for childlink in link.links -%}
+                <li class="custom-m-menu-item">
+                  {%- if childlink.links != blank -%}
+                    <button type="button" class="custom-m-menu-link has-children" data-target="submenu-L2-{{ forloop.parentloop.index }}-{{ forloop.index }}">
+                      {{ childlink.title | escape }}
+                      <span class="arrow-forward">&#10095;</span>
+                    </button>
+                  {%- else -%}
+                    <a href="{{ childlink.url }}" class="custom-m-menu-link">{{ childlink.title | escape }}</a>
+                  {%- endif -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} Level 3 panels {%- endcomment -%}
+        {%- for childlink in link.links -%}
+          {%- if childlink.links != blank -%}
+            <div class="custom-m-submenu-panel" id="submenu-L2-{{ forloop.parentloop.index }}-{{ forloop.index }}">
+              <div class="custom-m-submenu-header">
+                <button type="button" class="custom-m-back-btn">
+                  &#10094; {{ childlink.title | escape }}
+                </button>
+                <button type="button" class="custom-m-submenu-close">&times;</button>
+              </div>
+
+              {%- assign l3_has_products = false -%}
+              {%- for grandchild in childlink.links -%}
+                {%- if grandchild.type == 'product_link' -%}{%- assign l3_has_products = true -%}{%- endif -%}
+              {%- endfor -%}
+
+              {%- if l3_has_products -%}
+                <div class="custom-m-products-grid">
+                  {%- for grandchild in childlink.links -%}
+                    {%- if grandchild.type == 'product_link' -%}
+                      {%- assign product = grandchild.object -%}
+                      <a href="{{ grandchild.url }}" class="custom-m-product-card">
+                        <div class="custom-m-product-img-wrap">
+                          {%- if product.featured_image -%}
+                            <img src="{{ product.featured_image | image_url: width: 300 }}" alt="{{ product.title | escape }}" loading="lazy" width="150" height="150">
+                          {%- else -%}
+                            <div class="custom-m-no-img"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9l4-4 4 4 4-4 4 4"/><circle cx="8.5" cy="13.5" r="1.5"/></svg></div>
+                          {%- endif -%}
+                        </div>
+                        <div class="custom-m-product-info">
+                          <span class="custom-m-product-title">{{ product.title | escape | truncate: 40 }}</span>
+                          <span class="custom-m-product-price">{{ product.price | money }}</span>
+                        </div>
+                      </a>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+              {%- else -%}
+                <ul class="custom-m-menu-list">
+                  {%- for grandchild in childlink.links -%}
+                    <li class="custom-m-menu-item">
+                      <a href="{{ grandchild.url }}" class="custom-m-menu-link">{{ grandchild.title | escape }}</a>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+      {%- endif -%}
+    {%- endfor -%}
+
+  </div>
+</div>
+
+{%- comment -%} Engine Popup {%- endcomment -%}
+<div id="enginePopupModal" class="engine-popup-modal">
+  <div class="engine-popup-content">
+    <span class="close-popup">&times;</span>
+    <h3>SHOP PARTS BY ENGINE</h3>
+    <form action="/search" method="get">
+      <div class="form-group">
+        <select name="pf_v_engine_make" id="engineMake" class="ep-select">
+          <option value="">Engine Make</option>
+          <option value="mercury">Mercury Marine</option>
+          <option value="yamaha">Yamaha</option>
+          <option value="mercruiser">MerCruiser</option>
+          <option value="suzuki">Suzuki</option>
+          <option value="honda">Honda</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <select name="pf_v_model" id="engineModel" class="ep-select" disabled>
+          <option value="">Model</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <select name="pf_v_year" id="engineYear" class="ep-select" disabled>
+          <option value="">Year</option>
+        </select>
+      </div>
+      <button type="submit" class="engine-search-submit">Search</button>
+    </form>
+  </div>
+</div>
+
+<style>
+.custom-hamburger-trigger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 18px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 99;
+}
+.hamburger-bar {
+  width: 100%;
+  height: 3px;
+  background-color: currentColor;
+  border-radius: 2px;
+}
+.custom-m-drawer {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  max-width: 400px;
+  height: 100%;
+  background: #fff;
+  z-index: 99999;
+  box-shadow: 5px 0 15px rgba(0,0,0,0.2);
+  transition: left 0.3s ease-in-out;
+  overflow: hidden;
+}
+.custom-m-drawer.is-open { left: 0; }
+.custom-m-drawer-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.custom-m-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 18px;
+  background: #002d62;
+  color: #fff;
+  flex-shrink: 0;
+}
+.custom-drawer-logo { font-weight: 700; font-size: 15px; letter-spacing: 0.06em; }
+.custom-drawer-close { background: none; border: none; color: #fff; font-size: 28px; cursor: pointer; line-height: 1; padding: 0; }
+.custom-m-engine-section { padding: 10px 14px; background: #f4f4f4; flex-shrink: 0; }
+.custom-m-engine-btn {
+  width: 100%;
+  padding: 13px;
+  background: #f5a623;
+  color: #071a2d;
+  border: none;
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+.custom-m-engine-btn:hover { background: #e09410; }
+.custom-m-nav { flex: 1; overflow-y: auto; }
+.custom-m-menu-list { list-style: none; padding: 0; margin: 0; }
+.custom-m-menu-item { border-bottom: 1px solid #efefef; }
+.custom-m-menu-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 15px 20px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1a1a1a;
+  text-decoration: none;
+  cursor: pointer;
+}
+.custom-m-menu-link:hover { background: #fafafa; }
+.arrow-forward { color: #aaa; font-size: 13px; flex-shrink: 0; }
+.shop-all-link { color: #002d62; font-style: italic; font-weight: 600; }
+.custom-m-submenu-panel {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  transition: left 0.28s ease-in-out;
+  overflow-y: auto;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+}
+.custom-m-submenu-panel.is-active { left: 0; }
+.custom-m-submenu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #002d62;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.custom-m-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 18px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  flex: 1;
+  text-align: left;
+}
+.custom-m-submenu-close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 26px;
+  cursor: pointer;
+  padding: 0 16px;
+  line-height: 1;
+}
+.custom-m-products-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 14px;
+}
+.custom-m-product-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  background: #fff;
+  transition: box-shadow 0.15s;
+}
+.custom-m-product-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+.custom-m-product-img-wrap {
+  width: 100%;
+  aspect-ratio: 1;
+  background: #f7f7f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.custom-m-product-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
+}
+.custom-m-no-img { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.custom-m-product-info { padding: 8px 10px; display: flex; flex-direction: column; gap: 3px; }
+.custom-m-product-title { font-size: 11px; font-weight: 500; color: #1a1a1a; line-height: 1.3; }
+.custom-m-product-price { font-size: 12px; font-weight: 700; color: #002d62; }
+.engine-popup-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999999;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(3px);
+  align-items: center;
+  justify-content: center;
+}
+.engine-popup-modal.ep-open { display: flex; }
+.engine-popup-content {
+  background: #071a2d;
+  padding: 28px 24px 24px;
+  width: 90%;
+  max-width: 380px;
+  border-radius: 8px;
+  position: relative;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+.close-popup { position: absolute; right: 14px; top: 10px; color: rgba(255,255,255,0.7); font-size: 26px; font-weight: bold; cursor: pointer; line-height: 1; }
+.close-popup:hover { color: #fff; }
+.engine-popup-content h3 { text-align: center; margin: 0 0 20px; color: #fff; font-size: 17px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; }
+.form-group { margin-bottom: 12px; }
+.ep-select {
+  width: 100%;
+  height: 46px;
+  background: #0e3a56;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 14px;
+  padding: 0 36px 0 14px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+}
+.ep-select:focus { outline: none; border-color: #f5a623; }
+.ep-select option { background: #0d2b45; }
+.ep-select:disabled { opacity: 0.45; cursor: not-allowed; }
+.engine-search-submit {
+  width: 100%;
+  padding: 13px;
+  background: #f5a623;
+  color: #071a2d;
+  border: none;
+  font-weight: 800;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: background 0.15s;
+}
+.engine-search-submit:hover { background: #e09410; }
+@media screen and (max-width: 990px) {
+  .custom-hamburger-trigger { display: flex; }
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var drawer = document.getElementById("customMobileDrawer");
+  var openBtn = document.getElementById("openMobileDrawer");
+  var closeBtn = document.getElementById("closeMobileDrawer");
+
+  function closeDrawer() {
+    drawer.classList.remove("is-open");
+    document.body.style.overflow = "";
+    document.querySelectorAll('.custom-m-submenu-panel').forEach(function (p) {
+      p.classList.remove('is-active');
+    });
+  }
+
+  if (openBtn) openBtn.addEventListener("click", function () {
+    drawer.classList.add("is-open");
+    document.body.style.overflow = "hidden";
+  });
+  if (closeBtn) closeBtn.addEventListener("click", closeDrawer);
+
+  /* Submenu open — works for all levels */
+  document.querySelectorAll(".custom-m-menu-link.has-children").forEach(function (trigger) {
+    trigger.addEventListener("click", function () {
+      var panel = document.getElementById(this.getAttribute("data-target"));
+      if (panel) panel.classList.add("is-active");
+    });
+  });
+
+  /* Back button — only closes THIS panel */
+  document.querySelectorAll(".custom-m-back-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      this.closest('.custom-m-submenu-panel').classList.remove('is-active');
+    });
+  });
+
+  /* X button — close entire drawer */
+  document.querySelectorAll(".custom-m-submenu-close").forEach(function (btn) {
+    btn.addEventListener("click", closeDrawer);
+  });
+
+  /* Engine Popup */
+  var modal = document.getElementById("enginePopupModal");
+  var engineBtn = document.getElementById("openEnginePopup");
+  var closePopupBtn = document.querySelector(".close-popup");
+
+  var engineModels = {
+    yamaha: ['F4','F6','F8','F9.9','F15','F20','F25','F40','F50','F60','F70','F75','F90','F100','F115','F150','F175','F200','F225','F250','F300','F350'],
+    mercury: ['2.5','3.5','4','5','6','8','9.9','15','20','25','30','40','50','60','75','90','115','150','175','200','225','250','300','350','400 Verado'],
+    mercruiser: ['3.0L TKS','3.0L MPI','4.3L MPI','5.0L MPI','5.7L MPI','6.2L MPI','8.1L MPI','350 MAG','496 MAG'],
+    suzuki: ['DF2.5','DF4','DF6','DF8','DF9.9','DF15','DF20','DF25','DF40','DF50','DF60','DF70','DF90','DF115','DF140','DF150','DF175','DF200','DF225','DF250','DF300'],
+    honda: ['BF2.3','BF4','BF5','BF6','BF8','BF9.9','BF15','BF20','BF25','BF30','BF40','BF50','BF60','BF75','BF90','BF115','BF135','BF150','BF175','BF200','BF225','BF250']
+  };
+
+  if (engineBtn) engineBtn.addEventListener("click", function () {
+    modal.classList.add("ep-open");
+    document.body.style.overflow = "hidden";
+  });
+  function closeEp() { modal.classList.remove("ep-open"); document.body.style.overflow = ""; }
+  if (closePopupBtn) closePopupBtn.addEventListener("click", closeEp);
+  if (modal) modal.addEventListener("click", function (e) { if (e.target === this) closeEp(); });
+
+  var makeEl = document.getElementById("engineMake");
+  var modelEl = document.getElementById("engineModel");
+  var yearEl = document.getElementById("engineYear");
+
+  if (makeEl) makeEl.addEventListener("change", function () {
+    var make = this.value;
+    modelEl.innerHTML = '<option value="">Model</option>';
+    yearEl.innerHTML = '<option value="">Year</option>';
+    modelEl.disabled = true; yearEl.disabled = true;
+    if (make && engineModels[make]) {
+      engineModels[make].forEach(function (m) { var o = document.createElement('option'); o.value = m; o.textContent = m; modelEl.appendChild(o); });
+      modelEl.disabled = false;
+    }
+  });
+  if (modelEl) modelEl.addEventListener("change", function () {
+    yearEl.innerHTML = '<option value="">Year</option>'; yearEl.disabled = true;
+    if (this.value) {
+      for (var y = 2025; y >= 1985; y--) { var o = document.createElement('option'); o.value = y; o.textContent = y; yearEl.appendChild(o); }
+      yearEl.disabled = false;
+    }
+  });
+});
+</script>
+
+{% comment %} 
+{%- assign mobile_menu = linklist | default: section.settings.menu | default: menus[section.settings.menu] -%}
+
+
+
+<button type="button" class="custom-hamburger-trigger" id="openMobileDrawer" aria-label="Open Menu">
   <span class="hamburger-bar"></span>
   <span class="hamburger-bar"></span>
   <span class="hamburger-bar"></span>
@@ -20,7 +534,7 @@
 
     <nav class="custom-m-nav" id="mNavLayer1">
       <ul class="custom-m-menu-list">
-        {%- for link in linklist.links -%}
+        {%- for link in mobile_menu.links -%}
           <li class="custom-m-menu-item">
             {%- if link.links != blank -%}
               <button type="button" class="custom-m-menu-link has-children" data-target="submenu-{{ forloop.index }}">
@@ -35,7 +549,7 @@
       </ul>
     </nav>
 
-    {%- for link in linklist.links -%}
+    {%- for link in mobile_menu.links -%}
       {%- if link.links != blank -%}
         <div class="custom-m-submenu-panel" id="submenu-{{ forloop.index }}">
           <button type="button" class="custom-m-back-btn">&#10094; Back</button>
