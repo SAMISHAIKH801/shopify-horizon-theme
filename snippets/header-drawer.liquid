@@ -1482,13 +1482,45 @@
             <li class="custom-m-menu-item shop-all-row">
               <a href="{{ link.url }}" class="custom-m-menu-link shop-all-link">Shop All {{ link.title | escape }}</a>
             </li>
+            
             {%- for childlink in link.links -%}
               <li class="custom-m-menu-item">
-                <a href="{{ childlink.url }}" class="custom-m-menu-link">{{ childlink.title | escape }}</a>
+                {%- if childlink.links != blank -%}
+                  <button type="button" class="custom-m-menu-link has-children" data-target="grandchild-{{ forloop.parentloop.index }}-{{ forloop.index }}">
+                    {{ childlink.title | escape }}
+                    <span class="arrow-forward">&#10095;</span>
+                  </button>
+                {%- else -%}
+                  <a href="{{ childlink.url }}" class="custom-m-menu-link">{{ childlink.title | escape }}</a>
+                {%- endif -%}
               </li>
             {%- endfor -%}
           </ul>
         </div>
+
+        {%- for childlink in link.links -%}
+          {%- if childlink.links != blank -%}
+            <div class="custom-m-submenu-panel" id="grandchild-{{ forloop.parentloop.index }}-{{ forloop.index }}">
+              <button type="button" class="custom-m-back-btn">&#10094; Back</button>
+              
+              <div class="custom-m-submenu-header-bar">
+                <h3 class="custom-m-submenu-title">{{ childlink.title | escape }}</h3>
+              </div>
+              
+              <ul class="custom-m-menu-list">
+                <li class="custom-m-menu-item shop-all-row">
+                  <a href="{{ childlink.url }}" class="custom-m-menu-link shop-all-link">Shop All {{ childlink.title | escape }}</a>
+                </li>
+                {%- for grandchildlink in childlink.links -%}
+                  <li class="custom-m-menu-item">
+                    <a href="{{ grandchildlink.url }}" class="custom-m-menu-link">{{ grandchildlink.title | escape }}</a>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
       {%- endif -%}
     {%- endfor -%}
 
@@ -1524,7 +1556,7 @@
 
 <style>
   /* ==========================================================================
-     1. HAMBURGER TRIGGER (Header ke andar normal inline block rahega)
+     1. HAMBURGER TRIGGER
      ========================================================================== */
   .custom-hamburger-trigger {
     display: none;
@@ -1536,12 +1568,12 @@
     border: none;
     cursor: pointer;
     padding: 0;
-    margin-right: 15px; /* Theme header layout spacing */
+    margin-right: 15px;
   }
   .hamburger-bar {
     width: 100%;
     height: 2px;
-    background-color: #002d62; /* Theme Blue color */
+    background-color: #002d62;
     border-radius: 1px;
   }
   @media screen and (max-width: 990px) {
@@ -1549,29 +1581,25 @@
   }
 
   /* ==========================================================================
-     2. MAIN DRAWER (Is ko body par fix kiya hai taake header distrub na ho)
+     2. MAIN DRAWER (Pure Fullscreen Overlay Layout)
      ========================================================================== */
   .custom-m-drawer {
     position: fixed;
     top: 0;
-    left: -100%; /* Bahar rahega shuru me */
+    left: -100%;
     width: 100%;
-    max-width: 100vw; /* Poori mobile screen width */
+    max-width: 100vw;
     height: 100vh;
     height: -webkit-fill-available;
     background: #ffffff;
-    z-index: 999999; /* Sabse upar render hoga bina header ko hilae */
-    box-shadow: none;
+    z-index: 999999;
     transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
     box-sizing: border-box;
   }
-  
-  /* Open state class */
   .custom-m-drawer.is-open {
     left: 0;
   }
-
   .custom-m-drawer-inner {
     position: relative;
     width: 100%;
@@ -1580,8 +1608,6 @@
     flex-direction: column;
     box-sizing: border-box;
   }
-
-  /* Drawer Header (Blue Top Bar) */
   .custom-m-drawer-header {
     display: flex;
     justify-content: space-between;
@@ -1591,32 +1617,14 @@
     color: #ffffff;
     flex-shrink: 0;
   }
-  .custom-drawer-logo { 
-    font-weight: 700; 
-    font-size: 16px; 
-    letter-spacing: 1px;
-  }
-  .custom-drawer-close { 
-    background: none; 
-    border: none; 
-    color: #ffffff; 
-    font-size: 32px; 
-    line-height: 1; 
-    cursor: pointer;
-    padding: 0;
-  }
+  .custom-drawer-logo { font-weight: 700; font-size: 16px; letter-spacing: 1px;}
+  .custom-drawer-close { background: none; border: none; color: #ffffff; font-size: 32px; line-height: 1; cursor: pointer; padding: 0;}
 
-  /* Yellow Button section */
-  .custom-m-engine-section { 
-    padding: 12px 15px; 
-    background: #ffffff; 
-    flex-shrink: 0;
-    border-bottom: 1px solid #e5e5e5;
-  }
+  .custom-m-engine-section { padding: 12px 15px; background: #ffffff; flex-shrink: 0; border-bottom: 1px solid #e5e5e5; }
   .custom-m-engine-btn {
     width: 100%;
     padding: 14px;
-    background: #ffcc00; /* Flat Yellow */
+    background: #ffcc00;
     color: #000000;
     border: none;
     font-weight: 700;
@@ -1626,24 +1634,9 @@
     letter-spacing: 0.5px;
   }
 
-  /* Main Links View Area (Layer 1) */
-  .custom-m-nav { 
-    flex: 1; 
-    overflow-y: auto; 
-    -webkit-overflow-scrolling: touch;
-    background: #ffffff;
-  }
-  
-  .custom-m-menu-list { 
-    list-style: none; 
-    padding: 0; 
-    margin: 0; 
-  }
-  
-  .custom-m-menu-item { 
-    border-bottom: 1px solid #f0f0f0; 
-  }
-  
+  .custom-m-nav { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; background: #ffffff; }
+  .custom-m-menu-list { list-style: none; padding: 0; margin: 0; }
+  .custom-m-menu-item { border-bottom: 1px solid #f0f0f0; }
   .custom-m-menu-link {
     display: flex;
     justify-content: space-between;
@@ -1660,19 +1653,14 @@
     cursor: pointer;
     box-sizing: border-box;
   }
-  
-  .arrow-forward { 
-    color: #000000; 
-    font-size: 14px; 
-    font-weight: bold;
-  }
+  .arrow-forward { color: #000000; font-size: 14px; font-weight: bold; }
 
   /* ==========================================================================
-     3. SUBMENUS SLIDING LAYERS (Layer 2 - Full Height inside Drawer)
+     3. SUBMENUS SLIDING LAYERS
      ========================================================================== */
   .custom-m-submenu-panel {
     position: absolute;
-    top: 0; /* Pure drawer ke upar slide hoga bilkul image ki tarah */
+    top: 0;
     left: 100%;
     width: 100%;
     height: 100%;
@@ -1683,12 +1671,9 @@
     flex-direction: column;
     box-sizing: border-box;
   }
-  
   .custom-m-submenu-panel.is-active {
     left: 0;
   }
-
-  /* Back Button styling */
   .custom-m-back-btn {
     width: 100%;
     padding: 16px 20px;
@@ -1702,95 +1687,22 @@
     cursor: pointer;
     flex-shrink: 0;
   }
-
-  /* Category Title Heading Section */
-  .custom-m-submenu-header-bar {
-    padding: 20px 20px 10px 20px;
-    background: #ffffff;
-    flex-shrink: 0;
-  }
-  .custom-m-submenu-title { 
-    margin: 0; 
-    font-size: 24px; 
-    color: #000000; 
-    font-weight: 800;
-  }
-  
-  /* Shop all link styling */
-  .shop-all-row {
-    background: #f9f9f9;
-  }
-  .shop-all-link { 
-    color: #002d62; 
-    font-weight: 700;
-  }
-
-  /* Submenu lists scroll rules */
-  .custom-m-submenu-panel .custom-m-menu-list {
-    flex: 1;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
+  .custom-m-submenu-header-bar { padding: 20px 20px 10px 20px; background: #ffffff; flex-shrink: 0; }
+  .custom-m-submenu-title { margin: 0; font-size: 24px; color: #000000; font-weight: 800; }
+  .shop-all-row { background: #f9f9f9; }
+  .shop-all-link { color: #002d62; font-weight: 700; }
+  .custom-m-submenu-panel .custom-m-menu-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
   /* ==========================================================================
      4. POPUP ENGINE MODAL STYLING
      ========================================================================== */
-  .engine-popup-modal {
-    display: none;
-    position: fixed;
-    z-index: 9999999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.5);
-  }
-  .engine-popup-content {
-    background-color: #002d62; /* Blue Background matches image 1 */
-    margin: 20% auto;
-    padding: 25px 20px;
-    width: 90%;
-    max-width: 380px;
-    position: relative;
-  }
-  .engine-popup-content h3 {
-    text-align: center;
-    color: #ffffff;
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-  }
-  .close-popup { 
-    position: absolute; 
-    right: 15px; 
-    top: 10px; 
-    color: #ffffff; 
-    font-size: 28px; 
-    cursor: pointer; 
-  }
+  .engine-popup-modal { display: none; position: fixed; z-index: 9999999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
+  .engine-popup-content { background-color: #002d62; margin: 20% auto; padding: 25px 20px; width: 90%; max-width: 380px; position: relative; }
+  .engine-popup-content h3 { text-align: center; color: #ffffff; margin-top: 0; margin-bottom: 20px; font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
+  .close-popup { position: absolute; right: 15px; top: 10px; color: #ffffff; font-size: 28px; cursor: pointer; }
   .form-group { margin-bottom: 15px; }
-  .form-group select { 
-    width: 100%; 
-    padding: 14px; 
-    border: none; 
-    font-size: 15px; 
-    font-weight: 600;
-    background: #ffffff;
-    color: #000000;
-  }
-  .engine-search-submit { 
-    width: 100%; 
-    padding: 14px; 
-    background: #ffcc00; 
-    color: #000000; 
-    border: none; 
-    font-weight: 700; 
-    cursor: pointer; 
-    text-transform: uppercase; 
-    font-size: 15px;
-  }
+  .form-group select { width: 100%; padding: 14px; border: none; font-size: 15px; font-weight: 600; background: #ffffff; color: #000000; }
+  .engine-search-submit { width: 100%; padding: 14px; background: #ffcc00; color: #000000; border: none; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 15px; }
 </style>
 
 <script>
@@ -1799,10 +1711,8 @@
     var openBtn = document.getElementById("openMobileDrawer");
     var closeBtn = document.getElementById("closeMobileDrawer");
 
-    // Body reference to append drawer at top level if needed to prevent container clipping
     if(drawer && openBtn) {
-      // Is code se drawer main layout ke bahar body par attack karega taake structural clipping na ho
-      document.body.appendChild(drawer);
+      document.body.appendChild(drawer); // Z-index structural boundary override
       
       openBtn.addEventListener("click", function(e) {
         e.preventDefault();
@@ -1815,14 +1725,13 @@
       closeBtn.addEventListener("click", function() {
         drawer.classList.remove("is-open");
         document.body.style.overflow = "";
-        // Reset submenus
         document.querySelectorAll('.custom-m-submenu-panel').forEach(function(panel) {
           panel.classList.remove('is-active');
         });
       });
     }
 
-    // Layer 2 triggers logic
+    // Dynamic Sliding Script for Nested Submenus (Works for both Layer 2 and Layer 3)
     var menuTriggers = document.querySelectorAll(".custom-m-menu-link.has-children");
     menuTriggers.forEach(function(trigger) {
       trigger.addEventListener("click", function(e) {
@@ -1835,7 +1744,7 @@
       });
     });
 
-    // Back buttons layer 2 to layer 1
+    // Dynamic Back Navigation
     var backButtons = document.querySelectorAll(".custom-m-back-btn");
     backButtons.forEach(function(btn) {
       btn.addEventListener("click", function(e) {
@@ -1844,14 +1753,12 @@
       });
     });
 
-    // Engine Selector Popup Logic
+    // Engine Selection Handling 
     var modal = document.getElementById("enginePopupModal");
     var engineBtn = document.getElementById("openEnginePopup");
     var closePopup = document.querySelector(".close-popup");
 
-    if(modal) {
-      document.body.appendChild(modal); // Modal append to body for safe overlay
-    }
+    if(modal) { document.body.appendChild(modal); }
 
     if(engineBtn && modal) {
       engineBtn.addEventListener("click", function(e) {
