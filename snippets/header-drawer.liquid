@@ -1495,9 +1495,8 @@
             <button type="button" class="custom-m-submenu-close">&times;</button>
           </div>
 
-          <span class="custom-m-submenu-title">{{ link.title | escape }}</span>
-            <span class="custom-m-submenu-title">{{ childlink.title | escape }}</span>
-            
+          
+
           {%- comment -%} Check if children are products {%- endcomment -%}
           {%- assign l2_has_products = false -%}
           {%- for childlink in link.links -%}
@@ -1557,8 +1556,7 @@
                 <button type="button" class="custom-m-submenu-close">&times;</button>
               </div>
 
-              <span class="custom-m-submenu-title">{{ link.title | escape }}</span>
-                <span class="custom-m-submenu-title">{{ childlink.title | escape }}</span>
+           
 
 
               {%- assign l3_has_products = false -%}
