@@ -1494,21 +1494,44 @@
             </div>
 
             {%- for childlink in link.links -%}
+              
+              {%- assign is_product = false -%}
+              {%- assign raw_product = childlink.object -%}
+              
+              {%- if childlink.type == 'product_link' -%}
+                {%- assign is_product = true -%}
+              {%- elsif childlink.url contains '/products/' -%}
+                {%- assign url_parts = childlink.url | split: '/' -%}
+                {%- assign product_handle = url_parts | last | split: '?' | first -%}
+                {%- assign raw_product = all_products[product_handle] -%}
+                {%- if raw_product != blank -%}
+                  {%- assign is_product = true -%}-
+                {%- endif -%}
+              {%- endif -%}
+
               <div class="custom-m-product-card">
                 <a href="{{ childlink.url }}">
                   <div class="product-card-image-wrapper">
-                    {%- if childlink.type == 'product_link' -%}
-                      <img src="{{ childlink.object.featured_image | img_url: '300x300', crop: 'center' }}" alt="{{ childlink.title | escape }}" loading="lazy">
+                    {%- if is_product and raw_product.featured_image != blank -%}
+                      <img src="{{ raw_product.featured_image | img_url: '300x300', crop: 'center' }}" alt="{{ childlink.title | escape }}" loading="lazy">
+                    
                     {%- elsif childlink.type == 'collection_link' and childlink.object.image -%}
                       <img src="{{ childlink.object.image | img_url: '300x300', crop: 'center' }}" alt="{{ childlink.title | escape }}" loading="lazy">
+                    
                     {%- elsif childlink.type == 'collection_link' and childlink.object.products.first.featured_image -%}
                       <img src="{{ childlink.object.products.first.featured_image | img_url: '300x300', crop: 'center' }}" alt="{{ childlink.title | escape }}" loading="lazy">
+                    
                     {%- else -%}
                       <img src="{{ 'product-1' | placeholder_svg_tag }}" class="placeholder-svg" alt="placeholder">
                     {%- endif -%}
                   </div>
+                  
                   <div class="product-card-title">
-                    {{ childlink.title | escape }}
+                    {%- if childlink.title != blank -%}
+                      {{ childlink.title | escape }}
+                    {%- else -%}
+                      {{ raw_product.title | escape }}
+                    {%- endif -%}
                   </div>
                 </a>
               </div>
@@ -1551,7 +1574,7 @@
 
 <style>
   /* ==========================================
-     1. HAMBURGER & BASIC DRAWER
+     1. HAMBURGER & DRAWER LAYOUT
      ========================================== */
   .custom-hamburger-trigger {
     display: none;
@@ -1605,7 +1628,6 @@
   .custom-drawer-logo { font-weight: bold; font-size: 16px; }
   .custom-drawer-close { background: none; border: none; color: #fff; font-size: 28px; cursor: pointer; }
 
-  /* Yellow Bar Button */
   .custom-m-engine-section { padding: 12px 15px; background: #fff; border-bottom: 1px solid #e5e5e5; flex-shrink: 0; }
   .custom-m-engine-btn {
     width: 100%;
@@ -1620,7 +1642,6 @@
     letter-spacing: 0.5px;
   }
 
-  /* Layer 1 Navigation List */
   .custom-m-nav { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .custom-m-menu-list { list-style: none; padding: 0; margin: 0; }
   .custom-m-menu-item { border-bottom: 1px solid #e5e5e5; }
@@ -1642,7 +1663,7 @@
   .arrow-forward { color: #000; font-size: 14px; font-weight: bold; pointer-events: none; }
 
   /* ==========================================
-     2. NEW DYNAMIC SUBMENU SLIDING PANELS (GRID)
+     2. DYNAMIC GRID VIEW FOR SUBMENUS
      ========================================== */
   .custom-m-submenu-panel {
     position: absolute;
@@ -1675,19 +1696,18 @@
   .custom-m-submenu-header-bar { padding: 20px 20px 10px 20px; flex-shrink: 0; }
   .custom-m-submenu-title { margin: 0; font-size: 24px; color: #000; font-weight: 800; text-transform: capitalize; }
 
-  /* 1 Row Me 2 Cards Ka Grid Layout Layout */
+  /* 1 Row me Exact 2 Cards Columns layout */
   .custom-m-products-grid {
     flex: 1;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Divide into exactly 2 columns */
+    grid-template-columns: repeat(2, 1fr);
     gap: 15px;
     padding: 10px 20px 30px 20px;
     background: #fff;
   }
 
-  /* Product Cards Card Layout */
   .custom-m-product-card {
     background: #fff;
     display: flex;
@@ -1703,10 +1723,9 @@
     display: block;
   }
   
-  /* Image Block Box Container */
   .product-card-image-wrapper {
     width: 100%;
-    aspect-ratio: 1 / 1; /* Pure Square layout box like ref image */
+    aspect-ratio: 1 / 1; /* Square Shape like image 3 */
     background-color: #f7f7f7;
     display: flex;
     align-items: center;
@@ -1718,18 +1737,11 @@
   .product-card-image-wrapper img {
     max-width: 100%;
     max-height: 100%;
-    object-fit: contain; /* Pure image shape maintain */
+    object-fit: contain;
   }
-  .placeholder-icon-box {
-    font-size: 32px;
-  }
-  .placeholder-svg {
-    width: 100%;
-    height: 100%;
-    fill: #ddd;
-  }
+  .placeholder-icon-box { font-size: 32px; }
+  .placeholder-svg { width: 100%; height: 100%; fill: #ddd; }
 
-  /* Card Text Titles */
   .product-card-title {
     margin-top: 8px;
     font-size: 13px;
@@ -1738,22 +1750,16 @@
     color: #000;
     padding: 0 4px;
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* 2 lines max handle for neat look */
+    -webkit-line-clamp: 2; /* Truncate if long */
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
   
-  /* Special styling for Shop All option */
-  .shop-all-card .product-card-image-wrapper {
-    background-color: #eef3f8; /* halka sa unique tint layer */
-  }
-  .shop-all-card .product-card-title {
-    color: #002d62;
-    font-weight: 700;
-  }
+  .shop-all-card .product-card-image-wrapper { background-color: #eef3f8; }
+  .shop-all-card .product-card-title { color: #002d62; font-weight: 700; }
 
   /* ==========================================
-     3. ENGINE POPUP MODAL
+     3. ENGINE FILTER POPUP MODAL
      ========================================== */
   .engine-popup-modal { display: none; position: fixed; z-index: 9999999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
   .engine-popup-content { background-color: #002d62; margin: 20% auto; padding: 25px 20px; width: 90%; max-width: 380px; position: relative; }
@@ -1774,9 +1780,7 @@
     var openBtn = document.getElementById("openMobileDrawer");
     var closeBtn = document.getElementById("closeMobileDrawer");
 
-    if(drawer) {
-      document.body.appendChild(drawer); 
-    }
+    if(drawer) { document.body.appendChild(drawer); }
 
     if(openBtn && drawer) {
       openBtn.addEventListener("click", function(e) {
@@ -1796,7 +1800,7 @@
       });
     }
 
-    // Dynamic Sliding Drawer Layers Fix
+    // Dynamic Click Handler for Layer Links
     document.addEventListener("click", function(e) {
       var trigger = e.target.closest(".custom-m-menu-link.has-children");
       if(trigger) {
@@ -1809,7 +1813,7 @@
       }
     });
 
-    // Back Panel Action Handler
+    // Back Button Layer Triggers
     document.addEventListener("click", function(e) {
       var backBtn = e.target.closest(".custom-m-back-btn");
       if(backBtn) {
@@ -1818,7 +1822,7 @@
       }
     });
 
-    // Engine Selector Pop-up logic
+    // Engine Filter Pop-up Modal
     var modal = document.getElementById("enginePopupModal");
     var engineBtn = document.getElementById("openEnginePopup");
     var closePopup = document.querySelector(".close-popup");
