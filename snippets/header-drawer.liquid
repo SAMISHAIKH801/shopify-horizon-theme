@@ -1443,7 +1443,7 @@
 
 <div id="customMobileDrawer" class="custom-m-drawer">
   <div class="custom-m-drawer-inner">
-    
+
     <div class="custom-m-drawer-header">
       <span class="custom-drawer-logo">MENU</span>
       <button type="button" id="closeMobileDrawer" class="custom-drawer-close">&times;</button>
@@ -1455,6 +1455,7 @@
       </button>
     </div>
 
+    {%- comment -%} Layer 1: Root menu {%- endcomment -%}
     <nav class="custom-m-nav" id="mNavLayer1">
       <ul class="custom-m-menu-list">
         {%- for link in mobile_menu.links -%}
@@ -1472,70 +1473,83 @@
       </ul>
     </nav>
 
+    {%- comment -%} Layer 2: Submenu panels {%- endcomment -%}
     {%- for link in mobile_menu.links -%}
       {%- if link.links != blank -%}
         <div class="custom-m-submenu-panel" id="submenu-{{ forloop.index }}">
-          <button type="button" class="custom-m-back-btn">&#10094; Back</button>
-          
-          <div class="custom-m-submenu-header-bar">
+          <div class="custom-m-submenu-header">
+            <button type="button" class="custom-m-back-btn">
+              <span>&#10094;</span> {{ link.title | escape }}
+            </button>
+            <button type="button" class="custom-m-submenu-close">&times;</button>
+          </div>
+
+          {%- comment -%}
+            Check karo agar is parent ke children products hain ya categories.
+            Agar child link ka type 'product_link' hai to product card show karo.
+            Warna normal text link.
+          {%- endcomment -%}
+
+          {%- assign has_products = false -%}
+          {%- for childlink in link.links -%}
+            {%- if childlink.type == 'product_link' -%}
+              {%- assign has_products = true -%}
+            {%- endif -%}
+          {%- endfor -%}
+
+          {%- if has_products -%}
+            {%- comment -%} Product cards grid {%- endcomment -%}
             <h3 class="custom-m-submenu-title">{{ link.title | escape }}</h3>
-          </div>
-          
-          <div class="custom-m-products-grid">
-            
-            <div class="custom-m-product-card shop-all-card">
-              <a href="{{ link.url }}">
-                <div class="product-card-image-wrapper">
-                  {%- if link.type == 'collection_link' and link.object.image -%}
-                    <img src="{{ link.object.image | img_url: '300x300', crop: 'center' }}" alt="{{ link.title }}" loading="lazy">
-                  {%- else -%}
-                    <div class="placeholder-icon-box">📦</div>
-                  {%- endif -%}
+            <div class="custom-m-products-grid">
+              <a href="{{ link.url }}" class="custom-m-product-card custom-m-shop-all-card">
+                <div class="custom-m-product-img-wrap">
+                  <span class="custom-m-shop-all-text">Shop All<br>{{ link.title | escape }}</span>
                 </div>
-                <div class="product-card-title">Shop All {{ link.title | escape }}</div>
+                <div class="custom-m-product-info">
+                  <span class="custom-m-product-title">Shop All {{ link.title | escape }}</span>
+                </div>
               </a>
-            </div>
-
-            {%- for childlink in link.links -%}
-              
-              {%- assign is_product_item = false -%}
-              {%- assign product_obj = childlink.object -%}
-              
-              {%- if childlink.type == 'product_link' -%}
-                {%- assign is_product_item = true -%}
-              {%- comment -%} Check if the link falls under standard shopify product routing paths {%- endcomment -%}
-              {%- elsif childlink.url contains '/products/' -%}
-                {%- assign url_chunks = childlink.url | split: '/' -%}
-                {%- assign extracted_handle = url_chunks | last | split: '?' | first -%}
-                {%- assign product_obj = all_products[extracted_handle] -%}
-                {%- if product_obj != blank -%}
-                  {%- assign is_product_item = true -%}
+              {%- for childlink in link.links -%}
+                {%- if childlink.type == 'product_link' -%}
+                  {%- assign product = childlink.object -%}
+                  <a href="{{ childlink.url }}" class="custom-m-product-card">
+                    <div class="custom-m-product-img-wrap">
+                      {%- if product.featured_image -%}
+                        <img
+                          src="{{ product.featured_image | image_url: width: 300 }}"
+                          alt="{{ product.title | escape }}"
+                          loading="lazy"
+                          width="150"
+                          height="150"
+                        >
+                      {%- else -%}
+                        <div class="custom-m-no-img">
+                          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9l4-4 4 4 4-4 4 4"/><circle cx="8.5" cy="13.5" r="1.5"/></svg>
+                        </div>
+                      {%- endif -%}
+                    </div>
+                    <div class="custom-m-product-info">
+                      <span class="custom-m-product-title">{{ product.title | escape | truncate: 40 }}</span>
+                      <span class="custom-m-product-price">{{ product.price | money }}</span>
+                    </div>
+                  </a>
                 {%- endif -%}
-              {%- endif -%}
-
-              <div class="custom-m-product-card">
-                <a href="{{ childlink.url }}">
-                  <div class="product-card-image-wrapper">
-                    {%- if is_product_item and product_obj.featured_image != blank -%}
-                      <img src="{{ product_obj.featured_image | img_url: '300x300', crop: 'center' }}" alt="{{ childlink.title | escape }}" loading="lazy">
-                    {%- comment -%} Fallback if link is a nested sub-collection link instead {%- endcomment -%}
-                    {%- elsif childlink.type == 'collection_link' and childlink.object.image -%}
-                      <img src="{{ childlink.object.image | img_url: '300x300', crop: 'center' }}" alt="{{ childlink.title | escape }}" loading="lazy">
-                    {%- elsif childlink.type == 'collection_link' and childlink.object.products.first.featured_image -%}
-                      <img src="{{ childlink.object.products.first.featured_image | img_url: '300x300', crop: 'center' }}" alt="{{ childlink.title | escape }}" loading="lazy">
-                    {%- else -%}
-                      <img src="{{ 'product-1' | placeholder_svg_tag }}" class="placeholder-svg" alt="placeholder">
-                    {%- endif -%}
-                  </div>
-                  
-                  <div class="product-card-title">
-                    {%- if childlink.title != blank -%}{{ childlink.title | escape }}{%- else -%}{{ product_obj.title | escape }}{%- endif -%}
-                  </div>
-                </a>
-              </div>
-            {%- endfor -%}
-
-          </div>
+              {%- endfor -%}
+            </div>
+          {%- else -%}
+            {%- comment -%} Category / page links — normal list {%- endcomment -%}
+            <h3 class="custom-m-submenu-title">{{ link.title | escape }}</h3>
+            <ul class="custom-m-menu-list">
+              <li class="custom-m-menu-item">
+                <a href="{{ link.url }}" class="custom-m-menu-link shop-all-link">Shop All {{ link.title | escape }}</a>
+              </li>
+              {%- for childlink in link.links -%}
+                <li class="custom-m-menu-item">
+                  <a href="{{ childlink.url }}" class="custom-m-menu-link">{{ childlink.title | escape }}</a>
+                </li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
         </div>
       {%- endif -%}
     {%- endfor -%}
@@ -1543,25 +1557,29 @@
   </div>
 </div>
 
+{%- comment -%} Engine Popup {%- endcomment -%}
 <div id="enginePopupModal" class="engine-popup-modal">
   <div class="engine-popup-content">
     <span class="close-popup">&times;</span>
     <h3>SHOP PARTS BY ENGINE</h3>
     <form action="/search" method="get">
       <div class="form-group">
-        <select name="pf_v_engine_make" id="engineMake">
+        <select name="pf_v_engine_make" id="engineMake" class="ep-select">
           <option value="">Engine Make</option>
           <option value="mercury">Mercury Marine</option>
           <option value="yamaha">Yamaha</option>
+          <option value="mercruiser">MerCruiser</option>
+          <option value="suzuki">Suzuki</option>
+          <option value="honda">Honda</option>
         </select>
       </div>
       <div class="form-group">
-        <select name="pf_v_model" id="engineModel">
+        <select name="pf_v_model" id="engineModel" class="ep-select" disabled>
           <option value="">Model</option>
         </select>
       </div>
       <div class="form-group">
-        <select name="pf_v_year" id="engineYear">
+        <select name="pf_v_year" id="engineYear" class="ep-select" disabled>
           <option value="">Year</option>
         </select>
       </div>
@@ -1571,286 +1589,428 @@
 </div>
 
 <style>
-  /* ==========================================
-     1. MAIN INTERFACE FRAMEWORKS
-     ========================================== */
-  .custom-hamburger-trigger {
-    display: none;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 24px;
-    height: 18px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    z-index: 99;
-  }
-  .hamburger-bar {
-    width: 100%;
-    height: 3px;
-    background-color: #002d62;
-    border-radius: 2px;
-  }
-  .custom-m-drawer {
-    position: fixed;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    max-width: 100vw;
-    height: 100vh;
-    background: #fff;
-    z-index: 99999;
-    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow: hidden;
-    box-sizing: border-box;
-  }
-  .custom-m-drawer.is-open { left: 0; }
-  .custom-m-drawer-inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-  .custom-m-drawer-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 20px;
-    background: #002d62;
-    color: #fff;
-    flex-shrink: 0;
-  }
-  .custom-drawer-logo { font-weight: bold; font-size: 16px; }
-  .custom-drawer-close { background: none; border: none; color: #fff; font-size: 28px; cursor: pointer; }
+/* ── Hamburger ── */
+.custom-hamburger-trigger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 18px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 99;
+}
+.hamburger-bar {
+  width: 100%;
+  height: 3px;
+  background-color: currentColor;
+  border-radius: 2px;
+}
 
-  .custom-m-engine-section { padding: 12px 15px; background: #fff; border-bottom: 1px solid #e5e5e5; flex-shrink: 0; }
-  .custom-m-engine-btn {
-    width: 100%;
-    padding: 14px;
-    background: #ffcc00;
-    color: #000;
-    border: none;
-    font-weight: bold;
-    font-size: 15px;
-    text-transform: uppercase;
-    cursor: pointer;
-    letter-spacing: 0.5px;
-  }
+/* ── Drawer ── */
+.custom-m-drawer {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  max-width: 400px;
+  height: 100%;
+  background: #fff;
+  z-index: 99999;
+  box-shadow: 5px 0 15px rgba(0,0,0,0.2);
+  transition: left 0.3s ease-in-out;
+  overflow: hidden;
+}
+.custom-m-drawer.is-open { left: 0; }
 
-  /* Layer 1 Navigation List Styling Overhaul */
-  .custom-m-nav { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-  .custom-m-menu-list { list-style: none; padding: 0; margin: 0; display: block !important; }
-  .custom-m-menu-item { border-bottom: 1px solid #e5e5e5; display: block !important; }
-  .custom-m-menu-link {
-    display: flex !important;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 18px 20px;
-    background: none;
-    border: none;
-    text-align: left;
-    font-size: 15px;
-    font-weight: 700;
-    color: #000;
-    text-decoration: none;
-    cursor: pointer;
-    box-sizing: border-box;
-  }
-  .arrow-forward { color: #000; font-size: 14px; font-weight: bold; pointer-events: none; }
+.custom-m-drawer-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
 
-  /* ==========================================
-     2. LAYER 2: 2-COLUMN CARDS GRID SYSTEM
-     ========================================== */
-  .custom-m-submenu-panel {
-    position: absolute;
-    top: 0; /* Pure Top se set takay structural overlay clean rahe */
-    left: 100%;
-    width: 100%;
-    height: 100%;
-    background: #fff;
-    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-  }
-  .custom-m-submenu-panel.is-active { left: 0; }
-  
-  .custom-m-back-btn {
-    width: 100%;
-    padding: 16px 20px;
-    background: #fff;
-    border: none;
-    border-bottom: 1px solid #e5e5e5;
-    text-align: left;
-    font-size: 15px;
-    font-weight: 600;
-    color: #000;
-    cursor: pointer;
-    flex-shrink: 0;
-  }
-  .custom-m-submenu-header-bar { padding: 20px 20px 10px 20px; flex-shrink: 0; }
-  .custom-m-submenu-title { margin: 0; font-size: 24px; color: #000; font-weight: 800; text-transform: capitalize; }
+/* ── Header ── */
+.custom-m-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 18px;
+  background: #002d62;
+  color: #fff;
+  flex-shrink: 0;
+}
+.custom-drawer-logo { font-weight: 700; font-size: 15px; letter-spacing: 0.06em; }
+.custom-drawer-close { background: none; border: none; color: #fff; font-size: 28px; cursor: pointer; line-height: 1; padding: 0; }
 
-  /* 2 Column Responsive Flexible Grid Container Layout */
-  .custom-m-products-grid {
-    flex: 1;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important; /* Force layout conversion to exactly 2 columns split */
-    gap: 16px;
-    padding: 10px 20px 40px 20px;
-    background: #fff;
-    box-sizing: border-box;
-  }
+/* ── Engine Button ── */
+.custom-m-engine-section {
+  padding: 10px 14px;
+  background: #f4f4f4;
+  flex-shrink: 0;
+}
+.custom-m-engine-btn {
+  width: 100%;
+  padding: 13px;
+  background: #f5a623;
+  color: #071a2d;
+  border: none;
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+.custom-m-engine-btn:hover { background: #e09410; }
 
-  /* Individual Grid Product Block Structure */
-  .custom-m-product-card {
-    background: #fff;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center;
-    text-align: center;
-    box-sizing: border-box;
-    width: 100% !important;
-  }
-  .custom-m-product-card a {
-    text-decoration: none;
-    color: inherit;
-    width: 100%;
-    display: block;
-  }
-  
-  /* Image Block Framework */
-  .product-card-image-wrapper {
-    width: 100%;
-    aspect-ratio: 1 / 1; /* Aspect scale set to exact square */
-    background-color: #f7f7f7;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    box-sizing: border-box;
-    overflow: hidden;
-  }
-  .product-card-image-wrapper img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-  }
-  .placeholder-icon-box { font-size: 32px; }
-  .placeholder-svg { width: 100%; height: 100%; fill: #ddd; }
+/* ── Nav Layer 1 ── */
+.custom-m-nav { flex: 1; overflow-y: auto; }
+.custom-m-menu-list { list-style: none; padding: 0; margin: 0; }
+.custom-m-menu-item { border-bottom: 1px solid #efefef; }
+.custom-m-menu-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 15px 20px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1a1a1a;
+  text-decoration: none;
+  cursor: pointer;
+}
+.custom-m-menu-link:hover { background: #fafafa; }
+.arrow-forward { color: #aaa; font-size: 13px; flex-shrink: 0; }
+.shop-all-link { color: #002d62; font-style: italic; font-weight: 600; }
 
-  /* Typography Design */
-  .product-card-title {
-    margin-top: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    line-height: 1.3;
-    color: #000;
-    padding: 0 4px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2; /* Maximum text wrap height to avoid alignment breakdown */
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  .shop-all-card .product-card-image-wrapper { background-color: #eef3f8; }
-  .shop-all-card .product-card-title { color: #002d62; font-weight: 700; }
+/* ── Submenu Panel ── */
+.custom-m-submenu-panel {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  transition: left 0.28s ease-in-out;
+  overflow-y: auto;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+}
+.custom-m-submenu-panel.is-active { left: 0; }
 
-  /* ==========================================
-     3. MODAL POPUP DESIGNS
-     ========================================== */
-  .engine-popup-modal { display: none; position: fixed; z-index: 9999999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
-  .engine-popup-content { background-color: #002d62; margin: 20% auto; padding: 25px 20px; width: 90%; max-width: 380px; position: relative; }
-  .engine-popup-content h3 { text-align: center; color: #ffffff; margin-top: 0; margin-bottom: 20px; font-size: 18px; font-weight: 700; }
-  .close-popup { position: absolute; right: 15px; top: 10px; color: #ffffff; font-size: 28px; cursor: pointer; }
-  .form-group { margin-bottom: 15px; }
-  .form-group select { width: 100%; padding: 14px; border: none; font-size: 15px; font-weight: 600; background: #ffffff; color: #000; }
-  .engine-search-submit { width: 100%; padding: 14px; background: #ffcc00; color: #000; border: none; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 15px; }
+.custom-m-submenu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #002d62;
+  flex-shrink: 0;
+}
+.custom-m-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 18px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  flex: 1;
+  text-align: left;
+}
+.custom-m-submenu-close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 26px;
+  cursor: pointer;
+  padding: 0 16px;
+  line-height: 1;
+}
 
-  @media screen and (max-width: 990px) {
-    .custom-hamburger-trigger { display: flex; }
-  }
+.custom-m-submenu-title {
+  padding: 14px 18px 8px;
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #002d62;
+  border-bottom: 1px solid #efefef;
+  flex-shrink: 0;
+}
+
+/* ── Product Cards Grid (2 columns) ── */
+.custom-m-products-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 14px;
+  overflow-y: auto;
+}
+.custom-m-product-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  background: #fff;
+  transition: box-shadow 0.15s;
+}
+.custom-m-product-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+
+.custom-m-product-img-wrap {
+  width: 100%;
+  aspect-ratio: 1;
+  background: #f7f7f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.custom-m-product-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
+}
+.custom-m-no-img {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.custom-m-shop-all-card .custom-m-product-img-wrap {
+  background: #002d62;
+}
+.custom-m-shop-all-text {
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.4;
+  padding: 8px;
+}
+.custom-m-product-info {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.custom-m-product-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: #1a1a1a;
+  line-height: 1.3;
+}
+.custom-m-product-price {
+  font-size: 12px;
+  font-weight: 700;
+  color: #002d62;
+}
+
+/* ── Engine Popup ── */
+.engine-popup-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999999;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(3px);
+  align-items: center;
+  justify-content: center;
+}
+.engine-popup-modal.ep-open { display: flex; }
+
+.engine-popup-content {
+  background: #071a2d;
+  padding: 28px 24px 24px;
+  width: 90%;
+  max-width: 380px;
+  border-radius: 8px;
+  position: relative;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+.close-popup {
+  position: absolute;
+  right: 14px; top: 10px;
+  color: rgba(255,255,255,0.7);
+  font-size: 26px;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 1;
+}
+.close-popup:hover { color: #fff; }
+.engine-popup-content h3 {
+  text-align: center;
+  margin: 0 0 20px;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.engine-popup-content h3 span { color: #f5a623; }
+.form-group { margin-bottom: 12px; }
+.ep-select {
+  width: 100%;
+  height: 46px;
+  background: #0e3a56;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 14px;
+  padding: 0 36px 0 14px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+}
+.ep-select:focus { outline: none; border-color: #f5a623; }
+.ep-select option { background: #0d2b45; }
+.ep-select:disabled { opacity: 0.45; cursor: not-allowed; }
+.engine-search-submit {
+  width: 100%;
+  padding: 13px;
+  background: #f5a623;
+  color: #071a2d;
+  border: none;
+  font-weight: 800;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: background 0.15s;
+}
+.engine-search-submit:hover { background: #e09410; }
+
+/* ── Responsive ── */
+@media screen and (max-width: 990px) {
+  .custom-hamburger-trigger { display: flex; }
+}
 </style>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    var drawer = document.getElementById("customMobileDrawer");
-    var openBtn = document.getElementById("openMobileDrawer");
-    var closeBtn = document.getElementById("closeMobileDrawer");
+document.addEventListener("DOMContentLoaded", function () {
 
-    if(drawer) { document.body.appendChild(drawer); }
+  var drawer = document.getElementById("customMobileDrawer");
+  var openBtn = document.getElementById("openMobileDrawer");
+  var closeBtn = document.getElementById("closeMobileDrawer");
 
-    if(openBtn && drawer) {
-      openBtn.addEventListener("click", function(e) {
-        e.preventDefault();
-        drawer.classList.add("is-open");
-        document.body.style.overflow = "hidden";
-      });
-    }
-
-    if(closeBtn && drawer) {
-      closeBtn.addEventListener("click", function() {
-        drawer.classList.remove("is-open");
-        document.body.style.overflow = "";
-        document.querySelectorAll('.custom-m-submenu-panel').forEach(function(panel) {
-          panel.classList.remove('is-active');
-        });
-      });
-    }
-
-    // Secondary Submenu Panels Trigger Actions
-    document.addEventListener("click", function(e) {
-      var trigger = e.target.closest(".custom-m-menu-link.has-children");
-      if(trigger) {
-        e.preventDefault();
-        var targetId = trigger.getAttribute("data-target");
-        var targetPanel = document.getElementById(targetId);
-        if(targetPanel) {
-          targetPanel.classList.add("is-active");
-        }
-      }
+  function closeDrawer() {
+    drawer.classList.remove("is-open");
+    document.body.style.overflow = "";
+    document.querySelectorAll('.custom-m-submenu-panel').forEach(function (p) {
+      p.classList.remove('is-active');
     });
+  }
 
-    // Panel Back Action Buttons Setup
-    document.addEventListener("click", function(e) {
-      var backBtn = e.target.closest(".custom-m-back-btn");
-      if(backBtn) {
-        e.preventDefault();
-        backBtn.parentElement.classList.remove("is-active");
-      }
-    });
+  if (openBtn) openBtn.addEventListener("click", function () {
+    drawer.classList.add("is-open");
+    document.body.style.overflow = "hidden";
+  });
 
-    // Engine Selector Popup Controllers
-    var modal = document.getElementById("enginePopupModal");
-    var engineBtn = document.getElementById("openEnginePopup");
-    var closePopup = document.querySelector(".close-popup");
+  if (closeBtn) closeBtn.addEventListener("click", closeDrawer);
 
-    if(modal) { document.body.appendChild(modal); }
-
-    if(engineBtn && modal) {
-      engineBtn.addEventListener("click", function(e) {
-        e.preventDefault();
-        modal.style.display = "block";
-      });
-    }
-    if(closePopup && modal) {
-      closePopup.addEventListener("click", function() {
-        modal.style.display = "none";
-      });
-    }
-    window.addEventListener("click", function(e) {
-      if (e.target == modal) {
-        modal.style.display = "none";
-      }
+  /* Submenu open */
+  document.querySelectorAll(".custom-m-menu-link.has-children").forEach(function (trigger) {
+    trigger.addEventListener("click", function () {
+      var panel = document.getElementById(this.getAttribute("data-target"));
+      if (panel) panel.classList.add("is-active");
     });
   });
+
+  /* Back button */
+  document.querySelectorAll(".custom-m-back-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      this.closest('.custom-m-submenu-panel').classList.remove('is-active');
+    });
+  });
+
+  /* Submenu close (X) button */
+  document.querySelectorAll(".custom-m-submenu-close").forEach(function (btn) {
+    btn.addEventListener("click", closeDrawer);
+  });
+
+  /* Engine Popup */
+  var modal = document.getElementById("enginePopupModal");
+  var engineBtn = document.getElementById("openEnginePopup");
+  var closePopupBtn = document.querySelector(".close-popup");
+
+  var engineModels = {
+    yamaha: ['F4','F6','F8','F9.9','F15','F20','F25','F40','F50','F60','F70','F75','F90','F100','F115','F150','F175','F200','F225','F250','F300','F350'],
+    mercury: ['2.5','3.5','4','5','6','8','9.9','15','20','25','30','40','50','60','75','90','115','150','175','200','225','250','300','350','400 Verado'],
+    mercruiser: ['3.0L TKS','3.0L MPI','4.3L MPI','5.0L MPI','5.7L MPI','6.2L MPI','8.1L MPI','350 MAG','496 MAG'],
+    suzuki: ['DF2.5','DF4','DF6','DF8','DF9.9','DF15','DF20','DF25','DF40','DF50','DF60','DF70','DF90','DF115','DF140','DF150','DF175','DF200','DF225','DF250','DF300'],
+    honda: ['BF2.3','BF4','BF5','BF6','BF8','BF9.9','BF15','BF20','BF25','BF30','BF40','BF50','BF60','BF75','BF90','BF115','BF135','BF150','BF175','BF200','BF225','BF250']
+  };
+
+  if (engineBtn) engineBtn.addEventListener("click", function () {
+    modal.classList.add("ep-open");
+    document.body.style.overflow = "hidden";
+  });
+
+  function closeEp() {
+    modal.classList.remove("ep-open");
+    document.body.style.overflow = "";
+  }
+
+  if (closePopupBtn) closePopupBtn.addEventListener("click", closeEp);
+  if (modal) modal.addEventListener("click", function (e) { if (e.target === this) closeEp(); });
+
+  var makeEl = document.getElementById("engineMake");
+  var modelEl = document.getElementById("engineModel");
+  var yearEl = document.getElementById("engineYear");
+
+  if (makeEl) makeEl.addEventListener("change", function () {
+    var make = this.value;
+    modelEl.innerHTML = '<option value="">Model</option>';
+    yearEl.innerHTML = '<option value="">Year</option>';
+    modelEl.disabled = true;
+    yearEl.disabled = true;
+    if (make && engineModels[make]) {
+      engineModels[make].forEach(function (m) {
+        var o = document.createElement('option');
+        o.value = m; o.textContent = m;
+        modelEl.appendChild(o);
+      });
+      modelEl.disabled = false;
+    }
+  });
+
+  if (modelEl) modelEl.addEventListener("change", function () {
+    yearEl.innerHTML = '<option value="">Year</option>';
+    yearEl.disabled = true;
+    if (this.value) {
+      for (var y = 2025; y >= 1985; y--) {
+        var o = document.createElement('option');
+        o.value = y; o.textContent = y;
+        yearEl.appendChild(o);
+      }
+      yearEl.disabled = false;
+    }
+  });
+
+});
 </script>
+
 {% comment %} 
 {%- assign mobile_menu = linklist | default: section.settings.menu | default: menus[section.settings.menu] -%}
 
