@@ -1435,11 +1435,19 @@
 
 {%- assign mobile_menu = linklist | default: section.settings.menu | default: menus[section.settings.menu] -%}
 
+{% comment %} <button type="button" class="custom-hamburger-trigger" id="openMobileDrawer" aria-label="Open Menu">
+  <span class="hamburger-bar"></span>
+  <span class="hamburger-bar"></span>
+  <span class="hamburger-bar"></span>
+</button> {% endcomment %}
+
 <button type="button" class="custom-hamburger-trigger" id="openMobileDrawer" aria-label="Open Menu">
-  <span class="hamburger-bar"></span>
-  <span class="hamburger-bar"></span>
-  <span class="hamburger-bar"></span>
+  <span class="hamburger-bar bar1"></span>
+  <span class="hamburger-bar bar2"></span>
+  <span class="hamburger-bar bar3"></span>
 </button>
+
+
 
 <div id="customMobileDrawer" class="custom-m-drawer">
   <div class="custom-m-drawer-inner">
@@ -1478,6 +1486,10 @@
       {%- if link.links != blank -%}
         <div class="custom-m-submenu-panel" id="submenu-L1-{{ forloop.index }}">
           <div class="custom-m-submenu-header">
+
+            <span class="custom-m-submenu-title">{{ link.title | escape }}</span>
+            <span class="custom-m-submenu-title">{{ childlink.title | escape }}</span>
+            
             <button type="button" class="custom-m-back-btn">
               &#10094; {{ link.title | escape }}
             </button>
@@ -1534,6 +1546,10 @@
           {%- if childlink.links != blank -%}
             <div class="custom-m-submenu-panel" id="submenu-L2-{{ forloop.parentloop.index }}-{{ forloop.index }}">
               <div class="custom-m-submenu-header">
+
+                <span class="custom-m-submenu-title">{{ link.title | escape }}</span>
+                <span class="custom-m-submenu-title">{{ childlink.title | escape }}</span>
+
                 <button type="button" class="custom-m-back-btn">
                   &#10094; {{ childlink.title | escape }}
                 </button>
@@ -1617,6 +1633,60 @@
 </div>
 
 <style>
+
+
+
+
+
+
+
+
+  /* Full height drawer */
+.custom-m-drawer {
+  height: 100vh;
+}
+
+/* Hamburger to X animation */
+.custom-hamburger-trigger .bar1,
+.custom-hamburger-trigger .bar2,
+.custom-hamburger-trigger .bar3 {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  transform-origin: center;
+}
+.custom-hamburger-trigger.is-open .bar1 {
+  transform: translateY(7.5px) rotate(45deg);
+}
+.custom-hamburger-trigger.is-open .bar2 {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.custom-hamburger-trigger.is-open .bar3 {
+  transform: translateY(-7.5px) rotate(-45deg);
+}
+
+/* Submenu parent title (like "Mercury" in image) */
+.custom-m-submenu-title {
+  display: block;
+  padding: 12px 18px 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  border-bottom: 1px solid #efefef;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 .custom-hamburger-trigger {
   display: none;
   flex-direction: column;
@@ -1862,6 +1932,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function closeDrawer() {
     drawer.classList.remove("is-open");
+    openBtn.classList.remove("is-open");
     document.body.style.overflow = "";
     document.querySelectorAll('.custom-m-submenu-panel').forEach(function (p) {
       p.classList.remove('is-active');
@@ -1870,6 +1941,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (openBtn) openBtn.addEventListener("click", function () {
     drawer.classList.add("is-open");
+    openBtn.classList.add("is-open");
     document.body.style.overflow = "hidden";
   });
   if (closeBtn) closeBtn.addEventListener("click", closeDrawer);
