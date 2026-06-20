@@ -1430,10 +1430,7 @@
 
 
 
-
 {%- assign mobile_menu = linklist | default: section.settings.menu | default: menus[section.settings.menu] -%}
-
-
 
 <button type="button" class="custom-hamburger-trigger" id="openMobileDrawer" aria-label="Open Menu">
   <span class="hamburger-bar"></span>
@@ -1476,10 +1473,13 @@
       {%- if link.links != blank -%}
         <div class="custom-m-submenu-panel" id="submenu-{{ forloop.index }}">
           <button type="button" class="custom-m-back-btn">&#10094; Back</button>
-          <h3 class="custom-m-submenu-title">{{ link.title | escape }}</h3>
+          
+          <div class="custom-m-submenu-header-bar">
+            <h3 class="custom-m-submenu-title">{{ link.title | escape }}</h3>
+          </div>
           
           <ul class="custom-m-menu-list">
-            <li class="custom-m-menu-item">
+            <li class="custom-m-menu-item shop-all-row">
               <a href="{{ link.url }}" class="custom-m-menu-link shop-all-link">Shop All {{ link.title | escape }}</a>
             </li>
             {%- for childlink in link.links -%}
@@ -1523,122 +1523,291 @@
 </div>
 
 <style>
- /* Custom Drawer Setup for Full Height & Viewport Overriding */
-.custom-m-drawer {
-  position: fixed !important;
-  top: 0 !important;
-  left: -100% !important; /* Right-to-left transition smooth karne ke liye */
-  width: 100vw !important;
-  max-width: 100% !important; /* Mobile pe complete screen space cover kare */
-  height: 100vh !important;
-  height: -webkit-fill-available !important; /* Mobile browsers ke native bar issues handle karne k liye */
-  background: #ffffff !important;
-  z-index: 9999999 !important; /* Pure layout me sabse upar rahe */
-  box-shadow: 5px 0 25px rgba(0,0,0,0.3) !important;
-  transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  overflow: hidden !important;
-}
+  /* ==========================================================================
+     1. HAMBURGER TRIGGER (Header ke andar normal inline block rahega)
+     ========================================================================== */
+  .custom-hamburger-trigger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 22px;
+    height: 16px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-right: 15px; /* Theme header layout spacing */
+  }
+  .hamburger-bar {
+    width: 100%;
+    height: 2px;
+    background-color: #002d62; /* Theme Blue color */
+    border-radius: 1px;
+  }
+  @media screen and (max-width: 990px) {
+    .custom-hamburger-trigger { display: flex; }
+  }
 
-.custom-m-drawer.is-open {
-  left: 0 !important;
-}
+  /* ==========================================================================
+     2. MAIN DRAWER (Is ko body par fix kiya hai taake header distrub na ho)
+     ========================================================================== */
+  .custom-m-drawer {
+    position: fixed;
+    top: 0;
+    left: -100%; /* Bahar rahega shuru me */
+    width: 100%;
+    max-width: 100vw; /* Poori mobile screen width */
+    height: 100vh;
+    height: -webkit-fill-available;
+    background: #ffffff;
+    z-index: 999999; /* Sabse upar render hoga bina header ko hilae */
+    box-shadow: none;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  
+  /* Open state class */
+  .custom-m-drawer.is-open {
+    left: 0;
+  }
 
-/* Inner layout settings to ensure full tracking */
-.custom-m-drawer-inner {
-  position: relative !important;
-  width: 100% !important;
-  height: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
-}
+  .custom-m-drawer-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+  }
 
-/* Header Area setup */
-.custom-m-drawer-header {
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  padding: 18px 15px !important;
-  background: #002d62 !important;
-  color: #fff !important;
-  flex-shrink: 0 !important; /* Header scroll hotay waqt compress na ho */
-}
+  /* Drawer Header (Blue Top Bar) */
+  .custom-m-drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: #002d62;
+    color: #ffffff;
+    flex-shrink: 0;
+  }
+  .custom-drawer-logo { 
+    font-weight: 700; 
+    font-size: 16px; 
+    letter-spacing: 1px;
+  }
+  .custom-drawer-close { 
+    background: none; 
+    border: none; 
+    color: #ffffff; 
+    font-size: 32px; 
+    line-height: 1; 
+    cursor: pointer;
+    padding: 0;
+  }
 
-/* Shop by Engine Yellow segment fixed bar */
-.custom-m-engine-section { 
-  padding: 12px 15px !important; 
-  background: #f4f4f4 !important; 
-  flex-shrink: 0 !important;
-}
+  /* Yellow Button section */
+  .custom-m-engine-section { 
+    padding: 12px 15px; 
+    background: #ffffff; 
+    flex-shrink: 0;
+    border-bottom: 1px solid #e5e5e5;
+  }
+  .custom-m-engine-btn {
+    width: 100%;
+    padding: 14px;
+    background: #ffcc00; /* Flat Yellow */
+    color: #000000;
+    border: none;
+    font-weight: 700;
+    font-size: 15px;
+    text-transform: uppercase;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+  }
 
-/* Scrollable Container for Layer 1 links */
-.custom-m-nav { 
-  flex: 1 !important; 
-  overflow-y: auto !important; 
-  -webkit-overflow-scrolling: touch !important; /* iOS scrolling momentum fix */
-  background: #ffffff !important;
-}
+  /* Main Links View Area (Layer 1) */
+  .custom-m-nav { 
+    flex: 1; 
+    overflow-y: auto; 
+    -webkit-overflow-scrolling: touch;
+    background: #ffffff;
+  }
+  
+  .custom-m-menu-list { 
+    list-style: none; 
+    padding: 0; 
+    margin: 0; 
+  }
+  
+  .custom-m-menu-item { 
+    border-bottom: 1px solid #f0f0f0; 
+  }
+  
+  .custom-m-menu-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 18px 20px;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: 15px;
+    font-weight: 700;
+    color: #000000;
+    text-decoration: none;
+    cursor: pointer;
+    box-sizing: border-box;
+  }
+  
+  .arrow-forward { 
+    color: #000000; 
+    font-size: 14px; 
+    font-weight: bold;
+  }
 
-/* Submenus Sliding Panels Layer 2 absolute height fix */
-.custom-m-submenu-panel {
-  position: absolute !important;
-  top: 0 !important; /* Ab ye zero se start ho kar pure view area ko cover karega */
-  left: 100% !important;
-  width: 100% !important;
-  height: 100% !important; /* Layer 1 ke barabar complete dynamic space handle kare */
-  background: #ffffff !important;
-  transition: left 0.3s ease-in-out !important;
-  overflow-y: auto !important;
-  -webkit-overflow-scrolling: touch !important;
-  z-index: 10 !important;
-  display: flex !important;
-  flex-direction: column !important;
-}
+  /* ==========================================================================
+     3. SUBMENUS SLIDING LAYERS (Layer 2 - Full Height inside Drawer)
+     ========================================================================== */
+  .custom-m-submenu-panel {
+    position: absolute;
+    top: 0; /* Pure drawer ke upar slide hoga bilkul image ki tarah */
+    left: 100%;
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+  }
+  
+  .custom-m-submenu-panel.is-active {
+    left: 0;
+  }
 
-.custom-m-submenu-panel.is-active {
-  left: 0 !important;
-}
+  /* Back Button styling */
+  .custom-m-back-btn {
+    width: 100%;
+    padding: 16px 20px;
+    background: #ffffff;
+    border: none;
+    border-bottom: 1px solid #e5e5e5;
+    text-align: left;
+    font-size: 15px;
+    font-weight: 600;
+    color: #000000;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
 
-/* Layer 2 Submenu lists management */
-.custom-m-submenu-panel .custom-m-menu-list {
-  flex: 1 !important;
-  overflow-y: auto !important;
-}
+  /* Category Title Heading Section */
+  .custom-m-submenu-header-bar {
+    padding: 20px 20px 10px 20px;
+    background: #ffffff;
+    flex-shrink: 0;
+  }
+  .custom-m-submenu-title { 
+    margin: 0; 
+    font-size: 24px; 
+    color: #000000; 
+    font-weight: 800;
+  }
+  
+  /* Shop all link styling */
+  .shop-all-row {
+    background: #f9f9f9;
+  }
+  .shop-all-link { 
+    color: #002d62; 
+    font-weight: 700;
+  }
 
-.custom-m-back-btn {
-  width: 100% !important;
-  padding: 15px !important;
-  background: #f9f9f9 !important;
-  border: none !important;
-  border-bottom: 1px solid #e5e5e5 !important;
-  text-align: left !important;
-  font-size: 14px !important;
-  font-weight: bold !important;
-  color: #555 !important;
-  cursor: pointer !important;
-  flex-shrink: 0 !important;
-}
+  /* Submenu lists scroll rules */
+  .custom-m-submenu-panel .custom-m-menu-list {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 
-.custom-m-submenu-title { 
-  padding: 15px 20px 10px 20px !important; 
-  margin: 0 !important; 
-  font-size: 20px !important; 
-  color: #002d62 !important;
-  font-weight: bold !important;
-  flex-shrink: 0 !important;
-}
+  /* ==========================================================================
+     4. POPUP ENGINE MODAL STYLING
+     ========================================================================== */
+  .engine-popup-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+  }
+  .engine-popup-content {
+    background-color: #002d62; /* Blue Background matches image 1 */
+    margin: 20% auto;
+    padding: 25px 20px;
+    width: 90%;
+    max-width: 380px;
+    position: relative;
+  }
+  .engine-popup-content h3 {
+    text-align: center;
+    color: #ffffff;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .close-popup { 
+    position: absolute; 
+    right: 15px; 
+    top: 10px; 
+    color: #ffffff; 
+    font-size: 28px; 
+    cursor: pointer; 
+  }
+  .form-group { margin-bottom: 15px; }
+  .form-group select { 
+    width: 100%; 
+    padding: 14px; 
+    border: none; 
+    font-size: 15px; 
+    font-weight: 600;
+    background: #ffffff;
+    color: #000000;
+  }
+  .engine-search-submit { 
+    width: 100%; 
+    padding: 14px; 
+    background: #ffcc00; 
+    color: #000000; 
+    border: none; 
+    font-weight: 700; 
+    cursor: pointer; 
+    text-transform: uppercase; 
+    font-size: 15px;
+  }
 </style>
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
-    // Drawer Panel Logic
     var drawer = document.getElementById("customMobileDrawer");
     var openBtn = document.getElementById("openMobileDrawer");
     var closeBtn = document.getElementById("closeMobileDrawer");
 
-    if(openBtn && drawer) {
-      openBtn.addEventListener("click", function() {
+    // Body reference to append drawer at top level if needed to prevent container clipping
+    if(drawer && openBtn) {
+      // Is code se drawer main layout ke bahar body par attack karega taake structural clipping na ho
+      document.body.appendChild(drawer);
+      
+      openBtn.addEventListener("click", function(e) {
+        e.preventDefault();
         drawer.classList.add("is-open");
-        document.body.style.overflow = "hidden"; // Page scroll stop karne k liye
+        document.body.style.overflow = "hidden";
       });
     }
 
@@ -1646,17 +1815,18 @@
       closeBtn.addEventListener("click", function() {
         drawer.classList.remove("is-open");
         document.body.style.overflow = "";
-        // Saare active submenus bhi reset kardo back to layer 1
+        // Reset submenus
         document.querySelectorAll('.custom-m-submenu-panel').forEach(function(panel) {
           panel.classList.remove('is-active');
         });
       });
     }
 
-    // Submenu Sliding Tabs Logic (Click on link -> Layer 2 Open)
+    // Layer 2 triggers logic
     var menuTriggers = document.querySelectorAll(".custom-m-menu-link.has-children");
     menuTriggers.forEach(function(trigger) {
-      trigger.addEventListener("click", function() {
+      trigger.addEventListener("click", function(e) {
+        e.preventDefault();
         var targetId = this.getAttribute("data-target");
         var targetPanel = document.getElementById(targetId);
         if(targetPanel) {
@@ -1665,21 +1835,27 @@
       });
     });
 
-    // Back Buttons Logic (Layer 2 -> Layer 1)
+    // Back buttons layer 2 to layer 1
     var backButtons = document.querySelectorAll(".custom-m-back-btn");
     backButtons.forEach(function(btn) {
-      btn.addEventListener("click", function() {
+      btn.addEventListener("click", function(e) {
+        e.preventDefault();
         this.parentElement.classList.remove("is-active");
       });
     });
 
-    // Shop by Engine Popup Modal Logic inside Drawer
+    // Engine Selector Popup Logic
     var modal = document.getElementById("enginePopupModal");
     var engineBtn = document.getElementById("openEnginePopup");
     var closePopup = document.querySelector(".close-popup");
 
+    if(modal) {
+      document.body.appendChild(modal); // Modal append to body for safe overlay
+    }
+
     if(engineBtn && modal) {
-      engineBtn.addEventListener("click", function() {
+      engineBtn.addEventListener("click", function(e) {
+        e.preventDefault();
         modal.style.display = "block";
       });
     }
