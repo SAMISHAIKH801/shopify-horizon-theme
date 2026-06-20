@@ -1583,7 +1583,7 @@
   }
 
   /* ==========================================================================
-     2. MAIN DRAWER (Pure Fullscreen Overlay Layout)
+     2. MAIN DRAWER
      ========================================================================== */
   .custom-m-drawer {
     position: fixed;
@@ -1655,7 +1655,7 @@
     cursor: pointer;
     box-sizing: border-box;
   }
-  .arrow-forward { color: #000000; font-size: 14px; font-weight: bold; }
+  .arrow-forward { color: #000000; font-size: 14px; font-weight: bold; pointer-events: none; } /* Pointer events none lagaya taake spans click ko block na karein */
 
   /* ==========================================================================
      3. SUBMENUS SLIDING LAYERS
@@ -1713,9 +1713,12 @@
     var openBtn = document.getElementById("openMobileDrawer");
     var closeBtn = document.getElementById("closeMobileDrawer");
 
-    if(drawer && openBtn) {
+    // Pehle Drawer ko DOM me move karenge taake structure break na ho
+    if(drawer) {
       document.body.appendChild(drawer); 
-      
+    }
+
+    if(openBtn && drawer) {
       openBtn.addEventListener("click", function(e) {
         e.preventDefault();
         drawer.classList.add("is-open");
@@ -1733,26 +1736,26 @@
       });
     }
 
-    // Sliding Multi-layers Script (Strictly Triggering ID Switch)
-    var menuTriggers = document.querySelectorAll(".custom-m-menu-link.has-children");
-    menuTriggers.forEach(function(trigger) {
-      trigger.addEventListener("click", function(e) {
+    // FIX: `.closest()` use kiya taake agar span (arrow) par bhi click ho, toh parent button target ho sake
+    document.addEventListener("click", function(e) {
+      var trigger = e.target.closest(".custom-m-menu-link.has-children");
+      if(trigger) {
         e.preventDefault();
-        var targetId = this.getAttribute("data-target");
+        var targetId = trigger.getAttribute("data-target");
         var targetPanel = document.getElementById(targetId);
         if(targetPanel) {
           targetPanel.classList.add("is-active");
         }
-      });
+      }
     });
 
-    // Back Navigation Layout 
-    var backButtons = document.querySelectorAll(".custom-m-back-btn");
-    backButtons.forEach(function(btn) {
-      btn.addEventListener("click", function(e) {
+    // Back Navigation Layout FIX
+    document.addEventListener("click", function(e) {
+      var backBtn = e.target.closest(".custom-m-back-btn");
+      if(backBtn) {
         e.preventDefault();
-        this.parentElement.classList.remove("is-active");
-      });
+        backBtn.parentElement.classList.remove("is-active");
+      }
     });
 
     // Engine Selection Popup
