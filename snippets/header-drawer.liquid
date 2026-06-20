@@ -1430,11 +1430,7 @@
 
 
 
-{%- comment -%}
-  Automated Navigation Picker:
-  Yeh line check karegi ke header section me konsa menu chuna hua hai aur use hi load karega.
-{%- endcomment -%}
-{%- assign main_selected_menu = section.settings.menu | default: section.settings.main_menu_link_list -%}
+{%- assign main_selected_menu = section.settings.menu | default: section.settings.main_menu_link_list | default: 'main-menu' -%}
 {%- assign mobile_menu = linklists[main_selected_menu] -%}
 
 <button type="button" class="custom-hamburger-trigger" id="openMobileDrawer" aria-label="Open Menu">
@@ -1459,42 +1455,25 @@
 
     <nav class="custom-m-nav" id="mNavLayer1">
       <ul class="custom-m-menu-list">
-        {%- if mobile_menu and mobile_menu.links.size > 0 -%}
-          {%- for link in mobile_menu.links -%}
-            <li class="custom-m-menu-item">
-              {%- if link.links != blank -%}
-                <button type="button" class="custom-m-menu-link has-children" data-target="submenu-{{ forloop.index }}">
-                  {{ link.title | escape }}
-                  <span class="arrow-forward">&#10095;</span>
-                </button>
-              {%- else -%}
-                <a href="{{ link.url }}" class="custom-m-menu-link">{{ link.title | escape }}</a>
-              {%- endif -%}
-            </li>
-          {%- endfor -%}
-        {%- else -%}
-          {%- comment -%} Fallback agar upar wale variables match na karein toh default 'main-menu' handles check hon {%- endcomment -%}
-          {%- for link in linklists['main-menu'].links -%}
-            <li class="custom-m-menu-item">
-              {%- if link.links != blank -%}
-                <button type="button" class="custom-m-menu-link has-children" data-target="submenu-{{ forloop.index }}">
-                  {{ link.title | escape }}
-                  <span class="arrow-forward">&#10095;</span>
-                </button>
-              {%- else -%}
-                <a href="{{ link.url }}" class="custom-m-menu-link">{{ link.title | escape }}</a>
-              {%- endif -%}
-            </li>
-          {%- endfor -%}
-        {%- endif -%}
+        {%- for link in mobile_menu.links -%}
+          <li class="custom-m-menu-item">
+            {%- if link.links != blank -%}
+              <button type="button" class="custom-m-menu-link has-children" data-target="submenu-{{ link.handle }}">
+                {{ link.title | escape }}
+                <span class="arrow-forward">&#10095;</span>
+              </button>
+            {%- else -%}
+              <a href="{{ link.url }}" class="custom-m-menu-link">{{ link.title | escape }}</a>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
       </ul>
     </nav>
 
-    {%- assign operational_menu = mobile_menu | default: linklists['main-menu'] -%}
-    
-    {%- for link in operational_menu.links -%}
+    {%- for link in mobile_menu.links -%}
       {%- if link.links != blank -%}
-        <div class="custom-m-submenu-panel" id="submenu-{{ forloop.index }}">
+        
+        <div class="custom-m-submenu-panel" id="submenu-{{ link.handle }}">
           <button type="button" class="custom-m-back-btn">&#10094; Back</button>
           
           <div class="custom-m-submenu-header-bar">
@@ -1509,7 +1488,7 @@
             {%- for childlink in link.links -%}
               <li class="custom-m-menu-item">
                 {%- if childlink.links != blank -%}
-                  <button type="button" class="custom-m-menu-link has-children" data-target="grandchild-{{ forloop.parentloop.index }}-{{ forloop.index }}">
+                  <button type="button" class="custom-m-menu-link has-children" data-target="grandchild-{{ childlink.handle }}">
                     {{ childlink.title | escape }}
                     <span class="arrow-forward">&#10095;</span>
                   </button>
@@ -1523,7 +1502,7 @@
 
         {%- for childlink in link.links -%}
           {%- if childlink.links != blank -%}
-            <div class="custom-m-submenu-panel" id="grandchild-{{ forloop.parentloop.index }}-{{ forloop.index }}">
+            <div class="custom-m-submenu-panel" id="grandchild-{{ childlink.handle }}">
               <button type="button" class="custom-m-back-btn">&#10094; Back</button>
               
               <div class="custom-m-submenu-header-bar">
@@ -1604,7 +1583,7 @@
   }
 
   /* ==========================================================================
-     2. MAIN DRAWER
+     2. MAIN DRAWER (Pure Fullscreen Overlay Layout)
      ========================================================================== */
   .custom-m-drawer {
     position: fixed;
@@ -1735,7 +1714,7 @@
     var closeBtn = document.getElementById("closeMobileDrawer");
 
     if(drawer && openBtn) {
-      document.body.appendChild(drawer);
+      document.body.appendChild(drawer); 
       
       openBtn.addEventListener("click", function(e) {
         e.preventDefault();
@@ -1754,7 +1733,7 @@
       });
     }
 
-    // Sliding Multi-layers Script 
+    // Sliding Multi-layers Script (Strictly Triggering ID Switch)
     var menuTriggers = document.querySelectorAll(".custom-m-menu-link.has-children");
     menuTriggers.forEach(function(trigger) {
       trigger.addEventListener("click", function(e) {
@@ -1767,6 +1746,7 @@
       });
     });
 
+    // Back Navigation Layout 
     var backButtons = document.querySelectorAll(".custom-m-back-btn");
     backButtons.forEach(function(btn) {
       btn.addEventListener("click", function(e) {
