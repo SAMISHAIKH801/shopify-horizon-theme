@@ -1523,159 +1523,109 @@
 </div>
 
 <style>
-  /* Hamburger Button Trigger */
-  .custom-hamburger-trigger {
-    display: none; /* Desktop par hidden rahega */
-    flex-direction: column;
-    justify-content: space-between;
-    width: 24px;
-    height: 18px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    z-index: 99;
-  }
-  .hamburger-bar {
-    width: 100%;
-    height: 3px;
-    background-color: #002d62; /* Theme color */
-    border-radius: 2px;
-  }
+ /* Custom Drawer Setup for Full Height & Viewport Overriding */
+.custom-m-drawer {
+  position: fixed !important;
+  top: 0 !important;
+  left: -100% !important; /* Right-to-left transition smooth karne ke liye */
+  width: 100vw !important;
+  max-width: 100% !important; /* Mobile pe complete screen space cover kare */
+  height: 100vh !important;
+  height: -webkit-fill-available !important; /* Mobile browsers ke native bar issues handle karne k liye */
+  background: #ffffff !important;
+  z-index: 9999999 !important; /* Pure layout me sabse upar rahe */
+  box-shadow: 5px 0 25px rgba(0,0,0,0.3) !important;
+  transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  overflow: hidden !important;
+}
 
-  /* Main Drawer Layout */
-  .custom-m-drawer {
-    position: fixed;
-    top: 0;
-    left: -100%; /* Shuru me slide out rahega */
-    width: 100%;
-    max-width: 400px;
-    height: 100%;
-    background: #fff;
-    z-index: 99999;
-    box-shadow: 5px 0 15px rgba(0,0,0,0.2);
-    transition: left 0.3s ease-in-out;
-    overflow: hidden;
-  }
-  .custom-m-drawer.is-open {
-    left: 0;
-  }
-  .custom-m-drawer-inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-  .custom-m-drawer-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    background: #002d62;
-    color: #fff;
-  }
-  .custom-drawer-logo { font-weight: bold; font-size: 16px; }
-  .custom-drawer-close { background: none; border: none; color: #fff; font-size: 28px; cursor: pointer; }
+.custom-m-drawer.is-open {
+  left: 0 !important;
+}
 
-  /* Shop By Engine Button styling like your yellow bar */
-  .custom-m-engine-section { padding: 10px 15px; background: #f4f4f4; }
-  .custom-m-engine-btn {
-    width: 100%;
-    padding: 14px;
-    background: #ffcc00; /* Yellow Button */
-    color: #000;
-    border: none;
-    font-weight: bold;
-    font-size: 15px;
-    text-transform: uppercase;
-    cursor: pointer;
-    letter-spacing: 0.5px;
-  }
+/* Inner layout settings to ensure full tracking */
+.custom-m-drawer-inner {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
 
-  /* Navigation Links and Tabs List */
-  .custom-m-nav { flex: 1; overflow-y: auto; }
-  .custom-m-menu-list { list-style: none; padding: 0; margin: 0; }
-  .custom-m-menu-item { border-bottom: 1px solid #e5e5e5; }
-  .custom-m-menu-link {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 16px 20px;
-    background: none;
-    border: none;
-    text-align: left;
-    font-size: 15px;
-    font-weight: 600;
-    color: #333;
-    text-decoration: none;
-    cursor: pointer;
-  }
-  .arrow-forward { color: #888; font-size: 14px; }
-  .shop-all-link { color: #002d62; font-style: italic; }
+/* Header Area setup */
+.custom-m-drawer-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 18px 15px !important;
+  background: #002d62 !important;
+  color: #fff !important;
+  flex-shrink: 0 !important; /* Header scroll hotay waqt compress na ho */
+}
 
-  /* Submenus Sliding Panels Layer 2 */
-  .custom-m-submenu-panel {
-    position: absolute;
-    top: 110px; /* Engine bar ke niche se shuru hoga */
-    left: 100%;
-    width: 100%;
-    height: calc(100% - 110px);
-    background: #fff;
-    transition: left 0.3s ease-in-out;
-    overflow-y: auto;
-    z-index: 2;
-  }
-  .custom-m-submenu-panel.is-active {
-    left: 0;
-  }
-  .custom-m-back-btn {
-    width: 100%;
-    padding: 12px 15px;
-    background: #f9f9f9;
-    border: none;
-    border-bottom: 1px solid #e5e5e5;
-    text-align: left;
-    font-size: 14px;
-    font-weight: bold;
-    color: #555;
-    cursor: pointer;
-  }
-  .custom-m-submenu-title { padding: 15px 20px 5px 20px; margin: 0; font-size: 18px; color: #002d62; }
+/* Shop by Engine Yellow segment fixed bar */
+.custom-m-engine-section { 
+  padding: 12px 15px !important; 
+  background: #f4f4f4 !important; 
+  flex-shrink: 0 !important;
+}
 
-  /* Engine Popup Modal Styling */
-  .engine-popup-modal {
-    display: none;
-    position: fixed;
-    z-index: 999999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.6);
-    backdrop-filter: blur(3px);
-  }
-  .engine-popup-content {
-    background-color: #fff;
-    margin: 15% auto;
-    padding: 25px;
-    width: 85%;
-    max-width: 420px;
-    border-radius: 6px;
-    position: relative;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-  }
-  .close-popup { position: absolute; right: 15px; top: 10px; color: #555; font-size: 28px; font-weight: bold; cursor: pointer; }
-  .engine-popup-content h3 { text-align: center; margin-top: 0; margin-bottom: 20px; color: #002d62; font-size: 18px; }
-  .form-group { margin-bottom: 15px; }
-  .form-group select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
-  .engine-search-submit { width: 100%; padding: 12px; background: #ffcc00; color: #000; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; border-radius: 4px; }
+/* Scrollable Container for Layer 1 links */
+.custom-m-nav { 
+  flex: 1 !important; 
+  overflow-y: auto !important; 
+  -webkit-overflow-scrolling: touch !important; /* iOS scrolling momentum fix */
+  background: #ffffff !important;
+}
 
-  /* Mobile Screens Toggle Trigger display */
-  @media screen and (max-width: 990px) {
-    .custom-hamburger-trigger { display: flex; }
-  }
+/* Submenus Sliding Panels Layer 2 absolute height fix */
+.custom-m-submenu-panel {
+  position: absolute !important;
+  top: 0 !important; /* Ab ye zero se start ho kar pure view area ko cover karega */
+  left: 100% !important;
+  width: 100% !important;
+  height: 100% !important; /* Layer 1 ke barabar complete dynamic space handle kare */
+  background: #ffffff !important;
+  transition: left 0.3s ease-in-out !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  z-index: 10 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.custom-m-submenu-panel.is-active {
+  left: 0 !important;
+}
+
+/* Layer 2 Submenu lists management */
+.custom-m-submenu-panel .custom-m-menu-list {
+  flex: 1 !important;
+  overflow-y: auto !important;
+}
+
+.custom-m-back-btn {
+  width: 100% !important;
+  padding: 15px !important;
+  background: #f9f9f9 !important;
+  border: none !important;
+  border-bottom: 1px solid #e5e5e5 !important;
+  text-align: left !important;
+  font-size: 14px !important;
+  font-weight: bold !important;
+  color: #555 !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+}
+
+.custom-m-submenu-title { 
+  padding: 15px 20px 10px 20px !important; 
+  margin: 0 !important; 
+  font-size: 20px !important; 
+  color: #002d62 !important;
+  font-weight: bold !important;
+  flex-shrink: 0 !important;
+}
 </style>
 
 <script>
