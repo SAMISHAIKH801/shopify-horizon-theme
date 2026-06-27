@@ -639,7 +639,7 @@
       <div class="parts-menu__grid-content is-active">
         <ul class="parts-menu__five-grid">
           {% for link in parent_link.links %}
-            <li class="parts-menu__card">
+            {% comment %} <li class="parts-menu__card">
               <div class="parts-menu__image-holder">
                 {% if link.type == 'product_link' and link.object.featured_image != blank %}
                   <img src="{{ link.object.featured_image | img_url: '240x240' }}" alt="{{ link.title | escape }}" loading="lazy">
@@ -655,7 +655,30 @@
               <div class="parts-menu__card-price">
                 {% if link.type == 'product_link' %}{{ link.object.price | money }}{% endif %}
               </div>
-            </li>
+            </li> {% endcomment %}
+
+
+            <li class="parts-menu__card">
+  <a href="{{ link.url }}">
+    <div class="parts-menu__image-holder">
+      {% if link.type == 'product_link' and link.object.featured_image != blank %}
+        <img src="{{ link.object.featured_image | img_url: '240x240' }}" alt="{{ link.title | escape }}" loading="lazy">
+      {% elsif link.type == 'collection_link' and link.object.image != blank %}
+        <img src="{{ link.object.image | img_url: '240x240' }}" alt="{{ link.title | escape }}" loading="lazy">
+      {% elsif link.type == 'collection_link' and link.object.products.first.featured_image != blank %}
+        <img src="{{ link.object.products.first.featured_image | img_url: '240x240' }}" alt="{{ link.title | escape }}" loading="lazy">
+      {% else %}
+        {{ 'product-1' | placeholder_svg_tag }}
+      {% endif %}
+    </div>
+  </a>
+
+  <a href="{{ link.url }}" class="parts-menu__card-link">{{ link.title }}</a>
+
+  <div class="parts-menu__card-price">
+    {% if link.type == 'product_link' %}{{ link.object.price | money }}{% endif %}
+  </div>
+</li>
           {% endfor %}
         </ul>
       </div>
