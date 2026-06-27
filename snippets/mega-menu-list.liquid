@@ -586,7 +586,7 @@
         <div class="parts-menu__grid-content{% if forloop.first %} is-active{% endif %}" data-panel-index="{{ forloop.index }}">
           <ul class="parts-menu__five-grid">
             {% for grandChildLink in link.links %}
-              <li class="parts-menu__card">
+              {% comment %} <li class="parts-menu__card">
                 <div class="parts-menu__image-holder">
                   {% if grandChildLink.type == 'product_link' and grandChildLink.object.featured_image != blank %}
                     <img src="{{ grandChildLink.object.featured_image | img_url: '240x240' }}" alt="{{ grandChildLink.title | escape }}" loading="lazy">
@@ -602,7 +602,31 @@
                 <div class="parts-menu__card-price">
                   {% if grandChildLink.type == 'product_link' %}{{ grandChildLink.object.price | money }}{% endif %}
                 </div>
-              </li>
+              </li> {% endcomment %}
+
+              <li class="parts-menu__card">
+  <!-- Image Holder ko link ke andar wrap kar diya -->
+  <a href="{{ grandChildLink.url }}" class="parts-menu__image-link">
+    <div class="parts-menu__image-holder">
+      {% if grandChildLink.type == 'product_link' and grandChildLink.object.featured_image != blank %}
+        <img src="{{ grandChildLink.object.featured_image | img_url: '240x240' }}" alt="{{ grandChildLink.title | escape }}" loading="lazy">
+      {% elsif grandChildLink.type == 'collection_link' and grandChildLink.object.image != blank %}
+        <img src="{{ grandChildLink.object.image | img_url: '240x240' }}" alt="{{ grandChildLink.title | escape }}" loading="lazy">
+      {% elsif grandChildLink.type == 'collection_link' and grandChildLink.object.products.first.featured_image != blank %}
+        <img src="{{ grandChildLink.object.products.first.featured_image | img_url: '240x240' }}" alt="{{ grandChildLink.title | escape }}" loading="lazy">
+      {% else %}
+        {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+      {% endif %}
+    </div>
+  </a>
+
+  <!-- Title Link (Pehle se mojud hai) -->
+  <a href="{{ grandChildLink.url }}" class="parts-menu__card-link">{{ grandChildLink.title }}</a>
+
+  <div class="parts-menu__card-price">
+    {% if grandChildLink.type == 'product_link' %}{{ grandChildLink.object.price | money }}{% endif %}
+  </div>
+</li>
             {% endfor %}
           </ul>
         </div>
