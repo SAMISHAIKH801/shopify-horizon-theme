@@ -4333,3 +4333,11 @@ a.size-style.button.button--ASzZhVVhNOUMzZ01rN__button_8ML6g9 {
 /* .header__columns {
     --header-left: 5fr !important;
 } */
+
+
+
+
+.accordion.accordion--AKzd2NVkyQk5tWlpVQ__accordion_T9BJtR.accordion--caret.border-style.spacing-style {
+    gap: 10px !important;
+    display: grid !important;
+}
